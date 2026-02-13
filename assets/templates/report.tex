@@ -1,0 +1,106 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{tabularx}
+\usepackage{colortbl}
+\usepackage{booktabs}
+\usepackage{enumitem}
+
+% Page setup
+\geometry{a4paper, margin=1in}
+
+% Colors
+\definecolor{primary}{RGB}{0, 102, 204}
+\definecolor{lightgray}{RGB}{240, 240, 240}
+
+% Header/footer
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{gray}{Report Title}}
+\fancyhead[R]{\small\textcolor{gray}{\today}}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% Section styling
+\titleformat{\section}
+    {\Large\bfseries\color{primary}}{\thesection}{0.5em}{}
+\titleformat{\subsection}
+    {\large\bfseries}{}{0em}{}
+
+% Hyperlinks
+\hypersetup{colorlinks=true, linkcolor=primary, urlcolor=primary}
+
+\title{\textbf{Report Title} \\ \large Subtitle or Description}
+\author{Author Name \\ Organization}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+\newpage
+
+\tableofcontents
+\newpage
+
+% --- EXECUTIVE SUMMARY ---
+\section{Executive Summary}
+Brief overview of the report's key findings and recommendations.
+
+% --- INTRODUCTION ---
+\section{Introduction}
+Context and background for the report.
+
+% --- DATA / FINDINGS ---
+\section{Findings}
+
+\subsection{Key Metrics}
+
+\begin{table}[htbp]
+\centering
+\begin{tabularx}{0.9\textwidth}{lXrr}
+\toprule
+\textbf{Metric} & \textbf{Description} & \textbf{Value} & \textbf{Change} \\
+\midrule
+Metric 1 & Description of metric & 1,234 & +12\% \\
+Metric 2 & Description of metric & 5,678 & -3\% \\
+Metric 3 & Description of metric & 910 & +25\% \\
+\bottomrule
+\end{tabularx}
+\caption{Summary of key metrics}
+\end{table}
+
+\subsection{Analysis}
+Detailed analysis of findings with supporting data.
+
+% Placeholder for chart/image:
+% \begin{figure}[htbp]
+%   \centering
+%   \includegraphics[width=0.8\textwidth]{chart.png}
+%   \caption{Description of chart}
+%   \label{fig:chart}
+% \end{figure}
+
+% --- RECOMMENDATIONS ---
+\section{Recommendations}
+\begin{enumerate}[itemsep=0.5em]
+    \item First recommendation with rationale
+    \item Second recommendation with rationale
+    \item Third recommendation with rationale
+\end{enumerate}
+
+% --- CONCLUSION ---
+\section{Conclusion}
+Summary of findings and next steps.
+
+% --- APPENDIX (optional) ---
+% \appendix
+% \section{Supplementary Data}
+
+\end{document}

@@ -1,0 +1,108 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{colortbl}
+\usepackage{tikz}
+
+% Page setup
+\geometry{a4paper, left=0.75in, right=0.75in, top=0.75in, bottom=0.75in}
+\pagestyle{empty}
+
+% Colors - customize these
+\definecolor{primary}{RGB}{0, 102, 204}
+\definecolor{lightgray}{RGB}{240, 240, 240}
+
+% Section styling
+\titleformat{\section}
+    {\Large\bfseries\color{primary}}{}
+    {0em}{}[\titlerule]
+
+% Hyperlinks
+\hypersetup{colorlinks=true, linkcolor=primary, urlcolor=primary}
+
+% Reusable commands
+\newcommand{\entry}[4]{%
+    \noindent\textbf{#1} \hfill #2 \\
+    \textit{#3} \hfill \textit{#4}%
+}
+
+\begin{document}
+
+% --- HEADER ---
+\begin{minipage}[t]{0.65\textwidth}
+    {\huge\bfseries FULL NAME} \\[0.3em]
+    Phone $\cdot$ City, State \\
+    \href{mailto:email@example.com}{email@example.com} $\cdot$ \href{https://linkedin.com/in/profile}{LinkedIn}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.25\textwidth}
+    \raggedleft
+    % Replace with: \includegraphics[width=2.5cm]{photo.jpg}
+    \begin{tikzpicture}
+        \draw[fill=lightgray] (0,0) circle (1.2cm);
+        \node at (0,0) {\small Photo};
+    \end{tikzpicture}
+\end{minipage}
+
+% --- SUMMARY ---
+\section*{Professional Summary}
+Brief 2-3 sentence summary of experience and expertise.
+
+% --- SKILLS TABLE ---
+\section*{Technical Skills}
+\begin{tabularx}{\textwidth}{|>{\bfseries}l|X|c|}
+\hline
+\rowcolor{lightgray}
+\textbf{Category} & \textbf{Technologies} & \textbf{Level} \\
+\hline
+Skill Area 1 & Tool A, Tool B, Tool C & Expert \\
+\hline
+Skill Area 2 & Tool D, Tool E, Tool F & Advanced \\
+\hline
+\end{tabularx}
+
+% --- EXPERIENCE ---
+\section*{Experience}
+
+\entry{Job Title}{Start -- End}{Company Name}{City, State}
+\begin{itemize}[leftmargin=1.5em, itemsep=0.3em]
+    \item Achievement with quantified impact
+    \item Another achievement with metrics
+\end{itemize}
+
+\vspace{0.5em}
+
+\entry{Previous Job Title}{Start -- End}{Previous Company}{City, State}
+\begin{itemize}[leftmargin=1.5em, itemsep=0.3em]
+    \item Achievement with quantified impact
+    \item Another achievement with metrics
+\end{itemize}
+
+% --- EDUCATION ---
+\section*{Education}
+
+\entry{Degree}{Start -- End}{University Name}{City, State}
+\begin{itemize}[leftmargin=1.5em, itemsep=0.3em]
+    \item GPA: X.X/4.0
+    \item Relevant coursework or honors
+\end{itemize}
+
+% --- CERTIFICATIONS ---
+\section*{Certifications}
+\begin{center}
+\begin{tabular}{l|c}
+\textbf{Certification} & \textbf{Year} \\
+\hline
+Certification Name & 2025 \\
+\end{tabular}
+\end{center}
+
+\end{document}
