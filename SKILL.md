@@ -122,7 +122,7 @@ All 5 templates follow ATS rules: single-column, no graphics/images, no tables f
 
 ### Other Templates
 
-- **`report.tex`** -- Business report with TOC, headers/footers, data tables, recommendations
+- **`report.tex`** -- Business report with TOC, headers/footers, data tables, bar chart (pgfplots), process flowchart (TikZ), recommendations
 - **`cover-letter.tex`** -- Professional cover letter with sender/recipient blocks
 - **`invoice.tex`** -- Invoice with company header, line items table, subtotal/tax/total
 - **`academic-paper.tex`** -- Research paper with abstract, sections, bibliography, figures
@@ -202,6 +202,31 @@ Data & Description text & Value \\
 \end{tikzpicture}
 ```
 
+### Quick Flowchart (TikZ)
+
+```latex
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning}
+% ...
+\begin{tikzpicture}[
+    node distance=1.5cm,
+    box/.style={draw, rounded corners, fill=blue!10, minimum width=3cm, minimum height=1cm, align=center},
+    decision/.style={draw, diamond, fill=yellow!20, aspect=2, align=center},
+    arrow/.style={-{Stealth[length=3mm]}, thick}
+]
+\node[box] (start) {Start};
+\node[box, below of=start] (process) {Process};
+\node[decision, below of=process] (check) {Valid?};
+\node[box, below of=check] (output) {Output};
+\node[box, right of=check, node distance=3.5cm] (fix) {Fix};
+\draw[arrow] (start) -- (process);
+\draw[arrow] (process) -- (check);
+\draw[arrow] (check) -- node[left] {Yes} (output);
+\draw[arrow] (check) -- node[above] {No} (fix);
+\draw[arrow] (fix) |- (process);
+\end{tikzpicture}
+```
+
 ### Quick Image
 
 ```latex
@@ -214,6 +239,21 @@ Data & Description text & Value \\
   \node at (0,0) {\small Photo};
 \end{tikzpicture}
 ```
+
+## Visual Elements in Reports
+
+When creating reports, always include visual elements where they strengthen the content:
+
+- **Bar charts** (pgfplots `ybar`/`xbar`): Compare categories, show rankings, display metrics
+- **Line charts** (pgfplots): Show trends over time, growth curves, multi-series comparisons
+- **Pie charts** (TikZ): Show budget allocation, market share, composition breakdowns
+- **Flowcharts** (TikZ): Show processes, workflows, decision trees, system architecture
+- **Timelines** (TikZ): Show project phases, milestones, rollout schedules
+- **Tables** (booktabs/tabularx): Show detailed data, capability matrices, risk assessments, comparisons
+
+The `report.tex` template includes pgfplots, TikZ, and all required packages out of the box. Use `\begin{figure}[H]` (from `float` package) to prevent figures from floating away from their context.
+
+**Sizing TikZ diagrams**: Always use `width=0.8\textwidth` or smaller in axis options. For TikZ flowcharts, keep `node distance` and `minimum width` small enough that the diagram fits within margins. Test-compile and check PNG preview to catch clipping.
 
 ## Advanced Features
 
