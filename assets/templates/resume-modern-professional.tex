@@ -1,0 +1,104 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=0.7in]{geometry}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{parskip}
+
+\pagestyle{empty}
+
+% Modern accent color -- subtle, professional
+\definecolor{accent}{RGB}{0, 102, 153}
+\definecolor{darktext}{RGB}{50, 50, 50}
+
+% Hyperlinks
+\hypersetup{colorlinks=true, urlcolor=accent, linkcolor=accent}
+
+% Section styling -- colored text with thin rule
+\titleformat{\section}{\large\bfseries\color{accent}}{}{0em}{}[\vspace{-0.5em}{\color{accent}\rule{\textwidth}{0.5pt}}]
+\titlespacing*{\section}{0pt}{1em}{0.5em}
+
+% Entry command
+\newcommand{\entry}[4]{%
+    \noindent\textbf{\color{darktext}#1} \hfill {\small #2} \\
+    \textit{#3} \hfill {\small #4}%
+}
+
+% Skill tag
+\newcommand{\skill}[1]{%
+    \mbox{\small\textbf{#1}}%
+}
+
+\begin{document}
+
+% --- HEADER ---
+\begin{center}
+    {\huge\bfseries\color{accent} FULL NAME} \\[0.4em]
+    {\small City, State \quad\textbar\quad (555) 123-4567 \quad\textbar\quad \href{mailto:email@example.com}{email@example.com} \quad\textbar\quad \href{https://linkedin.com/in/profile}{linkedin.com/in/profile}}
+\end{center}
+
+% --- PROFESSIONAL SUMMARY ---
+\section{Professional Summary}
+
+Experienced [role] with X+ years driving [key outcomes] in [industry]. Expert in [core skill 1], [core skill 2], and [core skill 3]. Passionate about [area] with a proven ability to [value statement]. Known for [distinguishing trait].
+
+% --- CORE COMPETENCIES ---
+\section{Core Competencies}
+
+\skill{Competency One} \quad\textbar\quad
+\skill{Competency Two} \quad\textbar\quad
+\skill{Competency Three} \quad\textbar\quad
+\skill{Competency Four} \quad\textbar\quad
+\skill{Competency Five} \quad\textbar\quad
+\skill{Competency Six}
+
+% --- EXPERIENCE ---
+\section{Professional Experience}
+
+\entry{Senior Job Title}{Jan 2022 -- Present}{Company Name}{City, State}
+\begin{itemize}[leftmargin=1.5em, itemsep=0.2em, topsep=0.3em]
+    \item Spearheaded [initiative] across X departments, delivering [result] and generating \$XM in value
+    \item Built and managed team of X, improving team velocity by X\% through [method]
+    \item Designed [system/strategy] adopted company-wide, reducing [pain point] by X\%
+\end{itemize}
+
+\vspace{0.5em}
+
+\entry{Job Title}{Jun 2019 -- Dec 2021}{Previous Company}{City, State}
+\begin{itemize}[leftmargin=1.5em, itemsep=0.2em, topsep=0.3em]
+    \item Owned end-to-end delivery of [product/feature] used by X customers
+    \item Drove X\% improvement in [KPI] through [strategic action]
+    \item Partnered with [cross-functional teams] to launch [initiative] ahead of schedule
+\end{itemize}
+
+\vspace{0.5em}
+
+\entry{Job Title}{Aug 2016 -- May 2019}{Earlier Company}{City, State}
+\begin{itemize}[leftmargin=1.5em, itemsep=0.2em, topsep=0.3em]
+    \item Contributed to [project] serving X users, achieving [metric]
+    \item Streamlined [process] resulting in X\% efficiency gain
+\end{itemize}
+
+% --- EDUCATION ---
+\section{Education}
+
+\entry{Bachelor of Science in [Field]}{2012 -- 2016}{University Name}{City, State}
+
+% --- SKILLS ---
+\section{Technical Skills}
+
+\textbf{Programming:} Python, JavaScript, SQL, Java \\
+\textbf{Frameworks:} React, Node.js, Django, Spring Boot \\
+\textbf{Cloud \& DevOps:} AWS, Docker, Kubernetes, CI/CD \\
+\textbf{Data:} PostgreSQL, MongoDB, Redis, Elasticsearch
+
+% --- CERTIFICATIONS ---
+\section{Certifications}
+
+\noindent AWS Solutions Architect -- Amazon Web Services \hfill 2024 \\
+Professional Scrum Master (PSM I) -- Scrum.org \hfill 2023
+
+\end{document}

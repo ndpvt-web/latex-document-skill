@@ -1,0 +1,147 @@
+\documentclass[11pt,letterpaper]{article}
+
+% Packages
+\usepackage[margin=0.75in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{parskip}
+\usepackage{hyperref}
+
+% Define colors
+\definecolor{accentcolor}{RGB}{0,100,100}
+
+% Hyperref setup
+\hypersetup{
+    colorlinks=true,
+    linkcolor=accentcolor,
+    urlcolor=accentcolor,
+    pdfborder={0 0 0}
+}
+
+% Remove page numbers
+\pagestyle{empty}
+
+% Custom section formatting
+\usepackage{titlesec}
+\titleformat{\section}
+  {\large\bfseries\color{accentcolor}}
+  {}
+  {0em}
+  {}
+  [\vspace{-0.5em}\color{accentcolor}\titlerule]
+\titlespacing{\section}{0pt}{10pt}{8pt}
+
+% Compact lists
+\setlist[itemize]{leftmargin=*, noitemsep, topsep=0pt, partopsep=0pt, parsep=2pt}
+
+% Custom commands
+\newcommand{\name}[1]{
+  \begin{center}
+    {\huge\bfseries #1}
+  \end{center}
+  \vspace{-8pt}
+}
+
+\newcommand{\contact}[5]{
+  \begin{center}
+    #1 $|$ #2 $|$ \href{mailto:#3}{#3} $|$ \href{#4}{LinkedIn} $|$ \href{#5}{GitHub}
+  \end{center}
+  \vspace{-5pt}
+}
+
+\newcommand{\jobheader}[4]{
+  \textbf{#1} \hfill #2 \\
+  \textit{#3} \hfill \textit{#4}
+  \vspace{-5pt}
+}
+
+\newcommand{\projectheader}[2]{
+  \textbf{#1} $|$ \textit{#2}
+  \vspace{-5pt}
+}
+
+\newcommand{\educationheader}[4]{
+  \textbf{#1} \hfill #2 \\
+  #3 \hfill \textit{#4}
+  \vspace{-5pt}
+}
+
+% Document
+\begin{document}
+
+% Header
+\name{Your Name}
+\contact{San Francisco, CA}{(555) 123-4567}{your.email@example.com}{https://linkedin.com/in/yourprofile}{https://github.com/yourusername}
+
+% Technical Skills
+\section*{Technical Skills}
+
+\textbf{Languages:} Python, JavaScript, TypeScript, Java, Go, SQL, Bash, C++
+
+\textbf{Frameworks:} React, Node.js, Django, Flask, FastAPI, Spring Boot, Express.js, Next.js
+
+\textbf{Cloud/DevOps:} AWS (EC2, S3, Lambda, RDS), Docker, Kubernetes, Terraform, CI/CD, Jenkins, GitHub Actions
+
+\textbf{Databases:} PostgreSQL, MongoDB, Redis, MySQL, Elasticsearch, DynamoDB
+
+\textbf{Tools:} Git, Linux, REST APIs, GraphQL, Microservices, Kafka, RabbitMQ, Prometheus, Grafana
+
+% Professional Experience
+\section*{Professional Experience}
+
+\jobheader{Senior Software Engineer}{January 2022 -- Present}{Tech Company Inc.}{San Francisco, CA}
+\begin{itemize}
+  \item Architected and deployed microservices infrastructure using Kubernetes and Docker, reducing deployment time by 60\% and improving system reliability to 99.9\% uptime
+  \item Optimized database queries and implemented Redis caching layer, reducing API response latency by 40\% and supporting 10M+ events per day
+  \item Led migration from monolithic architecture to event-driven microservices using Kafka, processing 5M+ messages daily with zero data loss
+  \item Mentored team of 4 junior engineers on best practices for code review, testing, and system design
+  \item Implemented comprehensive monitoring with Prometheus and Grafana, reducing mean time to detection (MTTD) by 50\%
+\end{itemize}
+
+\jobheader{Software Engineer}{June 2019 -- December 2021}{StartUp Solutions}{Austin, TX}
+\begin{itemize}
+  \item Developed RESTful APIs using Node.js and Express.js, serving 1M+ requests per day with sub-100ms response times
+  \item Built real-time data pipeline using Python and Apache Kafka to process and analyze user behavior data, enabling data-driven product decisions
+  \item Implemented automated testing suite with Jest and Pytest, increasing code coverage from 45\% to 85\% and reducing production bugs by 35\%
+  \item Designed and optimized PostgreSQL database schemas, improving query performance by 3x through indexing and normalization
+\end{itemize}
+
+\jobheader{Junior Software Developer}{August 2017 -- May 2019}{Digital Innovations LLC}{Remote}
+\begin{itemize}
+  \item Developed and maintained full-stack web applications using React, Node.js, and MongoDB
+  \item Implemented CI/CD pipelines using Jenkins and GitHub Actions, automating deployment process and reducing release time by 70\%
+  \item Collaborated with cross-functional teams in Agile environment to deliver features on tight deadlines
+\end{itemize}
+
+% Projects
+\section*{Projects}
+
+\projectheader{Distributed Task Scheduler}{Go, Redis, PostgreSQL, Docker, Kubernetes}
+\begin{itemize}
+  \item Built scalable distributed task scheduler supporting 100K+ concurrent tasks with at-least-once delivery guarantee
+  \item Implemented priority queuing system with Redis and PostgreSQL for task persistence and state management
+  \item Deployed on Kubernetes cluster with horizontal pod autoscaling, handling traffic spikes of 10x baseline load
+\end{itemize}
+
+\projectheader{Real-Time Analytics Dashboard}{React, TypeScript, WebSocket, Python, FastAPI}
+\begin{itemize}
+  \item Created real-time analytics dashboard with WebSocket connections, visualizing metrics from 50+ data sources
+  \item Built FastAPI backend with async processing, handling 5K concurrent connections with sub-50ms latency
+  \item Implemented data aggregation pipeline using Python and pandas, processing 1GB+ of data per hour
+\end{itemize}
+
+% Education
+\section*{Education}
+
+\educationheader{Bachelor of Science in Computer Science}{Graduated May 2017}{University Name}{GPA: 3.8/4.0}
+
+% Certifications
+\section*{Certifications}
+
+\textbf{AWS Certified Solutions Architect -- Associate} \hfill Issued: March 2023
+
+\textbf{Certified Kubernetes Application Developer (CKAD)} \hfill Issued: November 2022
+
+\end{document}

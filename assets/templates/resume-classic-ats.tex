@@ -1,0 +1,86 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=0.7in]{geometry}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{parskip}
+
+% ATS-safe: no hyperref, no xcolor, no graphicx, no tikz, no tabularx
+% Single column, plain text, standard fonts only
+
+\pagestyle{empty}
+
+% Section styling -- simple bold with horizontal rule
+\titleformat{\section}{\large\bfseries\uppercase}{}{0em}{}[\vspace{-0.5em}\rule{\textwidth}{0.4pt}]
+\titlespacing*{\section}{0pt}{1em}{0.5em}
+
+% Entry command: Title | Dates on one line, Org | Location on next
+\newcommand{\entry}[4]{%
+    \noindent\textbf{#1} \hfill #2 \\
+    \textit{#3} \hfill #4%
+}
+
+\begin{document}
+
+% --- HEADER (in body, not header/footer) ---
+\begin{center}
+    {\LARGE\bfseries FULL NAME} \\[0.3em]
+    City, State \quad | \quad (555) 123-4567 \quad | \quad email@example.com \quad | \quad linkedin.com/in/profile
+\end{center}
+
+% --- PROFESSIONAL SUMMARY ---
+\section{Professional Summary}
+
+Results-driven professional with X+ years of experience in [industry/field]. Proven track record of [key achievement]. Skilled in [skill 1], [skill 2], and [skill 3]. Seeking to leverage expertise in [target area] to drive [value proposition].
+
+% --- EXPERIENCE ---
+\section{Experience}
+
+\entry{Senior Job Title}{Jan 2022 -- Present}{Company Name}{City, State}
+\begin{itemize}[leftmargin=1.5em, itemsep=0.2em, topsep=0.3em]
+    \item Led team of X to deliver [project], resulting in [quantified outcome, e.g., 30\% revenue increase]
+    \item Implemented [system/process] that reduced [metric] by X\%, saving \$XK annually
+    \item Managed [budget/team size/scope] across [departments/regions]
+\end{itemize}
+
+\vspace{0.5em}
+
+\entry{Job Title}{Jun 2019 -- Dec 2021}{Previous Company}{City, State}
+\begin{itemize}[leftmargin=1.5em, itemsep=0.2em, topsep=0.3em]
+    \item Developed [product/solution] serving X users, achieving [metric]
+    \item Collaborated with [stakeholders] to [action], improving [outcome] by X\%
+    \item Recognized with [award/recognition] for [achievement]
+\end{itemize}
+
+\vspace{0.5em}
+
+\entry{Junior Job Title}{Aug 2016 -- May 2019}{Earlier Company}{City, State}
+\begin{itemize}[leftmargin=1.5em, itemsep=0.2em, topsep=0.3em]
+    \item Contributed to [initiative] that [result with metric]
+    \item Supported [function/team] in [activity], streamlining [process]
+\end{itemize}
+
+% --- EDUCATION ---
+\section{Education}
+
+\entry{Bachelor of Science in [Field]}{Sep 2012 -- Jun 2016}{University Name}{City, State}
+\begin{itemize}[leftmargin=1.5em, itemsep=0.2em, topsep=0.3em]
+    \item GPA: 3.X/4.0
+    \item Relevant Coursework: Course A, Course B, Course C
+\end{itemize}
+
+% --- SKILLS ---
+\section{Skills}
+
+\textbf{Technical:} Skill A, Skill B, Skill C, Skill D, Skill E \\
+\textbf{Tools:} Tool A, Tool B, Tool C, Tool D \\
+\textbf{Languages:} English (Native), Spanish (Conversational)
+
+% --- CERTIFICATIONS ---
+\section{Certifications}
+
+\noindent Certification Name -- Issuing Organization \hfill 2024 \\
+Another Certification -- Issuing Organization \hfill 2023
+
+\end{document}

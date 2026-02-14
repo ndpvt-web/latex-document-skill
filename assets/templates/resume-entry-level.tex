@@ -1,0 +1,162 @@
+\documentclass[11pt,letterpaper]{article}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=0.5in]{geometry}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{parskip}
+
+% Define accent color - subtle blue
+\definecolor{accentcolor}{RGB}{41, 65, 122}
+
+% Configure hyperref
+\hypersetup{
+    colorlinks=true,
+    linkcolor=accentcolor,
+    urlcolor=accentcolor,
+    pdfborder={0 0 0}
+}
+
+% Remove page numbers
+\pagestyle{empty}
+
+% Compact spacing
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\setlist{nosep, leftmargin=*, itemsep=0.1em}
+
+% Section formatting command
+\newcommand{\resumesection}[1]{
+    \vspace{0.5em}
+    {\color{accentcolor}\textbf{\large #1}}
+    \vspace{-0.5em}
+    {\color{accentcolor}\hrule height 0.5pt}
+    \vspace{0.3em}
+}
+
+% Job/Experience entry command
+\newcommand{\experienceentry}[4]{
+    \textbf{#1} \hfill \textit{#2} \\
+    \textit{#3} \hfill #4
+    \vspace{0.1em}
+}
+
+% Education entry command
+\newcommand{\educationentry}[4]{
+    \textbf{#1} \hfill \textit{#2} \\
+    #3 \hfill #4
+    \vspace{0.1em}
+}
+
+% Project entry command
+\newcommand{\projectentry}[3]{
+    \textbf{#1} \hfill \textit{#2} \\
+    \textit{#3}
+    \vspace{0.1em}
+}
+
+\begin{document}
+
+% Header - Name and Contact
+\begin{center}
+    {\LARGE\textbf{Your Name}} \\
+    \vspace{0.3em}
+    City, State | (123) 456-7890 | \href{mailto:your.email@example.com}{your.email@example.com} | \href{https://linkedin.com/in/yourprofile}{linkedin.com/in/yourprofile}
+\end{center}
+
+\vspace{0.5em}
+
+% EDUCATION SECTION (First for entry-level resumes)
+\resumesection{Education}
+
+\educationentry{Bachelor of Science in Computer Science}{May 2025}{University Name}{GPA: 3.7/4.0}
+
+\textbf{Relevant Coursework:} Data Structures \& Algorithms, Database Systems, Software Engineering, Web Development, Operating Systems, Machine Learning
+
+\textbf{Academic Honors:} Dean's List (Fall 2023, Spring 2024), Scholarship Recipient
+
+\vspace{0.3em}
+
+% RELEVANT EXPERIENCE SECTION
+\resumesection{Relevant Experience}
+
+\experienceentry{Software Engineering Intern}{June 2024 -- August 2024}{Tech Company Name}{City, State}
+\begin{itemize}
+    \item Developed and deployed a customer dashboard feature using React and Node.js, improving user engagement by 25\%
+    \item Collaborated with cross-functional team of 5 engineers to implement RESTful APIs for data retrieval
+    \item Participated in code reviews and agile development practices, gaining experience with Git workflows
+    \item Wrote unit tests achieving 90\% code coverage using Jest and React Testing Library
+\end{itemize}
+
+\vspace{0.2em}
+
+\experienceentry{IT Support Assistant}{September 2023 -- May 2024}{University IT Department}{City, State}
+\begin{itemize}
+    \item Provided technical support to 200+ students and faculty, resolving hardware and software issues
+    \item Documented troubleshooting procedures, reducing average resolution time by 30\%
+    \item Trained 3 new team members on support ticketing system and customer service best practices
+\end{itemize}
+
+\vspace{0.3em}
+
+% PROJECTS SECTION
+\resumesection{Projects}
+
+\projectentry{Task Management Web Application}{January 2024 -- May 2024}{React, Express.js, MongoDB, AWS}
+\begin{itemize}
+    \item Built full-stack web application allowing users to create, organize, and track personal tasks
+    \item Implemented user authentication with JWT tokens and password encryption for security
+    \item Deployed application to AWS EC2 with automated CI/CD pipeline using GitHub Actions
+\end{itemize}
+
+\vspace{0.2em}
+
+\projectentry{Movie Recommendation System}{September 2023 -- December 2023}{Python, Pandas, Scikit-learn}
+\begin{itemize}
+    \item Developed machine learning model using collaborative filtering to recommend movies based on user preferences
+    \item Processed and analyzed dataset of 100,000+ movie ratings to train recommendation algorithm
+    \item Achieved 85\% accuracy in predicting user ratings through hyperparameter tuning
+\end{itemize}
+
+\vspace{0.2em}
+
+\projectentry{Mobile Expense Tracker}{March 2024}{React Native, Firebase}
+\begin{itemize}
+    \item Created cross-platform mobile app for tracking personal expenses with real-time data synchronization
+    \item Implemented data visualization using charts to display spending patterns by category
+\end{itemize}
+
+\vspace{0.3em}
+
+% SKILLS SECTION
+\resumesection{Technical Skills}
+
+\textbf{Languages:} Python, JavaScript, Java, C++, SQL, HTML/CSS
+
+\textbf{Frameworks \& Tools:} React, Node.js, Express.js, Git, Docker, MongoDB, PostgreSQL, AWS
+
+\textbf{Soft Skills:} Problem-solving, Team collaboration, Communication, Time management, Adaptability
+
+\vspace{0.3em}
+
+% ACTIVITIES AND LEADERSHIP SECTION
+\resumesection{Activities and Leadership}
+
+\textbf{Computer Science Club} \hfill \textit{September 2022 -- Present}
+\begin{itemize}
+    \item Vice President (2024-2025): Organize weekly technical workshops and coding competitions for 50+ members
+    \item Coordinate annual hackathon attracting 100+ participants from multiple universities
+\end{itemize}
+
+\vspace{0.2em}
+
+\textbf{Volunteer Coding Mentor} \hfill \textit{January 2023 -- Present}
+\begin{itemize}
+    \item Mentor high school students in introductory programming concepts through local nonprofit organization
+    \item Develop curriculum and teach weekly Python programming classes to groups of 10-15 students
+\end{itemize}
+
+\end{document}

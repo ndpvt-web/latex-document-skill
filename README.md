@@ -4,17 +4,42 @@ A Claude Code skill for creating, compiling, and converting any document to prof
 
 ## Features
 
-- **6 production-ready templates** -- resume, report, cover letter, invoice, academic paper, presentation (Beamer)
+- **11 production-ready templates** -- 5 ATS-optimized resume variants + report, cover letter, invoice, academic paper, presentation (Beamer), legacy resume
+- **ATS-compatible resumes** -- researched against industry standards (Workday, Greenhouse, Taleo, iCIMS); single-column, no graphics, standard section headings
 - **Charts and graphs** -- bar, line, scatter, pie charts via pgfplots; flowcharts and timelines via TikZ
 - **Tables** -- colored rows, multi-row/column, booktabs, long tables spanning pages
 - **PDF-to-LaTeX conversion** -- convert handwritten notes, printed reports, legal docs to LaTeX with empirically optimized scaling
 - **Auto-install** -- scripts automatically install TeX Live and poppler-utils if missing
 - **PNG previews** -- every compiled PDF generates page-by-page PNG previews
 
-## Template Gallery
+## Resume Templates (ATS-Optimized)
 
-### Resume
-![Resume](examples/resume.png)
+All 5 resume templates are designed to pass Applicant Tracking Systems (ATS). 98% of Fortune 500 companies use ATS to filter resumes before a human ever sees them.
+
+| Template | Best For | ATS Score |
+|---|---|---|
+| Classic ATS | Finance, law, government -- maximum parse safety | 10/10 |
+| Modern Professional | Tech, corporate -- good ATS + human appeal | 9/10 |
+| Executive | VP/Director/C-suite -- two-page, leadership focus | 9/10 |
+| Technical | Software/data/engineering -- skills-first, projects | 9/10 |
+| Entry-Level | New graduates -- education-first, one page | 9/10 |
+
+### Classic ATS
+![Classic ATS](examples/resume-classic-ats.png)
+
+### Modern Professional
+![Modern Professional](examples/resume-modern-professional.png)
+
+### Executive
+![Executive](examples/resume-executive.png)
+
+### Technical / Engineering
+![Technical](examples/resume-technical.png)
+
+### Entry-Level / Graduate
+![Entry-Level](examples/resume-entry-level.png)
+
+## Other Templates
 
 ### Report
 ![Report](examples/report.png)
@@ -91,16 +116,22 @@ Empirically tested on a 115-page handwritten math PDF across batch sizes 3, 5, 7
 
 ```
 latex-document/
-├── SKILL.md                          # Main skill file (218 lines)
+├── SKILL.md                          # Main skill file
 ├── assets/
-│   └── templates/                    # 6 compile-tested LaTeX templates
-│       ├── resume.tex
+│   └── templates/                    # 11 compile-tested LaTeX templates
+│       ├── resume-classic-ats.tex    # Maximum ATS compatibility
+│       ├── resume-modern-professional.tex  # Clean modern design
+│       ├── resume-executive.tex      # Senior/C-suite two-page
+│       ├── resume-technical.tex      # Skills-first engineering
+│       ├── resume-entry-level.tex    # Education-first graduate
+│       ├── resume.tex                # Legacy resume (not ATS-optimized)
 │       ├── report.tex
 │       ├── cover-letter.tex
 │       ├── invoice.tex
 │       ├── academic-paper.tex
 │       └── presentation.tex
 ├── references/
+│   ├── resume-ats-guide.md           # ATS rules, LaTeX pitfalls, keywords
 │   ├── charts-and-graphs.md          # pgfplots + TikZ reference
 │   ├── packages.md                   # Common LaTeX packages
 │   ├── pdf-conversion.md             # Full conversion pipeline

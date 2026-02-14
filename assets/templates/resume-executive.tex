@@ -1,0 +1,111 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=0.75in]{geometry}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{parskip}
+
+\pagestyle{empty}
+
+% Executive palette -- understated authority
+\definecolor{navy}{RGB}{0, 40, 85}
+\definecolor{darktext}{RGB}{40, 40, 40}
+
+\hypersetup{colorlinks=true, urlcolor=navy, linkcolor=navy}
+
+% Section styling -- bold, navy with rule (uppercase applied via scshape)
+\titleformat{\section}{\large\bfseries\scshape\color{navy}}{}{0em}{}[\vspace{-0.5em}{\color{navy}\rule{\textwidth}{0.6pt}}]
+\titlespacing*{\section}{0pt}{1.2em}{0.5em}
+
+% Entry command
+\newcommand{\entry}[4]{%
+    \noindent\textbf{#1} \hfill {\small #2} \\
+    \textit{#3} \hfill {\small #4}%
+}
+
+\begin{document}
+
+% --- HEADER ---
+\begin{center}
+    {\LARGE\bfseries\color{navy} FULL NAME} \\[0.2em]
+    {\large Senior Vice President | Operations \& Strategy} \\[0.4em]
+    {\small City, State \quad\textbar\quad (555) 123-4567 \quad\textbar\quad \href{mailto:email@example.com}{email@example.com} \quad\textbar\quad \href{https://linkedin.com/in/profile}{linkedin.com/in/profile}}
+\end{center}
+
+% --- EXECUTIVE SUMMARY ---
+\section{Executive Summary}
+
+C-level executive with 15+ years leading enterprise-scale operations across [industries]. Track record of driving \$XM+ revenue growth, managing P\&L of \$XM, and building high-performance teams of 100+ people. Board advisory experience in [sector]. Recognized for [signature strength] and [industry reputation].
+
+\vspace{0.3em}
+\noindent\textbf{Signature Strengths:} Strategic Planning \quad\textbar\quad P\&L Management \quad\textbar\quad M\&A Integration \quad\textbar\quad Digital Transformation \quad\textbar\quad Board Relations \quad\textbar\quad Global Operations
+
+% --- PROFESSIONAL EXPERIENCE ---
+\section{Professional Experience}
+
+\entry{Senior Vice President, Operations}{2020 -- Present}{Enterprise Corporation}{New York, NY}
+\begin{itemize}[leftmargin=1.5em, itemsep=0.2em, topsep=0.3em]
+    \item Oversee operations spanning X countries with \$XM annual budget and X+ direct/indirect reports
+    \item Led post-merger integration of [acquired company], achieving \$XM in synergies within 18 months
+    \item Launched digital transformation initiative reducing operational costs by X\% (\$XM annually)
+    \item Presented quarterly performance reviews to Board of Directors and executive committee
+\end{itemize}
+
+\vspace{0.5em}
+
+\entry{Vice President, Business Development}{2015 -- 2020}{Growth Industries Inc.}{Chicago, IL}
+\begin{itemize}[leftmargin=1.5em, itemsep=0.2em, topsep=0.3em]
+    \item Built and scaled business development function from 5 to 45 team members across 3 regions
+    \item Closed \$XM in enterprise contracts including [notable client/deal]
+    \item Developed strategic partnership framework generating X\% of total company revenue
+    \item Championed [initiative] that expanded market presence into X new verticals
+\end{itemize}
+
+\vspace{0.5em}
+
+\entry{Director, Strategy \& Planning}{2012 -- 2015}{Consulting Group LLP}{Boston, MA}
+\begin{itemize}[leftmargin=1.5em, itemsep=0.2em, topsep=0.3em]
+    \item Managed portfolio of X client engagements totaling \$XM in annual consulting revenue
+    \item Advised Fortune 500 clients on [strategic area], delivering measurable ROI of X\%
+    \item Promoted twice in 3 years; youngest Director in firm history
+\end{itemize}
+
+\vspace{0.5em}
+
+\entry{Senior Consultant}{2008 -- 2012}{Big Four Consulting}{Washington, DC}
+\begin{itemize}[leftmargin=1.5em, itemsep=0.2em, topsep=0.3em]
+    \item Led cross-functional teams of X on [industry] transformation projects
+    \item Developed [framework/methodology] adopted as firm-wide best practice
+\end{itemize}
+
+% --- EDUCATION ---
+\section{Education}
+
+\entry{Master of Business Administration (MBA)}{2006 -- 2008}{Top Business School}{City, State}
+\begin{itemize}[leftmargin=1.5em, itemsep=0.2em, topsep=0.3em]
+    \item Concentration in Strategy and Finance
+    \item Dean's List, Case Competition Winner
+\end{itemize}
+
+\vspace{0.3em}
+
+\entry{Bachelor of Science in Economics}{2002 -- 2006}{University Name}{City, State}
+
+% --- BOARD & ADVISORY ---
+\section{Board and Advisory Roles}
+
+\noindent Advisory Board Member -- Tech Startup Inc. \hfill 2022 -- Present \\
+Board Observer -- Industry Association \hfill 2021 -- Present \\
+Mentor -- Executive Leadership Program \hfill 2019 -- Present
+
+% --- CERTIFICATIONS & AFFILIATIONS ---
+\section{Certifications and Affiliations}
+
+\noindent Certified Board Director (CBD) -- National Association of Corporate Directors \hfill 2023 \\
+Six Sigma Black Belt -- ASQ \hfill 2015 \\
+Member, [Industry] Leadership Council \hfill 2020 -- Present
+
+\end{document}

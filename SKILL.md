@@ -104,18 +104,34 @@ Auto-installs `poppler-utils` and `imagemagick`, renders pages as PNG, resizes t
 
 ## Templates
 
-Copy from `assets/templates/` and customize:
+Copy from `assets/templates/` and customize.
 
-- **`resume.tex`** -- Professional resume with photo area, skills table, experience entries, education
+### Resume Templates (5 ATS-Compatible Options)
+
+Select based on experience level, industry, and ATS requirements. See [references/resume-ats-guide.md](references/resume-ats-guide.md) for full ATS guidance.
+
+| Template | Best For | Key Feature | ATS Score |
+|---|---|---|---|
+| **`resume-classic-ats.tex`** | Finance, law, government, any ATS portal | Zero graphics, plain text only, maximum parse safety | 10/10 |
+| **`resume-modern-professional.tex`** | Tech, corporate, general professional | Subtle color accents, clean design, good ATS + human appeal | 9/10 |
+| **`resume-executive.tex`** | VP, Director, C-suite (5-15+ years) | Two-page, executive summary, board roles, P&L focus | 9/10 |
+| **`resume-technical.tex`** | Software, data, engineering roles | Skills-first hybrid, projects section, tech stack emphasis | 9/10 |
+| **`resume-entry-level.tex`** | New graduates, career starters | Education-first, one page, coursework, activities | 9/10 |
+
+All 5 templates follow ATS rules: single-column, no graphics/images, no tables for layout, standard section headings, contact info in body (not header/footer).
+
+### Other Templates
+
 - **`report.tex`** -- Business report with TOC, headers/footers, data tables, recommendations
-- **`cover-letter.tex`** -- Matching cover letter with sender/recipient blocks, professional formatting
+- **`cover-letter.tex`** -- Professional cover letter with sender/recipient blocks
 - **`invoice.tex`** -- Invoice with company header, line items table, subtotal/tax/total
 - **`academic-paper.tex`** -- Research paper with abstract, sections, bibliography, figures
 - **`presentation.tex`** -- Beamer presentation with title slide, content frames, columns
+- **`resume.tex`** -- Legacy resume template (has photo area and tables -- not ATS-optimized)
 
 Usage:
 ```bash
-cp <skill_path>/assets/templates/resume.tex ./outputs/my_resume.tex
+cp <skill_path>/assets/templates/resume-classic-ats.tex ./outputs/my_resume.tex
 # Edit content, then compile
 bash <skill_path>/scripts/compile_latex.sh ./outputs/my_resume.tex --preview --preview-dir ./outputs
 ```
@@ -124,7 +140,11 @@ bash <skill_path>/scripts/compile_latex.sh ./outputs/my_resume.tex --preview --p
 
 | User Request | Template | Document Class |
 |---|---|---|
-| Resume, CV | `resume.tex` | `article` |
+| Resume, CV (ATS-safe) | `resume-classic-ats.tex` | `article` |
+| Resume (modern look) | `resume-modern-professional.tex` | `article` |
+| Resume (senior/executive) | `resume-executive.tex` | `article` |
+| Resume (technical/engineering) | `resume-technical.tex` | `article` |
+| Resume (new graduate) | `resume-entry-level.tex` | `article` |
 | Report, analysis | `report.tex` | `article` |
 | Cover letter | `cover-letter.tex` | `article` |
 | Invoice | `invoice.tex` | `article` |
@@ -201,6 +221,7 @@ Data & Description text & Value \\
 - **Images**: External images, TikZ drawings, circular clipped photos, side-by-side, text wrapping. See [references/tables-and-images.md](references/tables-and-images.md).
 - **Charts and Graphs**: Line plots, bar charts, scatter plots, pie charts, pgfplots. See [references/charts-and-graphs.md](references/charts-and-graphs.md).
 - **Package reference**: Common packages and their purposes. See [references/packages.md](references/packages.md).
+- **Resume ATS guide**: ATS compatibility rules, LaTeX-specific pitfalls, keyword optimization, action verbs. See [references/resume-ats-guide.md](references/resume-ats-guide.md).
 - **PDF-to-LaTeX conversion**: Full pipeline with scaling strategy and profiles. See [references/pdf-conversion.md](references/pdf-conversion.md).
 
 ## Critical Notes
