@@ -1,0 +1,124 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{colortbl}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{fancyhdr}
+
+% Page setup
+\geometry{a4paper, left=0.75in, right=0.75in, top=0.75in, bottom=0.75in}
+
+% Colors
+\definecolor{primary}{RGB}{0, 102, 204}
+\definecolor{lightgray}{RGB}{245, 245, 245}
+\definecolor{darkgray}{RGB}{80, 80, 80}
+
+% Remove header rule, add footer
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyfoot[C]{\small\textcolor{darkgray}{Thank you for your business.}}
+
+% Right-aligned currency column
+\newcolumntype{R}{>{\raggedleft\arraybackslash}p{2.5cm}}
+
+\begin{document}
+
+% --- HEADER ---
+\begin{minipage}[t]{0.55\textwidth}
+    % Replace with: \includegraphics[height=1.5cm]{logo.png}
+    {\huge\bfseries\textcolor{primary}{COMPANY NAME}}\\[0.3em]
+    {\small
+    123 Business Street \\
+    City, State, ZIP \\
+    Phone: (555) 123-4567 \\
+    Email: billing@company.com
+    }
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.35\textwidth}
+    \raggedleft
+    {\Huge\bfseries\textcolor{primary}{INVOICE}}\\[0.5em]
+    {\small
+    \begin{tabular}{r@{\hskip 0.5em}l}
+    \textbf{Invoice \#:} & INV-001 \\
+    \textbf{Date:} & \today \\
+    \textbf{Due Date:} & March 15, 2026 \\
+    \end{tabular}
+    }
+\end{minipage}
+
+\vspace{1.5em}
+\noindent\textcolor{primary}{\rule{\textwidth}{1pt}}
+\vspace{1em}
+
+% --- BILL TO ---
+\noindent
+\textbf{\textcolor{primary}{BILL TO:}}\\[0.5em]
+\noindent
+Client Name \\
+Client Company \\
+456 Client Avenue \\
+City, State, ZIP \\
+Email: client@example.com
+
+\vspace{1.5em}
+
+% --- LINE ITEMS ---
+\begin{tabularx}{\textwidth}{|c|X|c|R|R|}
+\hline
+\rowcolor{primary}
+\textcolor{white}{\textbf{\#}} &
+\textcolor{white}{\textbf{Description}} &
+\textcolor{white}{\textbf{Qty}} &
+\textcolor{white}{\textbf{Unit Price}} &
+\textcolor{white}{\textbf{Total}} \\
+\hline
+1 & Web Development Services & 40 hrs & \$150.00 & \$6,000.00 \\
+\hline
+\rowcolor{lightgray}
+2 & UI/UX Design & 10 hrs & \$120.00 & \$1,200.00 \\
+\hline
+3 & Project Management & 8 hrs & \$100.00 & \$800.00 \\
+\hline
+\rowcolor{lightgray}
+4 & Quality Assurance Testing & 5 hrs & \$90.00 & \$450.00 \\
+\hline
+\end{tabularx}
+
+\vspace{1em}
+
+% --- TOTALS ---
+\hfill
+\begin{tabular}{r@{\hskip 1em}R}
+\textbf{Subtotal:} & \$8,450.00 \\[0.3em]
+\textbf{Tax (10\%):} & \$845.00 \\[0.3em]
+\hline
+\\[-0.7em]
+{\Large\textbf{Total:}} & {\Large\textbf{\$9,295.00}} \\
+\end{tabular}
+
+\vspace{2em}
+
+% --- PAYMENT TERMS ---
+\noindent\textcolor{primary}{\rule{\textwidth}{0.5pt}}
+\vspace{0.5em}
+
+\noindent
+\textbf{\textcolor{primary}{Payment Terms:}}\\[0.3em]
+\noindent
+{\small
+Payment is due within 30 days of the invoice date. Please make checks payable to Company Name or transfer to:\\[0.3em]
+\begin{tabular}{@{}ll}
+\textbf{Bank:} & First National Bank \\
+\textbf{Account:} & 1234567890 \\
+\textbf{Routing:} & 021000021 \\
+\end{tabular}
+}
+
+\end{document}

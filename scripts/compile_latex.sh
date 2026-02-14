@@ -58,11 +58,16 @@ ensure_texlive() {
   if command -v pdflatex &>/dev/null; then
     return 0
   fi
-  echo ":: pdflatex not found. Installing texlive..." >&2
+  echo ":: pdflatex not found. Installing texlive (this may take several minutes)..." >&2
+  local INSTALL_CMD="texlive-latex-base texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra texlive-latex-recommended"
   if command -v sudo &>/dev/null; then
-    sudo apt-get update -qq && sudo apt-get install -y -qq texlive-latex-base texlive-latex-extra texlive-fonts-recommended >&2
+    sudo apt-get update -q >&2 || { echo "Error: apt-get update failed" >&2; exit 1; }
+    echo ":: Downloading and installing TeX Live packages..." >&2
+    sudo apt-get install -y -q $INSTALL_CMD >&2 || { echo "Error: apt-get install failed" >&2; exit 1; }
   elif command -v apt-get &>/dev/null; then
-    apt-get update -qq && apt-get install -y -qq texlive-latex-base texlive-latex-extra texlive-fonts-recommended >&2
+    apt-get update -q >&2 || { echo "Error: apt-get update failed" >&2; exit 1; }
+    echo ":: Downloading and installing TeX Live packages..." >&2
+    apt-get install -y -q $INSTALL_CMD >&2 || { echo "Error: apt-get install failed" >&2; exit 1; }
   else
     echo "Error: Cannot install texlive - apt-get not available" >&2
     exit 1
@@ -81,9 +86,11 @@ ensure_poppler() {
   fi
   echo ":: pdftoppm not found. Installing poppler-utils..." >&2
   if command -v sudo &>/dev/null; then
-    sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils >&2
+    sudo apt-get update -q >&2 || { echo "Error: apt-get update failed" >&2; exit 1; }
+    sudo apt-get install -y -q poppler-utils >&2 || { echo "Error: apt-get install poppler-utils failed" >&2; exit 1; }
   elif command -v apt-get &>/dev/null; then
-    apt-get update -qq && apt-get install -y -qq poppler-utils >&2
+    apt-get update -q >&2 || { echo "Error: apt-get update failed" >&2; exit 1; }
+    apt-get install -y -q poppler-utils >&2 || { echo "Error: apt-get install poppler-utils failed" >&2; exit 1; }
   else
     echo "Error: Cannot install poppler-utils - apt-get not available" >&2
     exit 1
@@ -93,14 +100,14 @@ ensure_poppler() {
 # --- Compile ---
 ensure_texlive
 
-echo ":: Compiling ${INPUT_TEX}..."
+echo ":: Compiling ${INPUT_TEX}..." >&2
 cd "$INPUT_DIR"
 
-# Run pdflatex twice to resolve references, TOC, etc.
+# First pass - halt on error for quick failure detection
 pdflatex -interaction=nonstopmode -halt-on-error "$INPUT_TEX" >/dev/null 2>&1 || {
-  echo ":: First pass had issues, running again for diagnostics..." >&2
-  pdflatex -interaction=nonstopmode "$INPUT_TEX" 2>&1 | tail -30 >&2
-  # Check if PDF was still produced
+  echo ":: First pass had errors. Running diagnostic pass..." >&2
+  pdflatex -interaction=nonstopmode -halt-on-error "$INPUT_TEX" 2>&1 | tail -40 >&2
+  # Check if PDF was still produced despite errors
   if [[ ! -f "$PDF_FILE" ]]; then
     echo "Error: Compilation failed - no PDF produced" >&2
     exit 1
@@ -108,8 +115,8 @@ pdflatex -interaction=nonstopmode -halt-on-error "$INPUT_TEX" >/dev/null 2>&1 ||
   echo ":: PDF produced despite warnings" >&2
 }
 
-# Second pass for cross-references
-pdflatex -interaction=nonstopmode "$INPUT_TEX" >/dev/null 2>&1 || true
+# Second pass for cross-references (also halt-on-error for consistency)
+pdflatex -interaction=nonstopmode -halt-on-error "$INPUT_TEX" >/dev/null 2>&1 || true
 
 if [[ ! -f "$PDF_FILE" ]]; then
   echo "Error: PDF not produced" >&2
@@ -136,6 +143,7 @@ fi
 cd "$INPUT_DIR"
 rm -f "${INPUT_BASE}.aux" "${INPUT_BASE}.log" "${INPUT_BASE}.out" \
       "${INPUT_BASE}.toc" "${INPUT_BASE}.lof" "${INPUT_BASE}.lot" \
-      "${INPUT_BASE}.nav" "${INPUT_BASE}.snm" "${INPUT_BASE}.vrb" 2>/dev/null || true
+      "${INPUT_BASE}.nav" "${INPUT_BASE}.snm" "${INPUT_BASE}.vrb" \
+      "${INPUT_BASE}.bbl" "${INPUT_BASE}.blg" 2>/dev/null || true
 
 echo ":: Done."
