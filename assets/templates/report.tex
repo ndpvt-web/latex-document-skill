@@ -11,6 +11,12 @@
 \usepackage{colortbl}
 \usepackage{booktabs}
 \usepackage{enumitem}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning}
+\usepackage{multirow}
+\usepackage{float}
 
 % Page setup
 \geometry{a4paper, margin=1in}
@@ -79,13 +85,59 @@ Metric 3 & Description of metric & 910 & +25\% \\
 \subsection{Analysis}
 Detailed analysis of findings with supporting data.
 
-% Placeholder for chart/image:
-% \begin{figure}[htbp]
-%   \centering
-%   \includegraphics[width=0.8\textwidth]{chart.png}
-%   \caption{Description of chart}
-%   \label{fig:chart}
-% \end{figure}
+% --- EXAMPLE: Bar Chart ---
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    ybar,
+    width=0.8\textwidth,
+    height=6cm,
+    xlabel={Quarter},
+    ylabel={Revenue (\$K)},
+    symbolic x coords={Q1, Q2, Q3, Q4},
+    xtick=data,
+    nodes near coords,
+    nodes near coords style={font=\small\bfseries},
+    bar width=18pt,
+    ymin=0,
+    grid=major,
+    major grid style={thin, gray!20},
+    enlarge x limits=0.2,
+]
+\addplot[fill=primary!60] coordinates {(Q1,120) (Q2,150) (Q3,180) (Q4,210)};
+\end{axis}
+\end{tikzpicture}
+\caption{Quarterly revenue performance}
+\label{fig:revenue}
+\end{figure}
+
+% --- EXAMPLE: Process Flowchart ---
+\subsection{Process Overview}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=1.5cm,
+    box/.style={draw, rounded corners, fill=primary!10, minimum width=3cm, minimum height=1cm, align=center, font=\small\bfseries},
+    decision/.style={draw, diamond, fill=yellow!20, minimum width=1.5cm, aspect=2, align=center, font=\small},
+    arrow/.style={-{Stealth[length=3mm]}, thick}
+]
+\node[box] (start) {Start};
+\node[box, below of=start] (process) {Process Data};
+\node[decision, below of=process] (check) {Valid?};
+\node[box, below of=check] (output) {Output};
+\node[box, right of=check, node distance=3.5cm] (fix) {Fix Errors};
+
+\draw[arrow] (start) -- (process);
+\draw[arrow] (process) -- (check);
+\draw[arrow] (check) -- node[left] {Yes} (output);
+\draw[arrow] (check) -- node[above] {No} (fix);
+\draw[arrow] (fix) |- (process);
+\end{tikzpicture}
+\caption{Data processing workflow}
+\label{fig:workflow}
+\end{figure}
 
 % --- RECOMMENDATIONS ---
 \section{Recommendations}
