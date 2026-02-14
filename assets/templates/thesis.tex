@@ -1,0 +1,430 @@
+\documentclass[12pt,a4paper,oneside]{book}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{enumitem}
+\usepackage{setspace}
+\usepackage{natbib}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{emptypage}  % Blank pages between chapters have no headers
+\usepackage{appendix}
+
+% Page setup
+\geometry{a4paper, margin=1in, bindingoffset=0.5cm}
+\onehalfspacing
+
+% Colors
+\definecolor{chaptercolor}{RGB}{0, 70, 140}
+
+% Header/footer
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\nouppercase{\leftmark}}
+\fancyhead[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\small\thepage}\renewcommand{\headrulewidth}{0pt}}
+
+% Chapter title styling
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries\color{chaptercolor}}
+  {\chaptertitlename\ \thechapter}{20pt}{\Huge}
+\titlespacing*{\chapter}{0pt}{-20pt}{40pt}
+
+% Hyperlinks
+\hypersetup{
+    colorlinks=true,
+    linkcolor=chaptercolor,
+    citecolor=green!50!black,
+    urlcolor=blue!60!black
+}
+
+% Theorem environments
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\begin{document}
+
+% ============================================================
+% FRONT MATTER (roman numerals, no chapter numbering)
+% ============================================================
+\frontmatter
+
+% --- Title Page ---
+\begin{titlepage}
+\begin{center}
+\vspace*{2cm}
+
+{\Large University Name}\\[0.5cm]
+{\large Department of Computer Science}\\[3cm]
+
+{\Huge\bfseries\color{chaptercolor} Thesis Title:\\[0.3cm]
+A Study of Something Important}\\[2cm]
+
+{\Large\textit{A dissertation submitted in partial fulfillment\\
+of the requirements for the degree of}}\\[1cm]
+
+{\Large\bfseries Doctor of Philosophy}\\[2cm]
+
+{\large Author Name}\\[0.5cm]
+{\large Supervisor: Prof.\ Advisor Name}\\[2cm]
+
+{\large February 2025}
+
+\vfill
+\end{center}
+\end{titlepage}
+
+% --- Declaration ---
+\chapter*{Declaration}
+\addcontentsline{toc}{chapter}{Declaration}
+
+I hereby declare that this thesis is my own original work and has not been submitted for any other degree or qualification. Where I have consulted the work of others, this is clearly acknowledged.
+
+\vspace{2cm}
+\noindent\rule{6cm}{0.4pt}\\
+Author Name\\
+\today
+
+% --- Abstract ---
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+This thesis investigates [topic]. We present [key contributions]. Our approach achieves [results] on [benchmarks], demonstrating [significance]. The main contributions are: (1) [contribution one], (2) [contribution two], and (3) [contribution three].
+
+% --- Acknowledgments ---
+\chapter*{Acknowledgments}
+\addcontentsline{toc}{chapter}{Acknowledgments}
+
+I would like to thank my supervisor, Prof.\ Advisor Name, for their guidance and support throughout this research. I am also grateful to [collaborators, family, funding agencies].
+
+% --- Table of Contents, Lists ---
+\tableofcontents
+\listoffigures
+\listoftables
+
+% ============================================================
+% MAIN MATTER (arabic numerals, chapter numbering)
+% ============================================================
+\mainmatter
+
+% --- CHAPTER 1: INTRODUCTION ---
+\chapter{Introduction}
+\label{ch:intro}
+
+The problem of [topic] has attracted significant research interest \citep{vaswani2017attention}. Despite recent advances, key challenges remain in [specific area].
+
+\section{Motivation}
+\label{sec:motivation}
+
+The need for [solution] arises from [practical problem]. Current approaches suffer from [limitation 1] and [limitation 2].
+
+\section{Research Questions}
+
+This thesis addresses the following research questions:
+\begin{enumerate}[itemsep=0.5em]
+    \item \textbf{RQ1:} How can we [question 1]?
+    \item \textbf{RQ2:} What is the effect of [question 2]?
+    \item \textbf{RQ3:} To what extent does [question 3]?
+\end{enumerate}
+
+\section{Contributions}
+
+The main contributions of this thesis are:
+\begin{itemize}[itemsep=0.5em]
+    \item We propose [contribution 1] (Chapter~\ref{ch:method}).
+    \item We demonstrate [contribution 2] (Chapter~\ref{ch:experiments}).
+    \item We release [contribution 3] for reproducibility.
+\end{itemize}
+
+\section{Thesis Outline}
+
+The remainder of this thesis is organized as follows:
+\begin{description}[itemsep=0.3em]
+    \item[Chapter~\ref{ch:background}] reviews related work and background concepts.
+    \item[Chapter~\ref{ch:method}] presents our proposed methodology.
+    \item[Chapter~\ref{ch:experiments}] describes experimental evaluation.
+    \item[Chapter~\ref{ch:conclusion}] concludes with a summary and future directions.
+\end{description}
+
+% --- CHAPTER 2: BACKGROUND ---
+\chapter{Background and Related Work}
+\label{ch:background}
+
+This chapter reviews the foundational concepts and related work relevant to our research.
+
+\section{Foundational Concepts}
+
+\begin{definition}[Key Concept]
+\label{def:concept}
+A \emph{key concept} is defined as [formal definition].
+\end{definition}
+
+\begin{theorem}[Important Result]
+\label{thm:result}
+Under conditions $C_1, C_2, \ldots, C_n$, it holds that
+\begin{equation}
+    \label{eq:theorem}
+    \sum_{i=1}^{n} f(x_i) \leq M \cdot \max_{i} f(x_i)
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+The proof follows by induction on $n$. For $n = 1$, the result is trivial. Assuming the result holds for $n-1$, we have\ldots
+\end{proof}
+
+\section{Related Work}
+
+\subsection{Area One}
+
+The foundational work by \citet{he2016deep} introduced [concept]. Subsequent work by \citet{goodfellow2016deep} extended this to [broader area].
+
+\subsection{Area Two}
+
+Research in [area two] has explored [approaches]. Our work differs from prior art in that we [key distinction].
+
+% --- CHAPTER 3: METHOD ---
+\chapter{Proposed Method}
+\label{ch:method}
+
+This chapter presents our proposed approach for [problem].
+
+\section{System Overview}
+
+Figure~\ref{fig:architecture} illustrates the overall architecture of our system.
+
+\begin{figure}[H]
+\centering
+\fbox{\parbox{0.7\textwidth}{\centering\vspace{2cm}
+[System architecture diagram placeholder]\\
+Use TikZ or \texttt{\\includegraphics} here
+\vspace{2cm}}}
+\caption{System architecture overview.}
+\label{fig:architecture}
+\end{figure}
+
+\section{Formal Framework}
+
+Given input $\mathbf{x} \in \mathcal{X}$ and output $\mathbf{y} \in \mathcal{Y}$, we define:
+
+\begin{equation}
+    \label{eq:objective}
+    \min_{\theta} \; \mathcal{L}(\theta) = \frac{1}{N} \sum_{i=1}^{N} \ell\bigl(f_\theta(\mathbf{x}_i), \mathbf{y}_i\bigr) + \lambda \Omega(\theta)
+\end{equation}
+
+where $\ell$ is the loss function and $\Omega(\theta)$ is the regularization term.
+
+\section{Algorithm}
+
+The complete procedure is summarized in Algorithm~\ref{alg:method}.
+
+\begin{table}[H]
+\centering
+\caption{Algorithm: Proposed Method}
+\label{alg:method}
+\begin{tabular}{l}
+\toprule
+\textbf{Input:} Training data $\{(\mathbf{x}_i, \mathbf{y}_i)\}_{i=1}^N$, learning rate $\eta$ \\
+\textbf{Output:} Trained parameters $\theta^*$ \\
+\midrule
+1: Initialize $\theta_0$ randomly \\
+2: \textbf{for} $t = 1, 2, \ldots, T$ \textbf{do} \\
+3: \quad Sample mini-batch $\mathcal{B} \subset \{1, \ldots, N\}$ \\
+4: \quad Compute gradient $g_t = \nabla_\theta \mathcal{L}_\mathcal{B}(\theta_{t-1})$ \\
+5: \quad Update $\theta_t = \theta_{t-1} - \eta \cdot g_t$ \\
+6: \textbf{end for} \\
+7: \textbf{return} $\theta_T$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% --- CHAPTER 4: EXPERIMENTS ---
+\chapter{Experiments}
+\label{ch:experiments}
+
+This chapter evaluates the proposed method through comprehensive experiments.
+
+\section{Experimental Setup}
+
+\subsection{Datasets}
+
+Table~\ref{tab:datasets} summarizes the datasets used in our evaluation.
+
+\begin{table}[H]
+\centering
+\caption{Dataset statistics.}
+\label{tab:datasets}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Dataset} & \textbf{Train} & \textbf{Validation} & \textbf{Test} \\
+\midrule
+Dataset A & 50,000 & 5,000 & 10,000 \\
+Dataset B & 100,000 & 10,000 & 20,000 \\
+Dataset C & 200,000 & 20,000 & 40,000 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Baselines}
+
+We compare against the following baselines:
+\begin{itemize}[itemsep=0.3em]
+    \item \textbf{Method A} \citep{lecun1998gradient}: [brief description]
+    \item \textbf{Method B} \citep{devlin2018bert}: [brief description]
+    \item \textbf{Method C}: [brief description]
+\end{itemize}
+
+\section{Main Results}
+
+Table~\ref{tab:results} presents the main results.
+
+\begin{table}[H]
+\centering
+\caption{Main results on benchmark datasets. Best results in \textbf{bold}.}
+\label{tab:results}
+\begin{tabular}{lcccccc}
+\toprule
+ & \multicolumn{2}{c}{\textbf{Dataset A}} & \multicolumn{2}{c}{\textbf{Dataset B}} & \multicolumn{2}{c}{\textbf{Dataset C}} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+\textbf{Method} & Acc. & F1 & Acc. & F1 & Acc. & F1 \\
+\midrule
+Method A & 85.2 & 83.1 & 82.4 & 80.3 & 79.1 & 77.5 \\
+Method B & 87.5 & 85.4 & 85.1 & 83.2 & 82.3 & 80.8 \\
+Method C & 88.1 & 86.3 & 86.0 & 84.1 & 83.5 & 81.9 \\
+\textbf{Ours} & \textbf{91.3} & \textbf{89.8} & \textbf{89.2} & \textbf{87.5} & \textbf{86.8} & \textbf{85.1} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Ablation Study}
+
+We conduct ablation experiments to analyze the contribution of each component.
+
+\section{Discussion}
+
+Our results demonstrate that [finding 1]. We observe that [finding 2], which aligns with the theoretical analysis in Section~\ref{sec:motivation}. The performance gap is most pronounced on [dataset/condition], suggesting that [insight].
+
+% --- CHAPTER 5: CONCLUSION ---
+\chapter{Conclusion and Future Work}
+\label{ch:conclusion}
+
+\section{Summary}
+
+This thesis investigated [topic] and proposed [method]. Through extensive experiments on [benchmarks], we demonstrated [key results].
+
+\section{Limitations}
+
+We acknowledge the following limitations:
+\begin{itemize}[itemsep=0.3em]
+    \item [Limitation 1 and potential mitigation]
+    \item [Limitation 2 and potential mitigation]
+\end{itemize}
+
+\section{Future Work}
+
+Several promising directions remain for future research:
+\begin{enumerate}[itemsep=0.3em]
+    \item \textbf{Direction 1:} [Description of future direction]
+    \item \textbf{Direction 2:} [Description of future direction]
+    \item \textbf{Direction 3:} [Description of future direction]
+\end{enumerate}
+
+% ============================================================
+% BACK MATTER
+% ============================================================
+\backmatter
+
+% --- Bibliography ---
+% To use: create a references.bib file and compile with bibtex
+% \bibliographystyle{plainnat}
+% \bibliography{references}
+
+% Placeholder references (remove when using .bib file)
+\begin{thebibliography}{9}
+\bibitem[Vaswani et~al.(2017)]{vaswani2017attention}
+Vaswani, A., Shazeer, N., Parmar, N., et~al. (2017).
+\newblock Attention Is All You Need.
+\newblock \emph{NeurIPS}, 30:5998--6008.
+
+\bibitem[He et~al.(2016)]{he2016deep}
+He, K., Zhang, X., Ren, S., and Sun, J. (2016).
+\newblock Deep Residual Learning for Image Recognition.
+\newblock In \emph{CVPR}, pages 770--778.
+
+\bibitem[Goodfellow et~al.(2016)]{goodfellow2016deep}
+Goodfellow, I., Bengio, Y., and Courville, A. (2016).
+\newblock \emph{Deep Learning}. MIT Press.
+
+\bibitem[LeCun et~al.(1998)]{lecun1998gradient}
+LeCun, Y., Bottou, L., Bengio, Y., and Haffner, P. (1998).
+\newblock Gradient-Based Learning Applied to Document Recognition.
+\newblock \emph{Intelligent Signal Processing}, pages 306--351.
+
+\bibitem[Devlin et~al.(2018)]{devlin2018bert}
+Devlin, J., Chang, M.-W., Lee, K., and Toutanova, K. (2018).
+\newblock BERT: Pre-training of Deep Bidirectional Transformers.
+\newblock \emph{arXiv:1810.04805}.
+\end{thebibliography}
+
+% --- Appendices ---
+\begin{appendices}
+
+\chapter{Supplementary Results}
+\label{app:results}
+
+Additional experimental results not included in the main text.
+
+\begin{table}[H]
+\centering
+\caption{Extended results with confidence intervals.}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Method} & \textbf{Accuracy} & \textbf{95\% CI} \\
+\midrule
+Method A & 85.2 & $\pm 1.3$ \\
+Method B & 87.5 & $\pm 1.1$ \\
+Ours & \textbf{91.3} & $\pm 0.8$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\chapter{Implementation Details}
+\label{app:implementation}
+
+\section{Hyperparameters}
+
+\begin{table}[H]
+\centering
+\caption{Hyperparameter settings.}
+\begin{tabular}{lc}
+\toprule
+\textbf{Hyperparameter} & \textbf{Value} \\
+\midrule
+Learning rate & $3 \times 10^{-4}$ \\
+Batch size & 64 \\
+Epochs & 100 \\
+Weight decay & $10^{-5}$ \\
+Dropout & 0.1 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\end{appendices}
+
+\end{document}

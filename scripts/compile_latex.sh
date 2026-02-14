@@ -9,6 +9,14 @@
 #   --preview-dir     Directory for PNG output (default: same as input)
 #   --scale           Max dimension for PNG preview in pixels (default: 1200)
 #
+# Features:
+#   - Auto-installs texlive if missing
+#   - Detects .bib files and runs bibtex automatically
+#   - Detects \makeindex and runs makeindex automatically
+#   - Runs pdflatex multiple passes for cross-references
+#   - Generates PNG previews with pdftoppm
+#   - Cleans auxiliary files after compilation
+#
 # Examples:
 #   compile_latex.sh resume.tex
 #   compile_latex.sh report.tex --preview
@@ -97,11 +105,41 @@ ensure_poppler() {
   fi
 }
 
+# --- Detect bibliography usage ---
+detect_bibliography() {
+  # Check if the .tex file uses \bibliography{} (BibTeX) or \addbibresource{} (biblatex)
+  if grep -qE '\\bibliography\{' "$INPUT_TEX" 2>/dev/null; then
+    echo "bibtex"
+  elif grep -qE '\\addbibresource\{' "$INPUT_TEX" 2>/dev/null; then
+    echo "biber"
+  else
+    echo "none"
+  fi
+}
+
+# --- Detect makeindex usage ---
+detect_makeindex() {
+  grep -qE '\\makeindex|\\printindex' "$INPUT_TEX" 2>/dev/null
+}
+
 # --- Compile ---
 ensure_texlive
 
 echo ":: Compiling ${INPUT_TEX}..." >&2
 cd "$INPUT_DIR"
+
+BIB_ENGINE=$(detect_bibliography)
+NEEDS_INDEX=false
+if detect_makeindex; then
+  NEEDS_INDEX=true
+fi
+
+if [[ "$BIB_ENGINE" != "none" ]]; then
+  echo ":: Detected bibliography ($BIB_ENGINE) -- will run bibliography pass" >&2
+fi
+if [[ "$NEEDS_INDEX" == true ]]; then
+  echo ":: Detected index -- will run makeindex" >&2
+fi
 
 # First pass - halt on error for quick failure detection
 pdflatex -interaction=nonstopmode -halt-on-error "$INPUT_TEX" >/dev/null 2>&1 || {
@@ -115,8 +153,35 @@ pdflatex -interaction=nonstopmode -halt-on-error "$INPUT_TEX" >/dev/null 2>&1 ||
   echo ":: PDF produced despite warnings" >&2
 }
 
-# Second pass for cross-references (also halt-on-error for consistency)
+# Run bibliography engine if needed
+if [[ "$BIB_ENGINE" == "bibtex" ]]; then
+  echo ":: Running bibtex..." >&2
+  bibtex "$INPUT_BASE" >/dev/null 2>&1 || {
+    echo ":: bibtex had warnings (this is often normal for first run)" >&2
+  }
+elif [[ "$BIB_ENGINE" == "biber" ]]; then
+  echo ":: Running biber..." >&2
+  biber "$INPUT_BASE" >/dev/null 2>&1 || {
+    echo ":: biber had warnings" >&2
+  }
+fi
+
+# Run makeindex if needed
+if [[ "$NEEDS_INDEX" == true ]]; then
+  echo ":: Running makeindex..." >&2
+  makeindex "$INPUT_BASE" >/dev/null 2>&1 || {
+    echo ":: makeindex had warnings" >&2
+  }
+fi
+
+# Second pass (resolves references after bibtex/biber/makeindex)
 pdflatex -interaction=nonstopmode -halt-on-error "$INPUT_TEX" >/dev/null 2>&1 || true
+
+# Third pass if bibliography or index was used (ensures all cross-refs resolved)
+if [[ "$BIB_ENGINE" != "none" || "$NEEDS_INDEX" == true ]]; then
+  echo ":: Running final pass for cross-references..." >&2
+  pdflatex -interaction=nonstopmode -halt-on-error "$INPUT_TEX" >/dev/null 2>&1 || true
+fi
 
 if [[ ! -f "$PDF_FILE" ]]; then
   echo "Error: PDF not produced" >&2
@@ -144,6 +209,8 @@ cd "$INPUT_DIR"
 rm -f "${INPUT_BASE}.aux" "${INPUT_BASE}.log" "${INPUT_BASE}.out" \
       "${INPUT_BASE}.toc" "${INPUT_BASE}.lof" "${INPUT_BASE}.lot" \
       "${INPUT_BASE}.nav" "${INPUT_BASE}.snm" "${INPUT_BASE}.vrb" \
-      "${INPUT_BASE}.bbl" "${INPUT_BASE}.blg" 2>/dev/null || true
+      "${INPUT_BASE}.bbl" "${INPUT_BASE}.blg" \
+      "${INPUT_BASE}.idx" "${INPUT_BASE}.ilg" "${INPUT_BASE}.ind" \
+      "${INPUT_BASE}.bcf" "${INPUT_BASE}.run.xml" 2>/dev/null || true
 
 echo ":: Done."

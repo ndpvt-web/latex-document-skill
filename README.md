@@ -1,13 +1,19 @@
 # latex-document
 
-A Claude Code skill for creating, compiling, and converting any document to professional PDF with PNG previews. Supports resumes, reports, cover letters, invoices, academic papers, presentations, charts, tables, and PDF-to-LaTeX conversion of handwritten or printed documents.
+A Claude Code skill for creating, compiling, and converting any document to professional PDF with PNG previews. Supports resumes, reports, cover letters, invoices, academic papers, theses/dissertations, academic CVs, presentations, charts, tables, watermarks, landscape pages, bibliography/citations, multi-language/CJK, and PDF-to-LaTeX conversion of handwritten or printed documents.
 
 ## Features
 
-- **11 production-ready templates** -- 5 ATS-optimized resume variants + report, cover letter, invoice, academic paper, presentation (Beamer), legacy resume
+- **15 production-ready templates** -- 5 ATS-optimized resume variants + thesis, academic CV, report, cover letter, invoice, academic paper, presentation (Beamer), legacy resume, example .bib file
 - **ATS-compatible resumes** -- researched against industry standards (Workday, Greenhouse, Taleo, iCIMS); single-column, no graphics, standard section headings
+- **Thesis/dissertation** -- `book` class with title page, declaration, abstract, acknowledgments, chapters, appendices, bibliography
+- **Academic CV** -- multi-page CV with publications, grants, teaching, advising, service sections
+- **Bibliography/citations** -- BibTeX and biblatex support with auto-detection in compile script; example `.bib` file with all entry types
 - **Charts and graphs** -- bar, line, scatter, pie charts via pgfplots; flowcharts and timelines via TikZ
 - **Tables** -- colored rows, multi-row/column, booktabs, long tables spanning pages
+- **Watermarks** -- text (DRAFT, CONFIDENTIAL), company logo background, header logos
+- **Landscape pages** -- mixed portrait/landscape in single documents (pdflscape/lscape)
+- **Multi-language** -- European (babel), CJK (xeCJK), RTL/Arabic (polyglossia), Cyrillic
 - **PDF-to-LaTeX conversion** -- convert handwritten notes, printed reports, legal docs to LaTeX with empirically optimized scaling
 - **Auto-install** -- scripts automatically install TeX Live and poppler-utils if missing
 - **PNG previews** -- every compiled PDF generates page-by-page PNG previews
@@ -40,6 +46,12 @@ All 5 resume templates are designed to pass Applicant Tracking Systems (ATS). 98
 ![Entry-Level](examples/resume-entry-level.png)
 
 ## Other Templates
+
+### Thesis / Dissertation
+![Thesis](examples/thesis.png)
+
+### Academic CV
+![Academic CV](examples/academic-cv.png)
 
 ### Report
 ![Report](examples/report.png)
@@ -74,14 +86,18 @@ Or install the `.skill` package if you have one.
 The skill triggers automatically when you ask Claude Code to:
 
 - Create a resume, CV, or cover letter
+- Write a thesis or dissertation
+- Create an academic CV with publications
 - Write any document in LaTeX
 - Create a PDF with tables, charts, or images
+- Add watermarks (text or logo) to documents
 - Compile a `.tex` file
 - Make a report, invoice, or presentation
 - Convert a PDF to LaTeX
 - Convert handwritten notes to LaTeX
 - Create charts or graphs
 - Create slides
+- Write multi-language documents (CJK, Arabic, European)
 
 ### Quick Examples
 
@@ -118,20 +134,25 @@ Empirically tested on a 115-page handwritten math PDF across batch sizes 3, 5, 7
 latex-document/
 ├── SKILL.md                          # Main skill file
 ├── assets/
-│   └── templates/                    # 11 compile-tested LaTeX templates
+│   └── templates/                    # 15 compile-tested LaTeX templates
 │       ├── resume-classic-ats.tex    # Maximum ATS compatibility
 │       ├── resume-modern-professional.tex  # Clean modern design
 │       ├── resume-executive.tex      # Senior/C-suite two-page
 │       ├── resume-technical.tex      # Skills-first engineering
 │       ├── resume-entry-level.tex    # Education-first graduate
 │       ├── resume.tex                # Legacy resume (not ATS-optimized)
+│       ├── thesis.tex                # Thesis/dissertation (book class)
+│       ├── academic-cv.tex           # Multi-page academic CV
 │       ├── report.tex
 │       ├── cover-letter.tex
 │       ├── invoice.tex
 │       ├── academic-paper.tex
-│       └── presentation.tex
+│       ├── presentation.tex
+│       └── references.bib            # Example bibliography file
 ├── references/
 │   ├── resume-ats-guide.md           # ATS rules, LaTeX pitfalls, keywords
+│   ├── bibliography-guide.md         # BibTeX/biblatex, citation styles
+│   ├── advanced-features.md          # Watermarks, landscape, multi-lang, code
 │   ├── charts-and-graphs.md          # pgfplots + TikZ reference
 │   ├── packages.md                   # Common LaTeX packages
 │   ├── pdf-conversion.md             # Full conversion pipeline
@@ -142,7 +163,7 @@ latex-document/
 │       ├── legal-document.md
 │       └── general-notes.md
 ├── scripts/
-│   ├── compile_latex.sh              # Compile .tex to PDF + PNG previews
+│   ├── compile_latex.sh              # Compile .tex to PDF + PNG (auto bibtex/biber)
 │   └── pdf_to_images.sh             # Split PDF into page images
 └── examples/                         # Preview images for README
 ```

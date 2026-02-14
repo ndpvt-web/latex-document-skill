@@ -1,0 +1,85 @@
+% references.bib - Example bibliography file for academic papers
+%
+% Usage in .tex file:
+%   \bibliographystyle{plainnat}  % or: apalike, ieeetr, acm, unsrt, alpha
+%   \bibliography{references}
+%
+% Compile sequence:
+%   pdflatex document.tex
+%   bibtex document
+%   pdflatex document.tex
+%   pdflatex document.tex
+%
+% The compile_latex.sh script handles this automatically.
+
+% --- Journal Article ---
+@article{vaswani2017attention,
+  author    = {Vaswani, Ashish and Shazeer, Noam and Parmar, Niki and Uszkoreit, Jakob and Jones, Llion and Gomez, Aidan N. and Kaiser, Lukasz and Polosukhin, Illia},
+  title     = {Attention Is All You Need},
+  journal   = {Advances in Neural Information Processing Systems},
+  volume    = {30},
+  pages     = {5998--6008},
+  year      = {2017}
+}
+
+% --- Conference Paper ---
+@inproceedings{he2016deep,
+  author    = {He, Kaiming and Zhang, Xiangyu and Ren, Shaoqing and Sun, Jian},
+  title     = {Deep Residual Learning for Image Recognition},
+  booktitle = {Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
+  pages     = {770--778},
+  year      = {2016}
+}
+
+% --- Book ---
+@book{goodfellow2016deep,
+  author    = {Goodfellow, Ian and Bengio, Yoshua and Courville, Aaron},
+  title     = {Deep Learning},
+  publisher = {MIT Press},
+  year      = {2016},
+  url       = {http://www.deeplearningbook.org}
+}
+
+% --- Book Chapter ---
+@incollection{lecun1998gradient,
+  author    = {LeCun, Yann and Bottou, L{\'e}on and Bengio, Yoshua and Haffner, Patrick},
+  title     = {Gradient-Based Learning Applied to Document Recognition},
+  booktitle = {Intelligent Signal Processing},
+  publisher = {IEEE Press},
+  pages     = {306--351},
+  year      = {1998}
+}
+
+% --- Technical Report ---
+@techreport{brown2020language,
+  author      = {Brown, Tom B. and Mann, Benjamin and Ryder, Nick and Subbiah, Melanie},
+  title       = {Language Models are Few-Shot Learners},
+  institution = {OpenAI},
+  year        = {2020},
+  type        = {Technical Report}
+}
+
+% --- Thesis ---
+@phdthesis{smith2023thesis,
+  author  = {Smith, Jane},
+  title   = {Advances in Machine Learning for Natural Language Understanding},
+  school  = {Stanford University},
+  year    = {2023}
+}
+
+@mastersthesis{doe2022thesis,
+  author  = {Doe, John},
+  title   = {Efficient Algorithms for Graph Neural Networks},
+  school  = {MIT},
+  year    = {2022}
+}
+
+% --- Online / Misc ---
+@misc{devlin2018bert,
+  author       = {Devlin, Jacob and Chang, Ming-Wei and Lee, Kenton and Toutanova, Kristina},
+  title        = {{BERT}: Pre-training of Deep Bidirectional Transformers for Language Understanding},
+  year         = {2018},
+  eprint       = {1810.04805},
+  archiveprefix= {arXiv},
+  primaryclass = {cs.CL}
+}

@@ -3,15 +3,17 @@ name: latex-document
 description: >
   Universal LaTeX document skill: create, compile, and convert any document to
   professional PDF with PNG previews. Supports resumes, reports, cover letters,
-  invoices, academic papers, presentations (Beamer), charts (pgfplots), tables
-  (booktabs), images (TikZ), and PDF-to-LaTeX conversion of handwritten or printed
-  documents (math, business, legal, general). Empirically optimized scaling: single
-  agent 1-10 pages, split 11-20, batch-7 pipeline 21+. Document-type profiles for
-  accurate conversion. Use when user asks to: (1) create a resume/CV/cover letter,
-  (2) write a LaTeX document, (3) create PDF with tables/charts/images, (4) compile
-  a .tex file, (5) make a report/invoice/presentation, (6) anything involving LaTeX
-  or pdflatex, (7) convert/OCR a PDF to LaTeX, (8) convert handwritten notes,
-  (9) create charts/graphs, (10) create slides.
+  invoices, academic papers, theses/dissertations, academic CVs, presentations
+  (Beamer), charts (pgfplots), tables (booktabs), images (TikZ), watermarks,
+  landscape pages, bibliography/citations (BibTeX/biblatex), multi-language/CJK,
+  and PDF-to-LaTeX conversion of handwritten or printed documents (math, business,
+  legal, general). Empirically optimized scaling: single agent 1-10 pages, split
+  11-20, batch-7 pipeline 21+. Use when user asks to: (1) create a resume/CV/cover
+  letter, (2) write a LaTeX document, (3) create PDF with tables/charts/images,
+  (4) compile a .tex file, (5) make a report/invoice/presentation, (6) anything
+  involving LaTeX or pdflatex, (7) convert/OCR a PDF to LaTeX, (8) convert
+  handwritten notes, (9) create charts/graphs, (10) create slides, (11) write a
+  thesis or dissertation, (12) create an academic CV with publications.
 ---
 
 # LaTeX Document Skill
@@ -20,7 +22,7 @@ Create any LaTeX document, compile to PDF, and generate PNG previews. Convert PD
 
 ## Workflow: Create Documents
 
-1. Determine document type (resume, report, letter, invoice, article, presentation)
+1. Determine document type (resume, report, letter, invoice, article, thesis, academic CV, presentation)
 2. Copy the appropriate template from `assets/templates/` or write from scratch
 3. Customize content based on user requirements
 4. Compile with `scripts/compile_latex.sh`
@@ -88,7 +90,7 @@ bash <skill_path>/scripts/compile_latex.sh document.tex --preview
 bash <skill_path>/scripts/compile_latex.sh document.tex --preview --preview-dir ./outputs
 ```
 
-The script auto-installs `texlive` and `poppler-utils` if missing, runs pdflatex twice for cross-references, generates PNG previews with `pdftoppm`, and cleans auxiliary files.
+The script auto-installs `texlive` and `poppler-utils` if missing. It auto-detects `\bibliography{}` (runs bibtex) and `\addbibresource{}` (runs biber), detects `\makeindex` (runs makeindex), runs the correct number of pdflatex passes, generates PNG previews with `pdftoppm`, and cleans auxiliary files.
 
 ## PDF-to-Images Script
 
@@ -122,10 +124,12 @@ All 5 templates follow ATS rules: single-column, no graphics/images, no tables f
 
 ### Other Templates
 
+- **`thesis.tex`** -- Thesis/dissertation (`book` class) with title page, declaration, abstract, acknowledgments, TOC, list of figures/tables, chapters, appendices, bibliography. Front matter uses roman numerals, main matter uses arabic. Includes theorem environments.
+- **`academic-cv.tex`** -- Multi-page academic CV with publications (journal/conference/preprint sections), grants and funding, teaching, advising (current/graduated students), awards, professional service, invited talks. ORCID and Google Scholar links.
 - **`report.tex`** -- Business report with TOC, headers/footers, data tables, bar chart (pgfplots), process flowchart (TikZ), recommendations
 - **`cover-letter.tex`** -- Professional cover letter with sender/recipient blocks
 - **`invoice.tex`** -- Invoice with company header, line items table, subtotal/tax/total
-- **`academic-paper.tex`** -- Research paper with abstract, sections, bibliography, figures
+- **`academic-paper.tex`** -- Research paper with abstract, sections, bibliography, figures. Includes example `.bib` file (`references.bib`) for BibTeX citations.
 - **`presentation.tex`** -- Beamer presentation with title slide, content frames, columns
 - **`resume.tex`** -- Legacy resume template (has photo area and tables -- not ATS-optimized)
 
@@ -145,10 +149,12 @@ bash <skill_path>/scripts/compile_latex.sh ./outputs/my_resume.tex --preview --p
 | Resume (senior/executive) | `resume-executive.tex` | `article` |
 | Resume (technical/engineering) | `resume-technical.tex` | `article` |
 | Resume (new graduate) | `resume-entry-level.tex` | `article` |
+| Thesis, dissertation | `thesis.tex` | `book` |
+| Academic CV (publications, grants) | `academic-cv.tex` | `article` |
 | Report, analysis | `report.tex` | `article` |
 | Cover letter | `cover-letter.tex` | `article` |
 | Invoice | `invoice.tex` | `article` |
-| Academic paper | `academic-paper.tex` | `article` |
+| Academic paper | `academic-paper.tex` + `references.bib` | `article` |
 | Slides, presentation | `presentation.tex` | `beamer` |
 | **Convert PDF to LaTeX** | Select profile + see [pdf-conversion.md](references/pdf-conversion.md) | varies |
 
@@ -227,6 +233,85 @@ Data & Description text & Value \\
 \end{tikzpicture}
 ```
 
+### Quick Bibliography (BibTeX)
+
+```latex
+% In preamble:
+\usepackage{natbib}
+
+% In text:
+\citet{vaswani2017attention}   % Vaswani et al. (2017)
+\citep{vaswani2017attention}   % (Vaswani et al., 2017)
+
+% Before \end{document}:
+\bibliographystyle{plainnat}   % or: apalike, ieeetr, unsrt, alpha
+\bibliography{references}      % references.bib file
+```
+
+The compile script auto-detects `\bibliography{}` and runs bibtex. For biblatex, use `\addbibresource{}` instead (auto-detected, runs biber). See `assets/templates/references.bib` for example entries. Full guide: [references/bibliography-guide.md](references/bibliography-guide.md).
+
+### Quick Watermark
+
+```latex
+% Text watermark (DRAFT, CONFIDENTIAL)
+\usepackage{draftwatermark}
+\SetWatermarkText{DRAFT}
+\SetWatermarkScale{1.5}
+\SetWatermarkColor[gray]{0.85}
+
+% Company logo as background watermark
+\usepackage{eso-pic}
+\usepackage{graphicx}
+\AddToShipoutPictureBG{%
+    \AtPageCenter{%
+        \makebox(0,0){%
+            \includegraphics[width=0.4\paperwidth,keepaspectratio,opacity=0.08]{logo.png}%
+        }%
+    }%
+}
+
+% Logo in header (every page)
+\usepackage{fancyhdr}
+\fancyhead[L]{\includegraphics[height=1cm]{logo.png}}
+```
+
+See [references/advanced-features.md](references/advanced-features.md) for combining text + logo watermarks, first-page-only watermarks, and more.
+
+### Quick Landscape Page
+
+```latex
+\usepackage{pdflscape}  % or: lscape (for print-rotated)
+
+% Normal portrait content...
+\begin{landscape}
+% Wide table or chart here -- page rotated in PDF viewer
+\end{landscape}
+% Back to portrait...
+```
+
+Use `pdflscape` for on-screen reading (page rotates in PDF viewer). Use `lscape` for print (content rotates on static page).
+
+### Quick Multi-Language
+
+```latex
+% European languages (pdflatex):
+\usepackage[english,french]{babel}
+\selectlanguage{french}
+Bonjour le monde.
+\selectlanguage{english}
+
+% CJK (requires XeLaTeX, not pdflatex):
+\usepackage{fontspec}
+\usepackage{xeCJK}
+\setCJKmainfont{Noto Serif CJK SC}  % Chinese Simplified
+
+% RTL / Arabic (requires XeLaTeX):
+\usepackage{polyglossia}
+\setotherlanguage{arabic}
+```
+
+For CJK/RTL documents, compile with `xelatex` instead of `pdflatex`. Full guide: [references/advanced-features.md](references/advanced-features.md).
+
 ### Quick Image
 
 ```latex
@@ -257,6 +342,8 @@ The `report.tex` template includes pgfplots, TikZ, and all required packages out
 
 ## Advanced Features
 
+- **Bibliography/Citations**: BibTeX and biblatex, citation styles, .bib file format, natbib vs biblatex commands. See [references/bibliography-guide.md](references/bibliography-guide.md).
+- **Watermarks, Landscape, Multi-Language, Code Listings**: Text/logo watermarks, mixed portrait/landscape, CJK/RTL/European languages, syntax highlighting. See [references/advanced-features.md](references/advanced-features.md).
 - **Tables**: Colored rows, multi-row/column, borderless booktabs, long tables spanning pages. See [references/tables-and-images.md](references/tables-and-images.md).
 - **Images**: External images, TikZ drawings, circular clipped photos, side-by-side, text wrapping. See [references/tables-and-images.md](references/tables-and-images.md).
 - **Charts and Graphs**: Line plots, bar charts, scatter plots, pie charts, pgfplots. See [references/charts-and-graphs.md](references/charts-and-graphs.md).

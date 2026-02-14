@@ -1,0 +1,227 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{parskip}
+
+% Page setup
+\geometry{a4paper, margin=0.85in}
+
+% Colors
+\definecolor{accent}{RGB}{0, 70, 140}
+
+% Section styling
+\titleformat{\section}
+    {\Large\bfseries\color{accent}}
+    {}
+    {0em}
+    {}
+    [\vspace{0.1em}{\color{accent}\titlerule}\vspace{0.3em}]
+\titlespacing{\section}{0pt}{12pt}{4pt}
+
+\titleformat{\subsection}
+    {\large\bfseries}
+    {}
+    {0em}
+    {}
+\titlespacing{\subsection}{0pt}{8pt}{3pt}
+
+% Hyperlinks
+\hypersetup{colorlinks=true, linkcolor=accent, urlcolor=accent, citecolor=accent}
+
+% Custom commands
+\newcommand{\cventry}[4]{%
+    \noindent\textbf{#1}\hfill #2\\
+    \textit{#3}\hfill\textit{#4}\par\vspace{0.3em}%
+}
+\newcommand{\publication}[1]{\noindent #1\par\vspace{0.4em}}
+
+\begin{document}
+
+% --- HEADER ---
+\begin{center}
+{\LARGE\bfseries\color{accent} Dr.\ Jane A.\ Smith}\\[0.5em]
+{\large Associate Professor of Computer Science}\\[0.3em]
+Department of Computer Science, University of Example\\
+123 University Ave, City, State 12345\\[0.3em]
+\href{mailto:jsmith@university.edu}{jsmith@university.edu} \enspace\textbar\enspace
+\href{https://janesmith.example.edu}{janesmith.example.edu} \enspace\textbar\enspace
+\href{https://scholar.google.com}{Google Scholar}\\[0.2em]
+ORCID: \href{https://orcid.org/0000-0000-0000-0000}{0000-0000-0000-0000}
+\end{center}
+
+% --- RESEARCH INTERESTS ---
+\section{Research Interests}
+
+Machine learning, natural language processing, computational linguistics, large language models, knowledge representation, information extraction.
+
+% --- EDUCATION ---
+\section{Education}
+
+\cventry{Ph.D.\ in Computer Science}{2015--2019}{Stanford University, Stanford, CA}{Advisor: Prof.\ John Doe}
+\textit{Thesis: ``Advances in Neural Methods for Natural Language Understanding''}
+
+\cventry{M.S.\ in Computer Science}{2013--2015}{MIT, Cambridge, MA}{}
+
+\cventry{B.S.\ in Mathematics, \textit{summa cum laude}}{2009--2013}{UC Berkeley, Berkeley, CA}{}
+
+% --- ACADEMIC POSITIONS ---
+\section{Academic Positions}
+
+\cventry{Associate Professor}{2023--present}{University of Example, Department of Computer Science}{}
+
+\cventry{Assistant Professor}{2019--2023}{University of Example, Department of Computer Science}{}
+
+\cventry{Visiting Researcher}{Summer 2022}{Google Research, Mountain View, CA}{}
+
+\cventry{Postdoctoral Fellow}{2018--2019}{Stanford NLP Group}{Advisor: Prof.\ Jane Advisor}
+
+% --- PUBLICATIONS ---
+\section{Publications}
+
+\subsection{Journal Articles}
+
+\publication{[J5] \textbf{Smith, J.A.}, Johnson, B., and Lee, C. (2024). ``Efficient Fine-Tuning of Large Language Models for Domain Adaptation.'' \textit{Journal of Machine Learning Research}, 25(1):1--35.}
+
+\publication{[J4] Chen, D., \textbf{Smith, J.A.}, and Park, E. (2023). ``Scaling Laws for Transfer Learning in NLP.'' \textit{Transactions of the ACL}, 11:450--468.}
+
+\publication{[J3] \textbf{Smith, J.A.} and Williams, R. (2022). ``A Survey of Knowledge-Enhanced Language Models.'' \textit{Artificial Intelligence Review}, 55(3):1890--1925.}
+
+\publication{[J2] \textbf{Smith, J.A.}, Brown, T., and Davis, M. (2021). ``Neural Information Extraction from Scientific Text.'' \textit{Computational Linguistics}, 47(2):301--340.}
+
+\publication{[J1] \textbf{Smith, J.A.} and Doe, J. (2019). ``Structured Prediction for Relation Extraction.'' \textit{JMLR}, 20(1):1--28.}
+
+\subsection{Conference Papers}
+
+\publication{[C8] \textbf{Smith, J.A.}, Kim, S., and Patel, R. (2024). ``Multi-Agent Collaboration for Code Generation.'' In \textit{Proceedings of NeurIPS 2024}. (Spotlight)}
+
+\publication{[C7] Wang, L., \textbf{Smith, J.A.}, and Zhang, H. (2023). ``Reasoning with Retrieved Knowledge.'' In \textit{Proceedings of ACL 2023}, pages 2340--2355.}
+
+\publication{[C6] \textbf{Smith, J.A.} and Chen, D. (2023). ``Prompt Engineering for Low-Resource Settings.'' In \textit{Proceedings of EMNLP 2023}, pages 890--905.}
+
+\publication{[C5] \textbf{Smith, J.A.}, Lee, C., and Park, E. (2022). ``Contrastive Learning for Text Classification.'' In \textit{Proceedings of ICML 2022}, pages 5500--5515.}
+
+\publication{[C4] Brown, T., \textbf{Smith, J.A.}, and Davis, M. (2021). ``Few-Shot Named Entity Recognition.'' In \textit{Proceedings of NAACL 2021}, pages 1234--1248.}
+
+\publication{[C3] \textbf{Smith, J.A.} and Williams, R. (2020). ``Graph Neural Networks for Relation Extraction.'' In \textit{Proceedings of ACL 2020}, pages 3100--3112. \textbf{(Best Paper Award)}}
+
+\publication{[C2] \textbf{Smith, J.A.}, Doe, J., and Lee, C. (2019). ``Attention Mechanisms for Information Extraction.'' In \textit{Proceedings of EMNLP 2019}, pages 1500--1512.}
+
+\publication{[C1] \textbf{Smith, J.A.} and Doe, J. (2018). ``Structured Output Learning for NLP.'' In \textit{Proceedings of ACL 2018}, pages 2200--2210.}
+
+\subsection{Workshop Papers and Preprints}
+
+\publication{[W2] Patel, R. and \textbf{Smith, J.A.} (2024). ``Benchmarking LLM Agents on Scientific Tasks.'' \textit{arXiv:2401.12345}.}
+
+\publication{[W1] \textbf{Smith, J.A.} (2022). ``Position Paper: Challenges in Evaluating Generative Models.'' In \textit{NeurIPS Workshop on Evaluation}.}
+
+% --- GRANTS AND FUNDING ---
+\section{Grants and Funding}
+
+\noindent\textbf{NSF CAREER Award} \hfill 2022--2027\\
+``Foundations of Knowledge-Enhanced Language Understanding'' \hfill \$600,000\par\vspace{0.3em}
+
+\noindent\textbf{Google Research Scholar Award} \hfill 2023--2025\\
+``Efficient Adaptation of Large Language Models'' \hfill \$75,000\par\vspace{0.3em}
+
+\noindent\textbf{NIH R01 (Co-PI)} \hfill 2021--2025\\
+``NLP Methods for Clinical Text Understanding'' \hfill \$1,200,000 (total)\par\vspace{0.3em}
+
+\noindent\textbf{Amazon Research Award} \hfill 2020--2021\\
+``Few-Shot Information Extraction'' \hfill \$80,000\par\vspace{0.3em}
+
+% --- TEACHING ---
+\section{Teaching}
+
+\cventry{CS 680: Advanced Natural Language Processing}{Fall 2020--present}{Graduate seminar, 25--40 students per offering}{}
+
+\cventry{CS 480: Introduction to Machine Learning}{Spring 2020--present}{Undergraduate lecture, 120--180 students per offering}{}
+
+\cventry{CS 280: Data Structures and Algorithms}{Fall 2019}{Undergraduate lecture, 200 students}{}
+
+% --- ADVISING ---
+\section{Advising}
+
+\subsection{Current Ph.D.\ Students}
+\begin{itemize}[itemsep=0.2em, leftmargin=1.5em]
+    \item Alice Johnson (2022--present): Multi-agent systems for code generation
+    \item Bob Chen (2021--present): Knowledge-grounded dialogue systems
+    \item Carol Park (2020--present): Low-resource NLP, expected graduation 2025
+\end{itemize}
+
+\subsection{Graduated Ph.D.\ Students}
+\begin{itemize}[itemsep=0.2em, leftmargin=1.5em]
+    \item David Lee (Ph.D.\ 2024) $\to$ Research Scientist, Google DeepMind
+    \item Emily Zhang (Ph.D.\ 2023) $\to$ Assistant Professor, UC San Diego
+\end{itemize}
+
+\subsection{M.S.\ Students Advised}
+\begin{itemize}[itemsep=0.2em, leftmargin=1.5em]
+    \item 8 M.S.\ thesis students (2019--present)
+\end{itemize}
+
+% --- AWARDS AND HONORS ---
+\section{Awards and Honors}
+
+\begin{tabularx}{\textwidth}{lX}
+2024 & Outstanding Faculty Research Award, University of Example \\
+2023 & Best Reviewer Award, ACL 2023 \\
+2022 & NSF CAREER Award \\
+2020 & Best Paper Award, ACL 2020 \\
+2019 & Stanford CS Distinguished Dissertation Award \\
+2013 & Valedictorian, UC Berkeley Mathematics \\
+\end{tabularx}
+
+% --- SERVICE ---
+\section{Professional Service}
+
+\subsection{Editorial Roles}
+\begin{itemize}[itemsep=0.2em, leftmargin=1.5em]
+    \item Action Editor, \textit{Transactions of the ACL} (2023--present)
+    \item Editorial Board, \textit{Journal of NLP} (2021--present)
+\end{itemize}
+
+\subsection{Conference Organization}
+\begin{itemize}[itemsep=0.2em, leftmargin=1.5em]
+    \item Area Chair: ACL 2024, EMNLP 2023, NeurIPS 2023
+    \item Workshop Co-organizer: ``LLMs in Practice'' at ICML 2024
+    \item Senior Program Committee: AAAI 2022, IJCAI 2021
+\end{itemize}
+
+\subsection{Reviewing}
+\begin{itemize}[itemsep=0.2em, leftmargin=1.5em]
+    \item Program Committee: ACL, EMNLP, NeurIPS, ICML, ICLR, AAAI (2019--present)
+    \item Journal Reviewer: JMLR, TACL, AI Journal, CL
+\end{itemize}
+
+\subsection{Department Service}
+\begin{itemize}[itemsep=0.2em, leftmargin=1.5em]
+    \item Graduate Admissions Committee (2021--2023)
+    \item Curriculum Committee (2020--present)
+    \item Faculty Search Committee, NLP position (2023)
+\end{itemize}
+
+% --- INVITED TALKS ---
+\section{Invited Talks (Selected)}
+
+\begin{tabularx}{\textwidth}{lX}
+2024 & ``The Future of AI Agents'' -- Google Research Colloquium \\
+2024 & ``Knowledge-Enhanced LLMs'' -- MIT CSAIL Seminar \\
+2023 & ``Efficient Fine-Tuning'' -- NeurIPS Workshop Keynote \\
+2023 & ``NLP for Science'' -- Allen Institute for AI \\
+2022 & ``Few-Shot Learning in NLP'' -- Stanford NLP Seminar \\
+\end{tabularx}
+
+% --- REFERENCES ---
+\section{References}
+
+Available upon request.
+
+\end{document}
