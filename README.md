@@ -34,12 +34,12 @@ It also converts between formats (Markdown/DOCX/HTML/LaTeX) and can reconstruct 
 | **Technical** | Software, data, engineering | 9/10 | Skills-first, projects section, GitHub |
 | **Entry-Level** | New graduates | 9/10 | Education-first, one page |
 
-| | | |
-|---|---|---|
-| ![Classic ATS](examples/resume-classic-ats.png) | ![Modern Professional](examples/resume-modern-professional.png) | ![Executive](examples/resume-executive.png) |
-| Classic ATS | Modern Professional | Executive |
-| ![Technical](examples/resume-technical.png) | ![Entry-Level](examples/resume-entry-level.png) | |
-| Technical | Entry-Level | |
+| | | | |
+|---|---|---|---|
+| ![Classic ATS](examples/resume-classic-ats.png) | ![Modern Professional](examples/resume-modern-professional.png) | ![Executive p1](examples/resume-executive-p1.png) | ![Executive p2](examples/resume-executive-p2.png) |
+| Classic ATS | Modern Professional | Executive (p1) | Executive (p2) |
+| ![Technical](examples/resume-technical.png) | ![Entry-Level](examples/resume-entry-level.png) | | |
+| Technical | Entry-Level | | |
 
 There is also a **legacy resume template** (`resume.tex`) with photo area and table layout -- not ATS-compatible, but useful for regions where photo resumes are standard.
 
@@ -56,25 +56,39 @@ The `lecture-notes.tex` template produces publication-quality math and science n
 - Custom math commands: `\R`, `\N`, `\Z`, `\Q`, `\C`, `\abs`, `\norm`, `\floor`, `\ceil`
 - Graph theory operators: `\adj`, `\deg`, `\diam`, `\chr`, `\Aut`
 
-![Lecture Notes](examples/lecture-notes.png)
+8 pages -- title, colored theorem boxes, TikZ graph drawings, Petersen graph, graph coloring:
+
+| | | | |
+|---|---|---|---|
+| ![p1](examples/lecture-notes-p1.png) | ![p2](examples/lecture-notes-p2.png) | ![p3](examples/lecture-notes-p3.png) | ![p4](examples/lecture-notes-p4.png) |
+| ![p5](examples/lecture-notes-p5.png) | ![p6](examples/lecture-notes-p6.png) | ![p7](examples/lecture-notes-p7.png) | ![p8](examples/lecture-notes-p8.png) |
 
 #### Thesis / Dissertation
 
 Full `book`-class document with front matter (title page, declaration, abstract, acknowledgments, TOC), main chapters, appendices, and bibliography. Bindingoffset for professional printing.
 
-![Thesis](examples/thesis.png)
+19 pages -- title page, abstract, TOC, chapters with math, algorithms, results tables, bibliography, appendix:
+
+| | | | |
+|---|---|---|---|
+| ![p1](examples/thesis-p1.png) | ![p2](examples/thesis-p2.png) | ![p3](examples/thesis-p3.png) | ![p4](examples/thesis-p4.png) |
+| ![p5](examples/thesis-p5.png) | ![p6](examples/thesis-p6.png) | ![p7](examples/thesis-p7.png) | ![p8](examples/thesis-p8.png) |
 
 #### Academic Paper
 
 Standard research paper structure (Abstract, Introduction, Related Work, Method, Experiments, Conclusion) with natbib citations, theorem environments, and figure/table placeholders. Includes example `.bib` file.
 
-![Academic Paper](examples/academic-paper.png)
+| | | |
+|---|---|---|
+| ![p1](examples/academic-paper-p1.png) | ![p2](examples/academic-paper-p2.png) | ![p3](examples/academic-paper-p3.png) |
 
 #### Academic CV
 
 Multi-page curriculum vitae with sections for publications (numbered: [J1], [C1], [W1]), grants with dollar amounts, teaching, student advising (current + graduated with placements), professional service, and invited talks. ORCID and Google Scholar links.
 
-![Academic CV](examples/academic-cv.png)
+| | | | |
+|---|---|---|---|
+| ![p1](examples/academic-cv-p1.png) | ![p2](examples/academic-cv-p2.png) | ![p3](examples/academic-cv-p3.png) | ![p4](examples/academic-cv-p4.png) |
 
 ---
 
@@ -121,7 +135,14 @@ Both portrait and landscape templates include commented geometry presets for spe
 
 Full `book`-class document with half-title, full title, copyright page (ISBN, edition, disclaimers), dedication, preface ("Who Should Read This Book", "How This Book Is Organized"), acknowledgments, parts, chapters with epigraphs, index (`\printindex`), and bibliography. Custom chapter headings, microtype for professional typography.
 
-![Book](examples/book.png)
+36 pages -- half title, full title, copyright, TOC, preface, acknowledgments, chapters with epigraphs, figures, bibliography:
+
+| | | | | |
+|---|---|---|---|---|
+| ![p1](examples/book-p1.png) | ![p2](examples/book-p2.png) | ![p3](examples/book-p3.png) | ![p4](examples/book-p4.png) | ![p5](examples/book-p5.png) |
+| Half Title | Full Title | Copyright | TOC | Preface |
+| ![p6](examples/book-p6.png) | ![p7](examples/book-p7.png) | ![p8](examples/book-p8.png) | ![p9](examples/book-p9.png) | ![p10](examples/book-p10.png) |
+| Acknowledgments | Ch 1: Introduction | Ch 3: Advanced Theory | Figure Placeholder | Bibliography |
 
 ---
 
@@ -131,7 +152,9 @@ Built on the `exam` class with automatic grading table, point tracking, and solu
 
 **Question types:** Multiple choice, True/False, fill-in-the-blank, matching, short answer, long answer/essay -- each with configurable point values and solution spaces.
 
-![Exam](examples/exam.png)
+| | | | | | |
+|---|---|---|---|---|---|
+| ![p1](examples/exam-p1.png) | ![p2](examples/exam-p2.png) | ![p3](examples/exam-p3.png) | ![p4](examples/exam-p4.png) | ![p5](examples/exam-p5.png) | ![p6](examples/exam-p6.png) |
 
 ---
 
@@ -148,13 +171,18 @@ Built on the `exam` class with automatic grading table, point tracking, and solu
 
 Executive summary, findings, recommendations structure with TOC, pgfplots bar charts, TikZ flowcharts, colored data tables, and fancyhdr headers.
 
-![Report](examples/report.png)
+| | | | |
+|---|---|---|---|
+| ![p1](examples/report-p1.png) | ![p2](examples/report-p2.png) | ![p3](examples/report-p3.png) | ![p4](examples/report-p4.png) |
 
 ### Presentation (Beamer)
 
 Widescreen (16:9) slides with Madrid theme. Title slide, outline, section frames, two-column layouts, block environments, equations, TikZ diagrams, booktabs tables.
 
-![Presentation](examples/presentation.png)
+| | | | | |
+|---|---|---|---|---|
+| ![p1](examples/presentation-p1.png) | ![p2](examples/presentation-p2.png) | ![p3](examples/presentation-p3.png) | ![p4](examples/presentation-p4.png) | ![p5](examples/presentation-p5.png) |
+| ![p6](examples/presentation-p6.png) | ![p7](examples/presentation-p7.png) | ![p8](examples/presentation-p8.png) | ![p9](examples/presentation-p9.png) | ![p10](examples/presentation-p10.png) |
 
 ---
 
