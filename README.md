@@ -67,20 +67,25 @@ The `lecture-notes.tex` template produces publication-quality math and science n
 
 Full `book`-class document with Palatino fonts (`newpxtext`+`newpxmath`), `microtype` with protrusion and expansion, `mathtools`, `cleveref`, `bookmark`, `emptypage`, `csquotes`, and `algorithm`+`algpseudocode`. Front matter (title page, declaration, abstract, acknowledgments, TOC), main chapters with proper theorem environments, appendices, and bibliography. Bindingoffset for professional printing.
 
-19 pages -- title page, abstract, TOC, chapters with math, algorithms, results tables, bibliography, appendix:
+38 pages -- title page, abstract, TOC, chapters with math, algorithms, TikZ architecture diagrams, heatmaps, bar charts, results tables, bibliography, appendix:
 
 | | | | |
 |---|---|---|---|
 | ![p1](examples/thesis-p1.png) | ![p2](examples/thesis-p2.png) | ![p3](examples/thesis-p3.png) | ![p4](examples/thesis-p4.png) |
+| Title Page | Table of Contents | Literature Review | TikZ Architecture Diagram |
 | ![p5](examples/thesis-p5.png) | ![p6](examples/thesis-p6.png) | ![p7](examples/thesis-p7.png) | ![p8](examples/thesis-p8.png) |
+| Results Tables | Heatmap & Bar Chart | Chapter Content | Bibliography |
 
 #### Academic Paper
 
 Professional research paper with Times fonts (`newtxtext`+`newtxmath`), `microtype`, `mathtools` with `\DeclarePairedDelimiter`, `cleveref` with custom `\crefname` configs, `authblk` for multi-author affiliations, `siunitx`, `algorithm`+`algpseudocode`, `amsthm` theorem environments, and colorblind-safe Tol palette. arXiv-compatible (`\pdfoutput=1`). Structure: Abstract, Introduction, Related Work, Method (with theorem/proof/algorithm), Experiments (with subfigures and ablation), Conclusion.
 
+11 pages -- title, abstract, theorems & proofs, algorithm, pgfplots line chart & TikZ scatter plot, results tables, ablation, bibliography:
+
 | | | | |
 |---|---|---|---|
 | ![p1](examples/academic-paper-p1.png) | ![p2](examples/academic-paper-p2.png) | ![p3](examples/academic-paper-p3.png) | ![p4](examples/academic-paper-p4.png) |
+| Title & Abstract | Table + Charts (pgfplots & TikZ) | Ablation Tables & Conclusion | References |
 
 #### Academic CV
 
