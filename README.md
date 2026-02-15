@@ -142,7 +142,7 @@ Full `book`-class document with Palatino fonts (`newpxtext`+`newpxmath`), `micro
 | ![p1](examples/book-p1.png) | ![p2](examples/book-p2.png) | ![p3](examples/book-p3.png) | ![p4](examples/book-p4.png) | ![p5](examples/book-p5.png) |
 | Half Title | Full Title | Copyright | TOC | Preface |
 | ![p6](examples/book-p6.png) | ![p7](examples/book-p7.png) | ![p8](examples/book-p8.png) | ![p9](examples/book-p9.png) | ![p10](examples/book-p10.png) |
-| Acknowledgments | Ch 1: Drop Caps | Ch 3: Advanced Theory | Ch 4: Applications | Bibliography |
+| Acknowledgments | Part I | Ch 1: Drop Caps | Definitions & Theorems | Notation & Summary |
 
 ---
 
