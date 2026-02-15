@@ -438,36 +438,59 @@ The `report.tex` template includes pgfplots, TikZ, and all required packages out
 
 **Sizing TikZ diagrams**: Always use `width=0.8\textwidth` or smaller in axis options. For TikZ flowcharts, keep `node distance` and `minimum width` small enough that the diagram fits within margins. Test-compile and check PNG preview to catch clipping.
 
-## Advanced Features
+## Reference Guides (load as needed)
 
-- **Bibliography/Citations**: BibTeX and biblatex, citation styles, .bib file format, natbib vs biblatex commands. See [references/bibliography-guide.md](references/bibliography-guide.md).
-- **Watermarks, Landscape, Multi-Language, Code Listings**: Text/logo watermarks, mixed portrait/landscape, CJK/RTL/European languages, syntax highlighting. See [references/advanced-features.md](references/advanced-features.md).
-- **Algorithms and Pseudocode**: algorithm2e and algorithmicx packages with complete examples. See [references/advanced-features.md](references/advanced-features.md).
-- **Colored Boxes (tcolorbox)**: Theorem boxes, code example boxes, warning/info/tip callouts. See [references/advanced-features.md](references/advanced-features.md).
-- **SI Units (siunitx)**: Proper number formatting, unit typesetting, table decimal alignment. See [references/advanced-features.md](references/advanced-features.md).
-- **Advanced Charts**: 3D surface, heatmap, box plot, Gantt chart (pgfgantt), radar/spider chart. See [references/advanced-features.md](references/advanced-features.md).
-- **AI-Generated Images**: Workflow for generate-image skill + LaTeX integration. See [references/advanced-features.md](references/advanced-features.md).
-- **Mermaid Diagrams**: Flowcharts, sequence, class, ER, Gantt, pie, mindmap diagrams. See [references/mermaid-diagrams.md](references/mermaid-diagrams.md).
-- **Python Charts (matplotlib)**: Bar, line, scatter, pie, heatmap, box, histogram, area, radar charts. See [references/python-charts.md](references/python-charts.md).
-- **Format Conversion (Pandoc)**: Markdown/DOCX/HTML to/from LaTeX. See [references/format-conversion.md](references/format-conversion.md).
-- **Tables**: Colored rows, multi-row/column, borderless booktabs, long tables spanning pages. See [references/tables-and-images.md](references/tables-and-images.md).
-- **Images**: External images, TikZ drawings, circular clipped photos, side-by-side, text wrapping. See [references/tables-and-images.md](references/tables-and-images.md).
-- **Charts and Graphs (pgfplots)**: Line plots, bar charts, scatter plots, pie charts. See [references/charts-and-graphs.md](references/charts-and-graphs.md).
-- **Package reference**: Common packages and their purposes. See [references/packages.md](references/packages.md).
-- **Resume ATS guide**: ATS compatibility rules, LaTeX-specific pitfalls, keyword optimization, action verbs. See [references/resume-ats-guide.md](references/resume-ats-guide.md).
-- **PDF-to-LaTeX conversion**: Full pipeline with scaling strategy and profiles. See [references/pdf-conversion.md](references/pdf-conversion.md).
+| Topic | File | When to Read |
+|---|---|---|
+| Bibliography/Citations | [bibliography-guide.md](references/bibliography-guide.md) | BibTeX/biblatex, citation styles, .bib format |
+| Watermarks, Landscape, Multi-Lang, Code, Algorithms, tcolorbox, siunitx, Advanced Charts, AI Images | [advanced-features.md](references/advanced-features.md) | Any feature not covered by quick patterns above |
+| Mermaid Diagrams | [mermaid-diagrams.md](references/mermaid-diagrams.md) | Flowcharts, sequence, class, ER, Gantt, pie, mindmap |
+| Python Charts (matplotlib) | [python-charts.md](references/python-charts.md) | Bar, line, scatter, pie, heatmap, box, histogram, area, radar |
+| Format Conversion (Pandoc) | [format-conversion.md](references/format-conversion.md) | Markdown/DOCX/HTML to/from LaTeX |
+| Tables and Images | [tables-and-images.md](references/tables-and-images.md) | Colored rows, multi-row/column, booktabs, long tables, images, TikZ |
+| Charts and Graphs (pgfplots) | [charts-and-graphs.md](references/charts-and-graphs.md) | Line plots, bar charts, scatter plots, pie charts in pgfplots |
+| LaTeX Packages | [packages.md](references/packages.md) | Common packages reference |
+| Resume ATS Guide | [resume-ats-guide.md](references/resume-ats-guide.md) | ATS rules, LaTeX pitfalls, keywords |
+| PDF-to-LaTeX Pipeline | [pdf-conversion.md](references/pdf-conversion.md) | Full conversion pipeline with profiles |
 
-## Critical Notes
+## Critical Notes and Common Mistakes
 
+### Compile & Output
 - Run compile script from the directory containing the .tex file, or use absolute paths
-- For documents with `\tableofcontents`, the script runs pdflatex twice automatically
-- Use `\usepackage{colortbl}` when using `\rowcolor` -- missing this causes `Undefined control sequence` errors
-- Use `\usepackage{url}` when using `\url{}` in bibliography entries with natbib -- missing this causes `Undefined control sequence` errors
-- PNG previews require `poppler-utils` (auto-installed by script)
 - Place output .tex files in `./outputs/` for user visibility
-- After compilation, read the PNG files to show the user how the document looks
-- The `hyperref` package is fine for normal documents (most templates use it). Only avoid it in **PDF-to-LaTeX converted documents** with theorem environments, where it causes `\set@color` errors.
-- **PDF conversion**: Do NOT use `sed` to clean control characters from LaTeX -- it breaks `\begin`, `\end`, `\newpage`, etc.
-- **PDF conversion**: Do NOT use `hyperref` package in converted documents -- causes `\set@color` errors with theorem environments
-- **PDF conversion**: Use `run_in_background` agents, NOT agent teams -- simpler, more reliable
-- **PDF conversion**: Select the correct conversion profile for the document type -- a math profile on a business doc produces unnecessary theorem environments
+- After compilation, read the PNG preview files to show the user how the document looks
+- PNG previews require `poppler-utils` (auto-installed by script)
+
+### Package Dependency Errors (MUST READ)
+These cause `Undefined control sequence` -- always include the required package:
+
+| If you use... | You MUST include | Error without it |
+|---|---|---|
+| `\rowcolor{}` | `\usepackage{colortbl}` | Undefined control sequence `\rowcolor` |
+| `\url{}` in .bib with natbib | `\usepackage{url}` | Undefined control sequence `\url` |
+| `\checkmark` | `\usepackage{amssymb}` | Undefined control sequence `\checkmark` |
+| `\begin{figure}[H]` | `\usepackage{float}` | Unknown float option `H` |
+| `\rowcolors{}{}{}` | `\usepackage[table]{xcolor}` or `\usepackage{colortbl}` | Undefined control sequence |
+
+### Exam Class Pitfalls
+- Do NOT use `\usepackage{fancyhdr}` with exam class -- it conflicts with exam's own `headandfoot` pagestyle, causing `\f@nch@orf` errors. The exam class provides `\firstpageheader`, `\runningheader`, `\footer` instead.
+- Do NOT use bare `\section*{}` inside `\begin{questions}` -- it causes "Something's wrong--perhaps a missing \item" errors. Use `\fullwidth{\section*{Part A: ...}}` instead.
+- Use `\fullwidth{...}` for ANY non-question content inside the `questions` environment (headings, instructions, notes).
+
+### Book/Thesis Pitfalls
+- When using `fancyhdr` with custom headers, set `headheight=14pt` (or larger) in geometry options: `\usepackage[margin=1in, headheight=14pt]{geometry}`. Without this, you get "headheight is too small" warnings that can cause layout issues.
+- First-pass compilation of books/theses will always show "undefined references" and "Label(s) may have changed" warnings -- this is normal. The compile script runs multiple passes to resolve these.
+
+### hyperref Package
+- `hyperref` is fine for normal documents (most templates use it).
+- Only avoid it in **PDF-to-LaTeX converted documents** with theorem environments, where it causes `\set@color` errors.
+
+### PDF-to-LaTeX Conversion
+- Do NOT use `sed` to clean control characters from LaTeX -- it breaks `\begin`, `\end`, `\newpage`, etc.
+- Do NOT use `hyperref` package in converted documents -- causes `\set@color` errors with theorem environments
+- Use `run_in_background` agents, NOT agent teams -- simpler, more reliable
+- Select the correct conversion profile for the document type -- a math profile on a business doc produces unnecessary theorem environments
+
+### Compilation Environment
+- If texlive is not installed, the compile script auto-installs it. Do NOT run multiple compile commands in parallel before texlive is installed -- they will all try to install simultaneously, causing dpkg lock contention. Install once first or run compiles sequentially.
+- The compile script uses `-interaction=nonstopmode` (not `-halt-on-error`) to ensure PDFs are produced even with warnings. This is intentional -- many documents produce warnings on first pass that resolve on subsequent passes.
