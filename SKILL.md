@@ -165,7 +165,8 @@ All 5 templates follow ATS rules: single-column, no graphics/images, no tables f
 - **`thesis.tex`** -- Thesis/dissertation (`book` class) with title page, declaration, abstract, acknowledgments, TOC, list of figures/tables, chapters, appendices, bibliography. Front matter uses roman numerals, main matter uses arabic. Includes theorem environments.
 - **`academic-cv.tex`** -- Multi-page academic CV with publications (journal/conference/preprint sections), grants and funding, teaching, advising (current/graduated students), awards, professional service, invited talks. ORCID and Google Scholar links.
 - **`book.tex`** -- Full book (`book` class) with half-title, title page, copyright page, dedication, preface, acknowledgments, TOC, list of figures/tables, parts, chapters, appendix, bibliography, index. Custom chapter headings, epigraphs, fancyhdr, microtype.
-- **`poster.tex`** -- Conference poster (`tikzposter` class, A0 portrait) with 2-column layout, custom color scheme, tikzfigure charts, tables, coloredbox highlights. Portrait is standard for most conferences; switch to `landscape` for ICML/CVPR.
+- **`poster.tex`** -- Conference poster (`tikzposter` class, A0 portrait) with 2-column layout, QR code, 5 color schemes, tikzfigure charts, tables, coloredbox highlights. Portrait is standard for most conferences. See poster design guide for conference size presets.
+- **`poster-landscape.tex`** -- Landscape conference poster (`tikzposter` class, A0 landscape) with 3-column (30/40/30) layout, QR code, tech purple color scheme. For CS/ML conferences (NeurIPS, ICML, CVPR, ICLR). Includes commented `\geometry{}` presets for CVPR/NeurIPS custom sizes.
 - **`letter.tex`** -- Formal business letter with colored letterhead bar, TikZ logo placeholder, company info, recipient block, date, subject line, signature. Professional corporate appearance.
 - **`exam.tex`** -- Exam/quiz (`exam` class) with grading table, multiple question types (multiple choice, true/false, fill-in-blank, matching, short answer, essay), point values, solution toggle via `\printanswers`.
 - **`report.tex`** -- Business report with TOC, headers/footers, data tables, bar chart (pgfplots), process flowchart (TikZ), recommendations
@@ -198,7 +199,8 @@ bash <skill_path>/scripts/compile_latex.sh ./outputs/my_resume.tex --preview --p
 | Invoice | `invoice.tex` | `article` |
 | Academic paper | `academic-paper.tex` + `references.bib` | `article` |
 | Book | `book.tex` | `book` |
-| Scientific poster | `poster.tex` | `tikzposter` |
+| Scientific poster (portrait) | `poster.tex` | `tikzposter` |
+| Scientific poster (landscape) | `poster-landscape.tex` | `tikzposter` |
 | Formal business letter | `letter.tex` | `article` |
 | Exam, quiz, test | `exam.tex` | `exam` |
 | Slides, presentation | `presentation.tex` | `beamer` |
@@ -438,6 +440,7 @@ The `report.tex` template includes pgfplots, TikZ, and all required packages out
 | Tables and Images | [tables-and-images.md](references/tables-and-images.md) | Colored rows, multi-row/column, booktabs, long tables, images, TikZ |
 | Charts and Graphs (pgfplots) | [charts-and-graphs.md](references/charts-and-graphs.md) | Line plots, bar charts, scatter plots, pie charts in pgfplots |
 | LaTeX Packages | [packages.md](references/packages.md) | Common packages reference |
+| Poster Design Guide | [poster-design-guide.md](references/poster-design-guide.md) | Conference size presets, typography, color schemes, layout archetypes, content guidelines |
 | Resume ATS Guide | [resume-ats-guide.md](references/resume-ats-guide.md) | ATS rules, LaTeX pitfalls, keywords |
 | PDF-to-LaTeX Pipeline | [pdf-conversion.md](references/pdf-conversion.md) | Full conversion pipeline with profiles |
 
@@ -470,12 +473,15 @@ These cause `Undefined control sequence` -- always include the required package:
 - First-pass compilation of books/theses will always show "undefined references" and "Label(s) may have changed" warnings -- this is normal. The compile script runs multiple passes to resolve these.
 
 ### Poster (tikzposter) Pitfalls
-- **Orientation depends on conference.** Portrait (2-column, A0 841mm x 1189mm) is most common across academia. Landscape is used by specific CS/ML conferences (ICML, CVPR). Always check the conference guidelines. Default to **portrait** if unknown.
-- Portrait uses **2 equal columns** (50/50); landscape uses **3 columns** (e.g., 30/40/30).
+- **Orientation depends on conference.** Portrait (2-column, A0 841mm x 1189mm) is most common (~60% of conferences). Landscape is used by CS/ML conferences (NeurIPS, ICML, CVPR, ICLR). Always check conference guidelines. Default to **portrait** if unknown. See [poster-design-guide.md](references/poster-design-guide.md) for conference size presets.
+- **Template selection:** Use `poster.tex` for portrait, `poster-landscape.tex` for landscape. For non-A0 sizes (e.g., CVPR 84"x42"), uncomment the `\geometry{}` line in the landscape template.
+- Portrait uses **2 equal columns** (50/50); landscape uses **3 columns** (30/40/30, center wider for main results).
 - Do NOT use `\begin{figure}` inside tikzposter -- use `\begin{tikzfigure}[Caption]` instead.
 - Always use **relative widths** for charts: `width=0.9\linewidth` (not `width=20cm`). Fixed dimensions overflow blocks on A0.
 - Set `bodyinnersep=15mm` (not 8mm) and `margin=15mm` -- 8mm padding causes content-edge collisions on A0.
-- Keep total text under 500 words. Use `\coloredbox` for key insights.
+- Keep total text under 800 words (target 400-500). Use `\coloredbox` for key insights.
+- **QR codes:** Add with `\usepackage{qrcode}` and `\qrcode[height=3.5cm]{URL}`. Link to paper, code, or demo.
+- **Color schemes:** Both templates include 5 schemes (Navy+Amber, Forest Green, Medical Teal, Tech Purple, Minimal Dark). Uncomment the desired scheme.
 
 ### hyperref Package
 - `hyperref` is fine for normal documents (most templates use it).

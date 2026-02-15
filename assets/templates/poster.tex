@@ -24,12 +24,31 @@
 \usepackage{enumitem}
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
+\usepackage{qrcode}
 
 % Use sans-serif for better poster readability at distance
 \renewcommand{\familydefault}{\sfdefault}
 
 % ===== COLOR SCHEME (Navy + White + Amber accent) =====
 % High contrast, professional, stands out at conferences
+% --- Alternative schemes (uncomment ONE set, comment out the active set) ---
+%% Forest Green (biology/environmental):
+%   \definecolor{navyblue}{HTML}{166534} \definecolor{steelblue}{HTML}{4ADE80}
+%   \definecolor{amber}{HTML}{92400E} \definecolor{darktext}{HTML}{1C1917}
+%   \definecolor{lightbg}{HTML}{F0FDF4}
+%% Medical Teal (healthcare/clinical):
+%   \definecolor{navyblue}{HTML}{0F766E} \definecolor{steelblue}{HTML}{5EEAD4}
+%   \definecolor{amber}{HTML}{F43F5E} \definecolor{darktext}{HTML}{1E293B}
+%   \definecolor{lightbg}{HTML}{F0FDFA}
+%% Tech Purple (CS/ML/AI):
+%   \definecolor{navyblue}{HTML}{6D28D9} \definecolor{steelblue}{HTML}{A78BFA}
+%   \definecolor{amber}{HTML}{EC4899} \definecolor{darktext}{HTML}{1E1B4B}
+%   \definecolor{lightbg}{HTML}{FAF5FF}
+%% Minimal Dark (high contrast/modern):
+%   \definecolor{navyblue}{HTML}{1F2937} \definecolor{steelblue}{HTML}{6B7280}
+%   \definecolor{amber}{HTML}{DC2626} \definecolor{darktext}{HTML}{111827}
+%   \definecolor{lightbg}{HTML}{F9FAFB}
+% --- Active scheme (Navy + Amber) ---
 \definecolor{navyblue}{HTML}{1E3A8A}
 \definecolor{steelblue}{HTML}{3B82F6}
 \definecolor{amber}{HTML}{F59E0B}
@@ -321,7 +340,7 @@
         \textbf{Future:} Extend to detection/segmentation, hardware-aware objectives, larger search spaces.
     }
 
-    \block{References}{
+    \block{References \& Resources}{
         {\small
         [1] Liu et al. (2019). DARTS: Differentiable Architecture Search. \textit{ICLR}.
 
@@ -330,8 +349,14 @@
         [3] Cai et al. (2019). ProxylessNAS. \textit{ICLR}.
         }
 
-        \vspace{0.8em}
-        \textbf{Acknowledgments:} Supported by NSF Grant IIS-2024000 and Google Research Award.
+        \vspace{1em}
+        \begin{center}
+        \qrcode[height=3.5cm]{https://github.com/achen/enas-adaptive}\\[0.5em]
+        {\normalsize Paper \& Code}
+        \end{center}
+
+        \vspace{0.5em}
+        {\small \textbf{Acknowledgments:} NSF Grant IIS-2024000 and Google Research Award.}
     }
 
 \end{columns}
