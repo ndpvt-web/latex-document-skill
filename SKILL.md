@@ -31,11 +31,22 @@ Create any LaTeX document, compile to PDF, and generate PNG previews. Convert PD
 ## Workflow: Create Documents
 
 1. Determine document type (resume, report, letter, invoice, article, thesis, academic CV, presentation, poster, exam, book)
-2. Copy the appropriate template from `assets/templates/` or write from scratch
-3. Customize content based on user requirements
-4. Generate any external assets (Mermaid diagrams, matplotlib charts, AI images) if needed
-5. Compile with `scripts/compile_latex.sh` (auto-detects XeLaTeX for CJK/RTL, glossaries, bibliography)
-6. Show PNG preview to user, deliver PDF
+2. **Ask the user which enrichment elements they want** (use AskUserQuestion tool with multiSelect). Offer relevant options based on document type:
+   - **AI-generated images** -- custom illustrations, diagrams, photos (uses generate-image skill)
+   - **Charts/graphs** -- bar, line, pie, scatter, heatmap (pgfplots or matplotlib)
+   - **Flowcharts/diagrams** -- process flows, architecture, decision trees (TikZ or Mermaid)
+   - **Citations/bibliography** -- academic references, footnotes, works cited (BibTeX/biblatex)
+   - **Tables with data** -- comparison matrices, financial data, statistics (booktabs)
+   - **Watermarks** -- DRAFT, CONFIDENTIAL, or company logo background
+   - Skip this step for simple documents (cover letters, invoices) or when the user has already specified exactly what they want.
+3. Copy the appropriate template from `assets/templates/` or write from scratch
+4. Customize content based on user requirements
+5. Generate external assets based on user's element choices:
+   - AI images: `python3 <skill_path>/../generate-image/scripts/generate_image.py "prompt" --output ./outputs/figure.png`
+   - matplotlib charts: `python3 <skill_path>/scripts/generate_chart.py <type> --data '<json>' --output chart.png`
+   - Mermaid diagrams: `bash <skill_path>/scripts/mermaid_to_image.sh diagram.mmd output.png`
+6. Compile with `scripts/compile_latex.sh` (auto-detects XeLaTeX for CJK/RTL, glossaries, bibliography)
+7. Show PNG preview to user, deliver PDF
 
 ## Workflow: Convert Document Formats
 
@@ -407,32 +418,24 @@ Supports: booktabs, grid, simple, plain styles. Auto-detects column alignment. S
 ### Quick AI-Generated Image
 
 ```bash
-# Generate image with AI and include in LaTeX
-python3 /home/node/.claude/skills/generate-image/scripts/generate_image.py \
+python3 <skill_path>/../generate-image/scripts/generate_image.py \
     "Professional diagram of neural network, clean white background, technical illustration" \
     --output ./outputs/figure.png
 ```
 
-```latex
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.6\textwidth]{figure.png}
-    \caption{Neural network architecture (AI-generated).}
-\end{figure}
-```
-
-Request "white background, clean, no text" for best results in documents. See [references/advanced-features.md](references/advanced-features.md).
+Then include with `\includegraphics[width=0.6\textwidth]{figure.png}` in a `figure` environment. Request "white background, clean, no text" for best results. See [references/advanced-features.md](references/advanced-features.md).
 
 ## Visual Elements in Reports
 
-When creating reports, always include visual elements where they strengthen the content:
+When creating reports, use the enrichment elements the user selected in step 2. If the user selected "AI-generated images", generate relevant illustrations for key sections. Available visual elements:
 
-- **Bar charts** (pgfplots `ybar`/`xbar`): Compare categories, show rankings, display metrics
-- **Line charts** (pgfplots): Show trends over time, growth curves, multi-series comparisons
-- **Pie charts** (TikZ): Show budget allocation, market share, composition breakdowns
-- **Flowcharts** (TikZ): Show processes, workflows, decision trees, system architecture
-- **Timelines** (TikZ): Show project phases, milestones, rollout schedules
-- **Tables** (booktabs/tabularx): Show detailed data, capability matrices, risk assessments, comparisons
+| Element | Tool | Best For |
+|---|---|---|
+| Bar/line/pie charts | pgfplots (inline) or matplotlib (script) | Metrics, trends, breakdowns |
+| Flowcharts | TikZ (inline) or Mermaid (script) | Processes, architecture, decisions |
+| AI-generated images | generate-image skill | Custom illustrations, diagrams, photos |
+| Data tables | booktabs/tabularx | Comparisons, financials, statistics |
+| Timelines | TikZ | Project phases, milestones, roadmaps |
 
 The `report.tex` template includes pgfplots, TikZ, and all required packages out of the box. Use `\begin{figure}[H]` (from `float` package) to prevent figures from floating away from their context.
 
