@@ -67,9 +67,10 @@ For a 25-page PDF, the single agent would produce ~15+ catastrophic errors. Thre
 Before launching workers, one agent scans 3-5 representative pages to build the preamble:
 
 1. Read the selected profile's suggested preamble as a starting point
-2. Scan pages to identify additional packages or custom commands needed
-3. Write `tmp/preamble.tex` with everything from `\documentclass` through the last `\newcommand`
-4. Do NOT include `\begin{document}` -- that goes in the assembly step
+2. **For math-notes profile**: Default to **beautiful mode** -- copy the preamble from `assets/templates/lecture-notes.tex` (everything before `\begin{document}`). This gives you tcolorbox theorem environments, TikZ graph styles, Palatino font, and microtype. Only use plain mode if the user explicitly requests it.
+3. Scan pages to identify additional packages or custom commands needed beyond the profile's base
+4. Write `tmp/preamble.tex` with everything from `\documentclass` through the last `\newcommand`
+5. Do NOT include `\begin{document}` -- that goes in the assembly step
 
 ## Step 5: Launch Workers
 

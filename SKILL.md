@@ -31,7 +31,8 @@ Create any LaTeX document, compile to PDF, and generate PNG previews. Convert PD
 ## Workflow: Create Documents
 
 1. Determine document type (resume, report, letter, invoice, article, thesis, academic CV, presentation, poster, exam, book)
-2. **Ask the user which enrichment elements they want** (use AskUserQuestion tool with multiSelect). Offer relevant options based on document type:
+2. **If poster:** Run the poster sub-workflow (see [Poster Sub-Workflow](#poster-sub-workflow) below), then skip to step 5.
+3. **Ask the user which enrichment elements they want** (use AskUserQuestion tool with multiSelect). Offer relevant options based on document type:
    - **AI-generated images** -- custom illustrations, diagrams, photos (uses generate-image skill)
    - **Charts/graphs** -- bar, line, pie, scatter, heatmap (pgfplots or matplotlib)
    - **Flowcharts/diagrams** -- process flows, architecture, decision trees (TikZ or Mermaid)
@@ -39,14 +40,57 @@ Create any LaTeX document, compile to PDF, and generate PNG previews. Convert PD
    - **Tables with data** -- comparison matrices, financial data, statistics (booktabs)
    - **Watermarks** -- DRAFT, CONFIDENTIAL, or company logo background
    - Skip this step for simple documents (cover letters, invoices) or when the user has already specified exactly what they want.
-3. Copy the appropriate template from `assets/templates/` or write from scratch
-4. Customize content based on user requirements
-5. Generate external assets based on user's element choices:
+4. Copy the appropriate template from `assets/templates/` or write from scratch
+5. Customize content based on user requirements
+6. Generate external assets based on user's element choices:
    - AI images: `python3 <skill_path>/../generate-image/scripts/generate_image.py "prompt" --output ./outputs/figure.png`
    - matplotlib charts: `python3 <skill_path>/scripts/generate_chart.py <type> --data '<json>' --output chart.png`
    - Mermaid diagrams: `bash <skill_path>/scripts/mermaid_to_image.sh diagram.mmd output.png`
-6. Compile with `scripts/compile_latex.sh` (auto-detects XeLaTeX for CJK/RTL, glossaries, bibliography)
-7. Show PNG preview to user, deliver PDF
+7. Compile with `scripts/compile_latex.sh` (auto-detects XeLaTeX for CJK/RTL, glossaries, bibliography)
+8. Show PNG preview to user, deliver PDF
+
+### Poster Sub-Workflow
+
+When the user requests a poster (step 1), follow these steps before proceeding to template customization:
+
+**Step A: Ask for conference/orientation** (use AskUserQuestion with these options):
+- "Which conference or orientation is this poster for?"
+  - **Portrait A0 (Recommended)** -- Default for most conferences (Interspeech, SIGMOD, APS, AACR, AGU, biomedical, physics, most European)
+  - **Landscape A0** -- For CS/ML conferences (AAAI, some engineering)
+  - **NeurIPS / ICML / CVPR / ICLR** -- Landscape with custom dimensions (auto-configured)
+  - **Other** -- Let user specify dimensions
+
+Based on the answer, select the template and configure paper size:
+
+| Answer | Template | Paper Size | Notes |
+|---|---|---|---|
+| Portrait A0 (default) | `poster.tex` | A0 841mm x 1189mm | No changes needed |
+| Landscape A0 | `poster-landscape.tex` | A0 1189mm x 841mm | No changes needed |
+| NeurIPS main | `poster-landscape.tex` | Uncomment `\geometry{paperwidth=2438mm, paperheight=1219mm}` | 96" x 48" |
+| NeurIPS workshop | `poster.tex` | Add `\geometry{paperwidth=610mm, paperheight=914mm}` | 24" x 36" |
+| ICML main | `poster-landscape.tex` | Uncomment `\geometry{paperwidth=1219mm, paperheight=914mm}` | 48" x 36" |
+| ICML workshop | `poster.tex` | Add `\geometry{paperwidth=610mm, paperheight=914mm}` | 24" x 36" |
+| CVPR | `poster-landscape.tex` | Uncomment `\geometry{paperwidth=2133mm, paperheight=1067mm}` | 84" x 42" |
+| ICLR main | `poster-landscape.tex` | Add `\geometry{paperwidth=1940mm, paperheight=950mm}` | 194cm x 95cm |
+| ICLR workshop | `poster.tex` | Add `\geometry{paperwidth=610mm, paperheight=914mm}` | 24" x 36" |
+
+**Step B: Ask for layout archetype** (use AskUserQuestion):
+- "Which layout style do you prefer?"
+  - **Traditional Column (Recommended)** -- Standard academic poster: 2 columns (portrait) or 3 columns (landscape). Used by ~70% of posters. Best for most conferences.
+  - **#BetterPoster** -- Central billboard with ONE key finding in large text, sidebars for details. Maximizes "drive-by" readability. Growing trend (~10% of posters).
+  - **Visual-Heavy** -- Large central figure dominating 40-50% of area. Best for data visualization, imaging, astronomy.
+
+If #BetterPoster is selected: use the commented #BetterPoster layout in `poster.tex` (uncomment it, comment out the default 2-column layout).
+
+**Step C: Ask for color scheme** (use AskUserQuestion):
+- "Which color scheme?"
+  - **Navy + Amber (Recommended)** -- Professional, high contrast, works for any field
+  - **Tech Purple** -- Modern CS/ML/AI conferences (purple + pink accent)
+  - **Forest Green** -- Biology, environmental sciences
+  - **Medical Teal** -- Healthcare, clinical research
+  - **Minimal Dark** -- High contrast, modern minimalist
+
+Then proceed to step 5 (customize content) with the selected template, layout, and color scheme. See [poster-design-guide.md](references/poster-design-guide.md) for typography standards, content guidelines, and common mistakes.
 
 ## Workflow: Convert Document Formats
 
@@ -90,7 +134,7 @@ Select based on document content:
 
 | Content Type | Profile | When to Use |
 |---|---|---|
-| Math / science notes | `references/profiles/math-notes.md` | Equations, theorems, proofs, definitions, Greek symbols |
+| Math / science notes | `references/profiles/math-notes.md` | Equations, theorems, proofs, definitions, Greek symbols. **Has beautiful mode** (default) using `lecture-notes.tex` template with tcolorbox + TikZ diagrams. |
 | Business documents | `references/profiles/business-document.md` | Reports, meeting notes, memos, proposals, financial data |
 | Legal documents | `references/profiles/legal-document.md` | Contracts, regulations, statutes, numbered paragraphs, citations |
 | General / mixed | `references/profiles/general-notes.md` | Handwritten notes, letters, journals, anything not clearly one of the above |
@@ -162,10 +206,11 @@ All 5 templates follow ATS rules: single-column, no graphics/images, no tables f
 
 ### Other Templates
 
+- **`lecture-notes.tex`** -- Beautiful lecture notes (`scrartcl` KOMA-Script class) with Palatino font, `microtype` typography, color-coded `tcolorbox` theorem environments (blue theorems, green definitions, orange examples, purple remarks), TikZ graph theory diagram styles and macros (`\CompleteGraph`, `\CycleGraph`, `\PathGraph`), styled section headings with `titlesec`, `fancyhdr` headers, `hyperref` + `cleveref` navigation. Ideal for converting handwritten math/science notes to beautiful PDFs. Includes graph theory custom commands (`\V`, `\E`, `\deg`, `\chr`). Used by the math-notes conversion profile in beautiful mode.
 - **`thesis.tex`** -- Thesis/dissertation (`book` class) with title page, declaration, abstract, acknowledgments, TOC, list of figures/tables, chapters, appendices, bibliography. Front matter uses roman numerals, main matter uses arabic. Includes theorem environments.
 - **`academic-cv.tex`** -- Multi-page academic CV with publications (journal/conference/preprint sections), grants and funding, teaching, advising (current/graduated students), awards, professional service, invited talks. ORCID and Google Scholar links.
 - **`book.tex`** -- Full book (`book` class) with half-title, title page, copyright page, dedication, preface, acknowledgments, TOC, list of figures/tables, parts, chapters, appendix, bibliography, index. Custom chapter headings, epigraphs, fancyhdr, microtype.
-- **`poster.tex`** -- Conference poster (`tikzposter` class, A0 portrait) with 2-column layout, QR code, 5 color schemes, tikzfigure charts, tables, coloredbox highlights. Portrait is standard for most conferences. See poster design guide for conference size presets.
+- **`poster.tex`** -- Conference poster (`tikzposter` class, A0 portrait) with 2-column layout, QR code, 5 color schemes, tikzfigure charts, tables, coloredbox highlights. Includes commented **#BetterPoster** layout variant (central billboard + sidebars). Portrait is standard for most conferences. See poster design guide for conference size presets.
 - **`poster-landscape.tex`** -- Landscape conference poster (`tikzposter` class, A0 landscape) with 3-column (30/40/30) layout, QR code, tech purple color scheme. For CS/ML conferences (NeurIPS, ICML, CVPR, ICLR). Includes commented `\geometry{}` presets for CVPR/NeurIPS custom sizes.
 - **`letter.tex`** -- Formal business letter with colored letterhead bar, TikZ logo placeholder, company info, recipient block, date, subject line, signature. Professional corporate appearance.
 - **`exam.tex`** -- Exam/quiz (`exam` class) with grading table, multiple question types (multiple choice, true/false, fill-in-blank, matching, short answer, essay), point values, solution toggle via `\printanswers`.
@@ -192,6 +237,7 @@ bash <skill_path>/scripts/compile_latex.sh ./outputs/my_resume.tex --preview --p
 | Resume (senior/executive) | `resume-executive.tex` | `article` |
 | Resume (technical/engineering) | `resume-technical.tex` | `article` |
 | Resume (new graduate) | `resume-entry-level.tex` | `article` |
+| Lecture notes, math notes (beautiful) | `lecture-notes.tex` | `scrartcl` |
 | Thesis, dissertation | `thesis.tex` | `book` |
 | Academic CV (publications, grants) | `academic-cv.tex` | `article` |
 | Report, analysis | `report.tex` | `article` |
@@ -474,7 +520,7 @@ These cause `Undefined control sequence` -- always include the required package:
 
 ### Poster (tikzposter) Pitfalls
 - **Orientation depends on conference.** Portrait (2-column, A0 841mm x 1189mm) is most common (~60% of conferences). Landscape is used by CS/ML conferences (NeurIPS, ICML, CVPR, ICLR). Always check conference guidelines. Default to **portrait** if unknown. See [poster-design-guide.md](references/poster-design-guide.md) for conference size presets.
-- **Template selection:** Use `poster.tex` for portrait, `poster-landscape.tex` for landscape. For non-A0 sizes (e.g., CVPR 84"x42"), uncomment the `\geometry{}` line in the landscape template.
+- **Template selection:** Use `poster.tex` for portrait, `poster-landscape.tex` for landscape. For #BetterPoster layout, uncomment the alternative layout section at the end of `poster.tex`. For non-A0 sizes (e.g., CVPR 84"x42"), uncomment the `\geometry{}` line in the landscape template.
 - Portrait uses **2 equal columns** (50/50); landscape uses **3 columns** (30/40/30, center wider for main results).
 - Do NOT use `\begin{figure}` inside tikzposter -- use `\begin{tikzfigure}[Caption]` instead.
 - Always use **relative widths** for charts: `width=0.9\linewidth` (not `width=20cm`). Fixed dimensions overflow blocks on A0.

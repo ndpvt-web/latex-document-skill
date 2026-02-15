@@ -362,3 +362,161 @@
 \end{columns}
 
 \end{document}
+
+%% ===================================================================
+%% ALTERNATIVE LAYOUT: #BetterPoster (Mike Morrison style)
+%% ===================================================================
+%% Uncomment the section below (and comment out the 2-column layout above)
+%% to use the #BetterPoster layout. This design maximizes "drive-by"
+%% readability: a large central billboard with ONE key finding, flanked
+%% by compact sidebars for methods and supporting results.
+%%
+%% How it works:
+%%   - 3-column layout: LEFT sidebar (25%) | CENTER billboard (50%) | RIGHT sidebar (25%)
+%%   - Center column: ONE key finding in huge text (60-80pt), readable from 10+ feet
+%%   - Left sidebar: compact Introduction + Methods
+%%   - Right sidebar: compact Results + References + QR code
+%%   - Designed for poster sessions where most people walk by without stopping
+%%
+%% To use: Replace everything between \maketitle and \end{document} with:
+%%
+% \begin{columns}
+%
+%     % === LEFT SIDEBAR (25%): Introduction + Methods (compact) ===
+%     \column{0.25}
+%
+%     \block{Introduction}{
+%         \begin{itemize}[leftmargin=*, itemsep=0.5em]
+%             \item Problem statement here (1-2 sentences)
+%             \item Why it matters (1-2 sentences)
+%             \item Gap in existing approaches
+%         \end{itemize}
+%     }
+%
+%     \block{Methods}{
+%         Brief description of your approach.
+%
+%         \vspace{0.5em}
+%         \begin{center}
+%         \begin{tikzpicture}[
+%             node distance=2.5cm,
+%             box/.style={rectangle, draw=navyblue, fill=steelblue!10,
+%                         text width=0.75\linewidth, text centered, rounded corners=3pt,
+%                         minimum height=1.5cm, line width=1pt, font=\normalsize},
+%             arrow/.style={->, >=stealth, line width=1.5pt, color=navyblue}
+%         ]
+%             \node[box] (step1) {\textbf{Step 1}\\Description};
+%             \node[box, below of=step1] (step2) {\textbf{Step 2}\\Description};
+%             \node[box, below of=step2] (step3) {\textbf{Step 3}\\Description};
+%             \draw[arrow] (step1) -- (step2);
+%             \draw[arrow] (step2) -- (step3);
+%         \end{tikzpicture}
+%         \end{center}
+%     }
+%
+%     \block{Experimental Setup}{
+%         {\normalsize
+%         \begin{tabular}{lc}
+%             \toprule
+%             \textbf{Parameter} & \textbf{Value} \\
+%             \midrule
+%             Dataset     & CIFAR-10 \\
+%             Model       & ResNet-50 \\
+%             Hardware    & 8x A100 \\
+%             \bottomrule
+%         \end{tabular}
+%         }
+%     }
+%
+%     % === CENTER BILLBOARD (50%): ONE Key Finding ===
+%     \column{0.50}
+%
+%     \block{}{
+%         \vspace{2em}
+%         \begin{center}
+%         {\fontsize{72}{80}\selectfont\textbf{%
+%             Our method achieves\\[0.3em]
+%             97.8\% accuracy\\[0.3em]
+%             at 73\% lower cost}}
+%         \end{center}
+%
+%         \vspace{2em}
+%         \begin{center}
+%         {\Large\color{darktext}
+%             We introduce ENAS-Adaptive, which couples gradient-based architecture
+%             search with adaptive resource allocation to achieve state-of-the-art
+%             accuracy in 0.4 GPU hours --- 73\% less than DARTS.}
+%         \end{center}
+%
+%         \vspace{2em}
+%         \coloredbox[bgcolor=amber!15, fgcolor=darktext, roundedcorners=5]{%
+%             \centering\Large
+%             \textbf{Scan for full paper \& code:}\\[1em]
+%             \qrcode[height=5cm]{https://github.com/user/project}
+%         }
+%         \vspace{1em}
+%     }
+%
+%     % === RIGHT SIDEBAR (25%): Results + References ===
+%     \column{0.25}
+%
+%     \block{Key Results}{
+%         {\normalsize
+%         \begin{tabular}{lcc}
+%             \toprule
+%             \textbf{Method} & \textbf{Acc.} & \textbf{Hours} \\
+%             \midrule
+%             DARTS           & 97.0\% & 1.5 \\
+%             ENAS            & 97.1\% & 0.5 \\
+%             ProxylessNAS    & 97.3\% & 4.0 \\
+%             \midrule
+%             \textbf{Ours}   & \textbf{97.8\%} & \textbf{0.4} \\
+%             \bottomrule
+%         \end{tabular}
+%         }
+%     }
+%
+%     \block{Supporting Evidence}{
+%         \begin{tikzfigure}[Accuracy comparison]
+%             \begin{tikzpicture}
+%                 \begin{axis}[
+%                     ybar, bar width=12pt,
+%                     width=0.92\linewidth, height=8cm,
+%                     ylabel={\textbf{Accuracy (\%)}},
+%                     symbolic x coords={DARTS,ENAS,Proxy.,Ours},
+%                     xtick=data,
+%                     ymin=96, ymax=98.5,
+%                     nodes near coords,
+%                     nodes near coords style={font=\small},
+%                     enlarge x limits=0.15
+%                 ]
+%                     \addplot[fill=steelblue!60, draw=navyblue] coordinates {
+%                         (DARTS,97.0) (ENAS,97.1) (Proxy.,97.3) (Ours,97.8)
+%                     };
+%                 \end{axis}
+%             \end{tikzpicture}
+%         \end{tikzfigure}
+%     }
+%
+%     \block{Conclusions}{
+%         \begin{itemize}[leftmargin=*, itemsep=0.3em, font=\normalsize]
+%             \item 73\% faster search than DARTS
+%             \item Transfers well to ImageNet (+1.3\%)
+%             \item Drop-in replacement for existing NAS
+%         \end{itemize}
+%     }
+%
+%     \block{References}{
+%         {\footnotesize
+%         [1] Liu+ (2019) DARTS. \textit{ICLR}.\\
+%         [2] Pham+ (2018) ENAS. \textit{ICML}.\\
+%         [3] Cai+ (2019) ProxylessNAS. \textit{ICLR}.}
+%
+%         \vspace{0.5em}
+%         {\small \texttt{achen@stanford.edu}}
+%     }
+%
+% \end{columns}
+%%
+%% END #BetterPoster layout
+%% ===================================================================
