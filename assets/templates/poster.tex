@@ -1,285 +1,360 @@
-%% Scientific Conference Poster Template
-%% Using tikzposter class for professional academic posters
+%% World-Class Scientific Conference Poster Template
+%% tikzposter class | Landscape A0 | 3-column layout
+%% Designed for top-tier conferences (NeurIPS, ICML, CVPR, ACL, CHI, etc.)
 %% Compile with: pdflatex poster.tex
+%%
+%% Design principles applied:
+%%   - Landscape orientation (standard for top conferences)
+%%   - Minimal text (~500 words), maximum visual impact
+%%   - 40% whitespace, large readable fonts, high-contrast colors
+%%   - tikzfigure environments (NOT standard figure) to prevent overflow
+%%   - Relative sizing (linewidth-based) for all figures/charts
+%%   - Generous padding (15mm+) to prevent content-edge collisions
 
-\documentclass[25pt, a0paper, portrait]{tikzposter}
+\documentclass[25pt, a0paper, landscape, margin=15mm,
+    innermargin=15mm, blockverticalspace=15mm, colspace=15mm]{tikzposter}
 
 % Packages
 \usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
 \usepackage{amsmath, amssymb}
 \usepackage{graphicx}
 \usepackage{booktabs}
+\usepackage{enumitem}
 \usepackage{pgfplots}
-\pgfplotsset{compat=1.16}
+\pgfplotsset{compat=1.18}
 
-% Custom color scheme (professional blues and grays)
-\definecolor{primaryblue}{HTML}{1E3A5F}
-\definecolor{secondaryblue}{HTML}{3A7CA5}
-\definecolor{accentblue}{HTML}{5DA9E9}
-\definecolor{lightgray}{HTML}{F5F5F5}
-\definecolor{darkgray}{HTML}{333333}
+% Use sans-serif for better poster readability at distance
+\renewcommand{\familydefault}{\sfdefault}
 
-% Define custom tikzposter style
-\definetitlestyle{CustomTitle}{
-    width=\paperwidth, roundedcorners=0, linewidth=0pt, innersep=1.5cm,
-    titletotopverticalspace=0mm, titletoblockverticalspace=20mm
+% ===== COLOR SCHEME (Navy + White + Amber accent) =====
+% High contrast, professional, stands out at conferences
+\definecolor{navyblue}{HTML}{1E3A8A}
+\definecolor{steelblue}{HTML}{3B82F6}
+\definecolor{amber}{HTML}{F59E0B}
+\definecolor{darktext}{HTML}{1F2937}
+\definecolor{lightbg}{HTML}{F8FAFC}
+
+% ===== CUSTOM TITLE STYLE =====
+\definetitlestyle{ConferenceTitle}{
+    width=\paperwidth, roundedcorners=0, linewidth=0pt, innersep=2cm,
+    titletotopverticalspace=0mm, titletoblockverticalspace=25mm
 }{
     \begin{scope}[line width=\titlelinewidth, rounded corners=\titleroundedcorners]
-        \fill[color=primaryblue] (\titleposleft,\titleposbottom) rectangle (\titleposright,\titlepostop);
+        \fill[color=navyblue] (\titleposleft,\titleposbottom) rectangle (\titleposright,\titlepostop);
+        % Accent bar at bottom of title
+        \fill[color=amber] (\titleposleft,\titleposbottom) rectangle (\titleposright,\titleposbottom+0.4cm);
     \end{scope}
 }
 
-\defineblockstyle{CustomBlock}{
+% ===== CUSTOM BLOCK STYLE =====
+\defineblockstyle{ConferenceBlock}{
     titlewidthscale=1, bodywidthscale=1, titleleft,
     titleoffsetx=0pt, titleoffsety=0pt, bodyoffsetx=0pt, bodyoffsety=0pt,
-    bodyverticalshift=0pt, roundedcorners=10, linewidth=2pt,
-    titleinnersep=8mm, bodyinnersep=8mm
+    bodyverticalshift=0pt, roundedcorners=8, linewidth=2pt,
+    titleinnersep=12mm, bodyinnersep=15mm
 }{
-    \draw[color=secondaryblue, fill=white, rounded corners=\blockroundedcorners]
+    \draw[color=steelblue!40, fill=white, rounded corners=\blockroundedcorners, line width=1pt]
         (blockbody.south west) rectangle (blockbody.north east);
     \ifBlockHasTitle
-        \draw[color=secondaryblue, fill=accentblue, rounded corners=\blockroundedcorners]
+        \draw[color=navyblue, fill=navyblue, rounded corners=\blockroundedcorners]
             (blocktitle.south west) rectangle (blocktitle.north east);
     \fi
 }
 
-% Apply custom style
+% Apply styles
 \usetheme{Default}
-\usetitlestyle{CustomTitle}
-\useblockstyle{CustomBlock}
+\usetitlestyle{ConferenceTitle}
+\useblockstyle{ConferenceBlock}
 
 % Set colors
-\colorlet{backgroundcolor}{lightgray}
-\colorlet{framecolor}{secondaryblue}
-\colorlet{titlebgcolor}{primaryblue}
+\colorlet{backgroundcolor}{white}
+\colorlet{framecolor}{steelblue}
+\colorlet{titlebgcolor}{navyblue}
 \colorlet{titlefgcolor}{white}
-\colorlet{blocktitlebgcolor}{accentblue}
+\colorlet{blocktitlebgcolor}{navyblue}
 \colorlet{blocktitlefgcolor}{white}
 \colorlet{blockbodybgcolor}{white}
-\colorlet{blockbodyfgcolor}{darkgray}
+\colorlet{blockbodyfgcolor}{darktext}
 
-% Title block content
-% CUSTOMIZATION: Change these to your details
-\title{\parbox{0.9\linewidth}{\centering\textbf{Your Research Title Here: A Comprehensive Study of Something Important}}}
-\author{John Doe$^1$, Jane Smith$^2$, Robert Johnson$^1$}
-\institute{$^1$Department of Computer Science, University Name \\
-           $^2$Institute of Research, Another Institution \\
-           \texttt{john.doe@university.edu}}
+% Remove tikzposter watermark
+\tikzposterlatexaffectionproofoff
 
-% Optional: Add logo
-% CUSTOMIZATION: Replace with your institution logo
-% \titlegraphic{\includegraphics[width=0.1\textwidth]{logo.png}}
+% ===== TITLE CONTENT =====
+% CUSTOMIZATION: Replace with your details
+\title{\parbox{0.85\linewidth}{\centering\textbf{%
+    Efficient Neural Architecture Search via Gradient-Based\\[0.3em]
+    Optimization with Adaptive Resource Allocation}}}
+\author{Alice Chen$^{1}$, Bob Kumar$^{2}$, Carol Zhang$^{1}$, David Patel$^{3}$}
+\institute{$^{1}$Department of Computer Science, Stanford University \quad
+           $^{2}$Google DeepMind \quad
+           $^{3}$MIT CSAIL \\[0.3em]
+           \texttt{achen@stanford.edu} \quad
+           \texttt{github.com/achen/enas-adaptive}}
+
+% CUSTOMIZATION: Uncomment and replace with your institution logos
+% \titlegraphic{%
+%     \includegraphics[height=7cm]{logo-left.png}%
+%     \hfill%
+%     \includegraphics[height=7cm]{logo-right.png}%
+% }
 
 \begin{document}
 
 \maketitle
 
-% 3-column layout
+% ===== 3-COLUMN LAYOUT (30% / 40% / 30%) =====
+% Middle column wider for the main results (visual focus)
 \begin{columns}
-    % Column 1
-    \column{0.33}
 
-    \block{Introduction}{
-        Scientific posters are an effective way to communicate research findings at conferences and symposia. This template provides a professional layout for presenting your work.
+    % ============================================================
+    % COLUMN 1: Motivation + Methods (30%)
+    % ============================================================
+    \column{0.30}
 
-        \vspace{1em}
-        \textbf{Research Question:} What is the optimal approach to solving problem X?
+    \block{Motivation}{
+        Neural Architecture Search (NAS) automates the design of neural networks, but existing methods face two critical limitations:
 
-        \vspace{1em}
-        \textbf{Hypothesis:} We hypothesize that method Y will outperform existing approaches by at least 20\%.
-
-        \vspace{1em}
-        \textbf{Key Contributions:}
-        \begin{itemize}
-            \item Novel algorithm with improved complexity
-            \item Comprehensive experimental validation
-            \item Open-source implementation available
-            \item Real-world application demonstrated
+        \vspace{1.5em}
+        \begin{itemize}[leftmargin=*, itemsep=0.8em]
+            \item \textbf{Computational cost:} Current methods require $10^3$--$10^4$ GPU hours
+            \item \textbf{Resource allocation:} Fixed budgets waste computation on unpromising architectures
         \end{itemize}
+
+        \vspace{1.5em}
+        \coloredbox[bgcolor=amber!15, fgcolor=darktext, roundedcorners=5]{%
+            \textbf{Key Insight:} By coupling gradient-based search with adaptive early stopping, we reduce search cost by \textbf{73\%} while improving final accuracy.
+        }
     }
 
-    \block{Methods}{
-        Our methodology consists of three main phases:
+    \block{Method: ENAS-Adaptive}{
+        Our approach combines three components:
 
         \vspace{1em}
-        \textbf{Phase 1: Data Collection}
-        \begin{itemize}
-            \item Sample size: $n = 1000$
-            \item Collection period: 6 months
-            \item Quality control measures applied
-        \end{itemize}
-
-        \vspace{1em}
-        \textbf{Phase 2: Algorithm Development}
-
-        The core algorithm follows this workflow:
-
-        % Example TikZ diagram
-        \vspace{0.5em}
+        % Workflow diagram -- uses center + tikzpicture (NOT figure env)
         \begin{center}
         \begin{tikzpicture}[
-            node distance=2cm,
-            box/.style={rectangle, draw=secondaryblue, fill=accentblue!20,
-                        text width=4cm, text centered, rounded corners,
-                        minimum height=1.5cm, thick},
-            arrow/.style={->, >=stealth, thick, color=primaryblue}
+            node distance=4cm,
+            box/.style={rectangle, draw=navyblue, fill=steelblue!10,
+                        text width=0.7\linewidth, text centered, rounded corners=5pt,
+                        minimum height=2.2cm, line width=1.5pt, font=\large},
+            arrow/.style={->, >=stealth, line width=2pt, color=navyblue}
         ]
-            \node[box] (input) {Input Data};
-            \node[box, below of=input] (preprocess) {Preprocessing};
-            \node[box, below of=preprocess] (algorithm) {Core Algorithm};
-            \node[box, below of=algorithm] (output) {Output Results};
+            \node[box] (supernet) {\textbf{1. Supernet Training}\\Weight sharing across candidates};
+            \node[box, below of=supernet] (search) {\textbf{2. Gradient Search}\\Differentiable architecture parameters};
+            \node[box, below of=search] (allocate) {\textbf{3. Adaptive Allocation}\\Multi-armed bandit resource scheduling};
+            \node[box, below of=allocate] (output) {\textbf{4. Final Architecture}\\Top-$k$ selection + fine-tuning};
 
-            \draw[arrow] (input) -- (preprocess);
-            \draw[arrow] (preprocess) -- (algorithm);
-            \draw[arrow] (algorithm) -- (output);
+            \draw[arrow] (supernet) -- (search);
+            \draw[arrow] (search) -- (allocate);
+            \draw[arrow] (allocate) -- (output);
+
+            % Feedback loop
+            \draw[arrow, dashed, color=amber] (allocate.east) -- ++(2.5cm,0) |- (supernet.east)
+                node[midway, right, font=\normalsize, text=darktext] {Budget reallocation};
         \end{tikzpicture}
         \end{center}
 
-        \vspace{1em}
-        \textbf{Phase 3: Validation}
-        \begin{itemize}
-            \item Cross-validation (k=10)
-            \item Comparison with baseline methods
-            \item Statistical significance testing ($p < 0.05$)
-        \end{itemize}
+        \vspace{1.5em}
+        \textbf{Adaptive allocation} uses Thompson sampling to dynamically redistribute GPU hours from low-performing candidates to promising ones during search.
     }
 
-    % Column 2
-    \column{0.33}
-
-    \block{Results}{
-        Our experiments demonstrate significant improvements over baseline methods.
-
-        \vspace{1em}
-        \textbf{Performance Comparison:}
-
-        % Example bar chart
+    \block{Datasets \& Setup}{
+        \vspace{0.5em}
         \begin{center}
-        \begin{tikzpicture}
-            \begin{axis}[
-                ybar,
-                bar width=15pt,
-                width=0.95\linewidth,
-                height=12cm,
-                ylabel={Accuracy (\%)},
-                symbolic x coords={Baseline A, Baseline B, Our Method},
-                xtick=data,
-                x tick label style={font=\large, rotate=0, anchor=north},
-                y tick label style={font=\large},
-                ylabel style={font=\Large},
-                ymin=0, ymax=100,
-                nodes near coords,
-                nodes near coords style={font=\Large},
-                enlarge x limits=0.3,
-                legend style={at={(0.5,-0.2)}, anchor=north, legend columns=-1, font=\large},
-                grid=major,
-                grid style={dashed, gray!30}
-            ]
-                \addplot[fill=secondaryblue] coordinates {
-                    (Baseline A, 72)
-                    (Baseline B, 78)
-                    (Our Method, 94)
-                };
-            \end{axis}
-        \end{tikzpicture}
-        \end{center}
-
-        \vspace{1em}
-        \textbf{Detailed Results:}
-
-        % Example table
-        \begin{center}
-        \begin{tabular}{lccc}
+        \begin{tabular}{lcc}
             \toprule
-            \textbf{Method} & \textbf{Accuracy} & \textbf{Time (s)} & \textbf{Memory (MB)} \\
+            \textbf{Dataset} & \textbf{Train/Val/Test} & \textbf{Classes} \\
             \midrule
-            Baseline A & 72.3\% & 15.2 & 450 \\
-            Baseline B & 78.1\% & 22.8 & 680 \\
-            \textbf{Our Method} & \textbf{94.2\%} & \textbf{18.5} & \textbf{520} \\
+            CIFAR-10     & 45K / 5K / 10K  & 10  \\
+            CIFAR-100    & 45K / 5K / 10K  & 100 \\
+            ImageNet-1K  & 1.2M / 50K / -- & 1000 \\
             \bottomrule
         \end{tabular}
         \end{center}
 
         \vspace{1em}
-        \textbf{Statistical Analysis:}
-        \begin{itemize}
-            \item Improvement over Baseline A: 30.4\% ($p < 0.001$)
-            \item Improvement over Baseline B: 20.6\% ($p < 0.001$)
-            \item Effect size (Cohen's d): 1.42 (large effect)
+        Search conducted on CIFAR-10; best architecture transferred to CIFAR-100 and ImageNet. All experiments on 8$\times$ NVIDIA A100 GPUs.
+    }
+
+    % ============================================================
+    % COLUMN 2: Results -- the visual centerpiece (40%)
+    % ============================================================
+    \column{0.40}
+
+    \block{Main Results}{
+        % Bar chart -- relative width prevents overflow
+        \begin{tikzfigure}[Accuracy vs.\ search cost across NAS methods on CIFAR-10]
+            \begin{tikzpicture}
+                \begin{axis}[
+                    ybar,
+                    bar width=20pt,
+                    width=0.92\linewidth,
+                    height=18cm,
+                    ylabel={\textbf{Test Accuracy (\%)}},
+                    ylabel style={font=\Large},
+                    symbolic x coords={DARTS, ENAS, ProxylessNAS, FairNAS, SNAS, Ours},
+                    xtick=data,
+                    x tick label style={font=\large, rotate=15, anchor=north east},
+                    y tick label style={font=\large},
+                    ymin=93, ymax=98.5,
+                    nodes near coords,
+                    nodes near coords style={font=\large, /pgf/number format/fixed, /pgf/number format/precision=1},
+                    enlarge x limits=0.12,
+                    grid=major,
+                    grid style={dashed, gray!20},
+                    legend style={at={(0.02,0.98)}, anchor=north west, font=\large, draw=none, fill=white!80},
+                    every axis plot/.append style={fill opacity=0.85}
+                ]
+                    \addplot[fill=steelblue!60, draw=navyblue] coordinates {
+                        (DARTS, 97.0) (ENAS, 97.1) (ProxylessNAS, 97.3)
+                        (FairNAS, 97.2) (SNAS, 97.0) (Ours, 97.8)
+                    };
+                \end{axis}
+            \end{tikzpicture}
+        \end{tikzfigure}
+
+        \vspace{1em}
+
+        % Results table -- the quantitative details
+        \begin{center}
+        {\large
+        \begin{tabular}{lcccc}
+            \toprule
+            \textbf{Method} & \textbf{CIFAR-10} & \textbf{CIFAR-100} & \textbf{ImageNet Top-1} & \textbf{GPU Hours} \\
+            \midrule
+            DARTS           & 97.00\%  & 82.5\%  & 73.3\%  & 1.5   \\
+            ENAS            & 97.11\%  & 83.1\%  & 74.0\%  & 0.5   \\
+            ProxylessNAS    & 97.30\%  & 83.8\%  & 75.1\%  & 4.0   \\
+            FairNAS         & 97.20\%  & 83.5\%  & 74.7\%  & 12.0  \\
+            SNAS            & 97.02\%  & 82.9\%  & 73.9\%  & 1.5   \\
+            \midrule
+            \textbf{Ours}   & \textbf{97.82\%} & \textbf{85.3\%} & \textbf{76.4\%} & \textbf{0.4} \\
+            \bottomrule
+        \end{tabular}
+        }
+        \end{center}
+
+        \vspace{1em}
+        \coloredbox[bgcolor=navyblue!8, fgcolor=darktext, roundedcorners=5]{%
+            \textbf{Highlight:} Our method achieves \textbf{state-of-the-art accuracy} (97.82\% CIFAR-10, 76.4\% ImageNet Top-1) with the \textbf{lowest search cost} (0.4 GPU hours --- 73\% less than DARTS).
+        }
+    }
+
+    \block{Search Efficiency Analysis}{
+        \begin{tikzfigure}[Search cost vs.\ accuracy trade-off. Circle size indicates model parameters (M).]
+            \begin{tikzpicture}
+                \begin{axis}[
+                    width=0.92\linewidth,
+                    height=14cm,
+                    xlabel={\textbf{Search Cost (GPU Hours)}},
+                    ylabel={\textbf{Test Accuracy (\%)}},
+                    xlabel style={font=\Large},
+                    ylabel style={font=\Large},
+                    x tick label style={font=\large},
+                    y tick label style={font=\large},
+                    xmin=0, xmax=14,
+                    ymin=96.5, ymax=98.2,
+                    grid=major,
+                    grid style={dashed, gray!20},
+                    legend style={at={(0.98,0.02)}, anchor=south east, font=\large, draw=none, fill=white!80}
+                ]
+                    % Scatter points for each method (x=cost, y=accuracy)
+                    \addplot[only marks, mark=*, mark size=6pt, color=steelblue!70] coordinates {
+                        (1.5, 97.0) (0.5, 97.11) (4.0, 97.3) (12.0, 97.2) (1.5, 97.02)
+                    };
+                    \addlegendentry{Baselines}
+
+                    % Our method (highlighted)
+                    \addplot[only marks, mark=star, mark size=10pt, color=amber, line width=2pt] coordinates {
+                        (0.4, 97.82)
+                    };
+                    \addlegendentry{Ours}
+
+                    % Labels
+                    \node[font=\normalsize, anchor=south west] at (axis cs:1.6, 97.03) {DARTS};
+                    \node[font=\normalsize, anchor=south east] at (axis cs:0.45, 97.14) {ENAS};
+                    \node[font=\normalsize, anchor=south west] at (axis cs:4.1, 97.33) {Proxy.};
+                    \node[font=\normalsize, anchor=south west] at (axis cs:12.1, 97.23) {FairNAS};
+                    \node[font=\normalsize, anchor=north west] at (axis cs:1.6, 96.99) {SNAS};
+                    \node[font=\large, anchor=south, color=navyblue] at (axis cs:0.4, 97.88) {\textbf{Ours}};
+
+                    % Pareto frontier
+                    \addplot[dashed, color=amber, line width=1.5pt, no markers] coordinates {
+                        (0.3, 97.85) (0.5, 97.5) (2.0, 97.35) (14, 97.25)
+                    };
+                \end{axis}
+            \end{tikzpicture}
+        \end{tikzfigure}
+    }
+
+    % ============================================================
+    % COLUMN 3: Analysis + Conclusions (30%)
+    % ============================================================
+    \column{0.30}
+
+    \block{Ablation Study}{
+        \vspace{0.5em}
+        \begin{center}
+        {\large
+        \begin{tabular}{lcc}
+            \toprule
+            \textbf{Configuration} & \textbf{Acc.} & \textbf{Hours} \\
+            \midrule
+            Full model (ours)         & \textbf{97.82\%} & \textbf{0.4} \\
+            \quad w/o adaptive alloc.  & 97.41\%           & 1.1           \\
+            \quad w/o gradient search  & 96.88\%           & 3.2           \\
+            \quad w/o weight sharing   & 97.35\%           & 8.7           \\
+            \bottomrule
+        \end{tabular}
+        }
+        \end{center}
+
+        \vspace{1em}
+        Each component contributes meaningfully:
+        \begin{itemize}[leftmargin=*, itemsep=0.5em]
+            \item Adaptive allocation: +0.41\% accuracy, 2.75$\times$ speedup
+            \item Gradient search: +0.94\% accuracy, 8$\times$ speedup
+            \item Weight sharing: +0.47\% accuracy, 21.75$\times$ speedup
         \end{itemize}
     }
 
-    % Column 3
-    \column{0.33}
-
-    \block{Discussion}{
-        \textbf{Key Findings:}
-        \begin{itemize}
-            \item Our method achieves state-of-the-art performance with 94.2\% accuracy
-            \item Computational efficiency is comparable to baseline methods
-            \item Memory footprint remains reasonable for practical deployment
-            \item Results generalize well across different datasets
-        \end{itemize}
-
-        \vspace{1em}
-        \textbf{Advantages:}
-        \begin{itemize}
-            \item Robust to noise and outliers
-            \item Scalable to large datasets
-            \item Easy to implement and deploy
-            \item Interpretable results
-        \end{itemize}
-
-        \vspace{1em}
-        \textbf{Limitations:}
-        \begin{itemize}
-            \item Requires labeled training data
-            \item Performance depends on hyperparameter tuning
-            \item May not generalize to all domain types
-        \end{itemize}
-
-        \vspace{1em}
-        \textbf{Future Work:}
-        \begin{itemize}
-            \item Extend to unsupervised learning scenarios
-            \item Investigate deep learning approaches
-            \item Develop real-time implementation
-            \item Conduct larger-scale validation studies
-        \end{itemize}
-    }
-
-    \block{Conclusions}{
-        This research presents a novel approach to solving problem X with significant improvements over existing methods. Our key contributions include:
-
-        \begin{enumerate}
-            \item A new algorithm with 94.2\% accuracy (20\% improvement)
-            \item Comprehensive validation on multiple datasets
-            \item Efficient implementation suitable for practical use
-            \item Open-source release for reproducibility
+    \block{Key Findings}{
+        \begin{enumerate}[leftmargin=*, itemsep=0.8em]
+            \item \textbf{Speed:} 73\% faster search than DARTS with higher accuracy
+            \item \textbf{Transferability:} Architecture found on CIFAR-10 transfers well to ImageNet (+1.3\% over best baseline)
+            \item \textbf{Adaptive allocation} is the key enabler --- reallocating from bottom 30\% of candidates yields 2.75$\times$ speedup
+            \item \textbf{Robustness:} Consistent gains across 3 datasets, 5 search runs (std $<$ 0.1\%)
         \end{enumerate}
+    }
 
-        \vspace{1em}
-        \textbf{Impact:} This work advances the field by providing a reliable, efficient solution that can be immediately deployed in real-world applications.
+    \block{Conclusions \& Future Work}{
+        We present \textbf{ENAS-Adaptive}, a gradient-based NAS method with adaptive resource allocation that achieves state-of-the-art accuracy at a fraction of the search cost.
+
+        \vspace{1.5em}
+        \textbf{Future directions:}
+        \begin{itemize}[leftmargin=*, itemsep=0.5em]
+            \item Extend to detection and segmentation tasks
+            \item Investigate hardware-aware search objectives
+            \item Scale to larger search spaces (100K+ candidates)
+        \end{itemize}
     }
 
     \block{References}{
-        \begin{footnotesize}
-        [1] Smith, J. et al. (2024). \textit{Previous Work on Topic X}. Journal Name, 45(2), 123-145.
+        {\small
+        [1] Liu et al. (2019). DARTS: Differentiable Architecture Search. \textit{ICLR}.
 
-        [2] Doe, J. and Johnson, R. (2023). \textit{Related Method Y}. Conference Proceedings, 678-690.
+        [2] Pham et al. (2018). Efficient Neural Architecture Search. \textit{ICML}.
 
-        [3] Brown, A. et al. (2023). \textit{Baseline Algorithm}. IEEE Transactions, 12(4), 234-256.
+        [3] Cai et al. (2019). ProxylessNAS. \textit{ICLR}.
 
-        [4] Wilson, K. (2022). \textit{Theoretical Framework}. Academic Press.
+        [4] Chu et al. (2021). FairNAS: Rethinking Evaluation Fairness. \textit{ICCV}.
 
-        [5] Chen, L. et al. (2024). \textit{Recent Advances}. arXiv:2401.12345.
-        \end{footnotesize}
+        [5] Xie et al. (2019). SNAS: Stochastic NAS. \textit{ICLR}.
+        }
 
-        \vspace{1em}
-        \begin{center}
-        \textbf{Acknowledgments:} This work was supported by Grant Number XYZ-123. \\
-        \textbf{Code:} \texttt{github.com/username/project} | \textbf{Contact:} \texttt{john.doe@university.edu}
-        \end{center}
+        \vspace{1.5em}
+        \textbf{Acknowledgments:} Supported by NSF Grant IIS-2024000 and Google Research Award.
     }
 
 \end{columns}

@@ -165,7 +165,7 @@ All 5 templates follow ATS rules: single-column, no graphics/images, no tables f
 - **`thesis.tex`** -- Thesis/dissertation (`book` class) with title page, declaration, abstract, acknowledgments, TOC, list of figures/tables, chapters, appendices, bibliography. Front matter uses roman numerals, main matter uses arabic. Includes theorem environments.
 - **`academic-cv.tex`** -- Multi-page academic CV with publications (journal/conference/preprint sections), grants and funding, teaching, advising (current/graduated students), awards, professional service, invited talks. ORCID and Google Scholar links.
 - **`book.tex`** -- Full book (`book` class) with half-title, title page, copyright page, dedication, preface, acknowledgments, TOC, list of figures/tables, parts, chapters, appendix, bibliography, index. Custom chapter headings, epigraphs, fancyhdr, microtype.
-- **`poster.tex`** -- Scientific conference poster (`tikzposter` class, A0) with 3-column layout, color blocks, TikZ workflow diagram, pgfplots bar chart, booktabs table. Customizable color scheme.
+- **`poster.tex`** -- Conference poster (`tikzposter` class, A0 landscape) with 30/40/30 column layout, navy+amber color scheme, tikzfigure charts, TikZ workflow diagram, coloredbox highlights, scatter plot. Designed for NeurIPS/ICML/CVPR-level conferences.
 - **`letter.tex`** -- Formal business letter with colored letterhead bar, TikZ logo placeholder, company info, recipient block, date, subject line, signature. Professional corporate appearance.
 - **`exam.tex`** -- Exam/quiz (`exam` class) with grading table, multiple question types (multiple choice, true/false, fill-in-blank, matching, short answer, essay), point values, solution toggle via `\printanswers`.
 - **`report.tex`** -- Business report with TOC, headers/footers, data tables, bar chart (pgfplots), process flowchart (TikZ), recommendations
@@ -305,24 +305,9 @@ The compile script auto-detects `\bibliography{}` and runs bibtex. For biblatex,
 \SetWatermarkText{DRAFT}
 \SetWatermarkScale{1.5}
 \SetWatermarkColor[gray]{0.85}
-
-% Company logo as background watermark
-\usepackage{eso-pic}
-\usepackage{graphicx}
-\AddToShipoutPictureBG{%
-    \AtPageCenter{%
-        \makebox(0,0){%
-            \includegraphics[width=0.4\paperwidth,keepaspectratio,opacity=0.08]{logo.png}%
-        }%
-    }%
-}
-
-% Logo in header (every page)
-\usepackage{fancyhdr}
-\fancyhead[L]{\includegraphics[height=1cm]{logo.png}}
 ```
 
-See [references/advanced-features.md](references/advanced-features.md) for combining text + logo watermarks, first-page-only watermarks, and more.
+For logo watermarks (`eso-pic`), header logos (`fancyhdr`), first-page-only watermarks, and combined text+logo, see [references/advanced-features.md](references/advanced-features.md).
 
 ### Quick Landscape Page
 
@@ -483,6 +468,14 @@ These cause `Undefined control sequence` -- always include the required package:
 ### Book/Thesis Pitfalls
 - When using `fancyhdr` with custom headers, set `headheight=14pt` (or larger) in geometry options: `\usepackage[margin=1in, headheight=14pt]{geometry}`. Without this, you get "headheight is too small" warnings that can cause layout issues.
 - First-pass compilation of books/theses will always show "undefined references" and "Label(s) may have changed" warnings -- this is normal. The compile script runs multiple passes to resolve these.
+
+### Poster (tikzposter) Pitfalls
+- Use **landscape** orientation (not portrait) -- standard for top conferences, avoids tall narrow columns with empty space at the bottom.
+- Do NOT use `\begin{figure}` inside tikzposter -- use `\begin{tikzfigure}[Caption]` instead or bare `\begin{center}\begin{tikzpicture}...\end{tikzpicture}\end{center}`.
+- Always use **relative widths** for charts: `width=0.9\linewidth` (not `width=20cm`). Fixed dimensions overflow blocks on A0.
+- Set `bodyinnersep=15mm` (not 8mm) and `margin=15mm` in documentclass options -- 8mm padding causes content to collide with block edges on A0.
+- Use unequal column widths (e.g., 30/40/30) with the widest column for results/charts. Equal columns waste space.
+- Keep total text under 500 words -- posters are conversation starters, not papers. Use `\coloredbox` for key insights.
 
 ### hyperref Package
 - `hyperref` is fine for normal documents (most templates use it).
