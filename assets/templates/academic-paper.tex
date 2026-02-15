@@ -1,39 +1,153 @@
-\documentclass[12pt,a4paper]{article}
+\pdfoutput=1  % Force PDF mode (required for arXiv)
+\documentclass[11pt,a4paper]{article}
+
+%=============================================================================
+% ENCODING AND FONTS
+%=============================================================================
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{geometry}
-\usepackage{amsmath,amssymb}
-\usepackage{graphicx}
-\usepackage{hyperref}
-\usepackage{xcolor}
-\usepackage{booktabs}
-\usepackage{tabularx}
-\usepackage{float}
-\usepackage{caption}
-\usepackage{subcaption}
-\usepackage{enumitem}
-\usepackage{setspace}
-\usepackage{natbib}
+\usepackage{newtxtext}           % Modern Times text font
+\usepackage{newtxmath}           % Matching Times math font
 
-% Page setup
-\geometry{a4paper, margin=1in}
+%=============================================================================
+% PAGE LAYOUT AND TYPOGRAPHY
+%=============================================================================
+\usepackage[a4paper, margin=1in]{geometry}
+\usepackage{microtype}           % Character protrusion, font expansion
+\usepackage{setspace}
 \onehalfspacing
 
-% Hyperlinks
+%=============================================================================
+% MATH
+%=============================================================================
+\usepackage{mathtools}           % Enhanced amsmath (loads amsmath automatically)
+\usepackage{amssymb}
+
+%=============================================================================
+% GRAPHICS AND FIGURES
+%=============================================================================
+\usepackage{graphicx}
+\usepackage[font=small,labelfont=bf,format=hang]{caption}
+\usepackage{subcaption}
+
+%=============================================================================
+% TABLES
+%=============================================================================
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+
+%=============================================================================
+% LISTS
+%=============================================================================
+\usepackage{enumitem}
+\setlist{nosep}                  % Compact lists
+
+%=============================================================================
+% COLORS (colorblind-safe Tol palette)
+%=============================================================================
+\usepackage{xcolor}
+\definecolor{linkblue}{RGB}{0,51,153}
+\definecolor{tolblue}{RGB}{0,114,178}
+\definecolor{tolorange}{RGB}{230,159,0}
+\definecolor{tolgreen}{RGB}{0,158,115}
+
+%=============================================================================
+% ALGORITHMS
+%=============================================================================
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+%=============================================================================
+% THEOREMS
+%=============================================================================
+\usepackage{amsthm}
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+%=============================================================================
+% UNITS AND NUMBERS
+%=============================================================================
+\usepackage{siunitx}
+\sisetup{detect-all}
+
+%=============================================================================
+% AUTHOR AND AFFILIATIONS
+%=============================================================================
+\usepackage{authblk}
+
+%=============================================================================
+% CITATIONS
+%=============================================================================
+\usepackage[numbers,sort&compress]{natbib}
+
+%=============================================================================
+% HYPERLINKS (load near end)
+%=============================================================================
+\usepackage{hyperref}
 \hypersetup{
     colorlinks=true,
-    linkcolor=blue!60!black,
-    citecolor=green!50!black,
-    urlcolor=blue!60!black
+    linkcolor=linkblue,
+    citecolor=linkblue,
+    urlcolor=linkblue,
+    pdfauthor={Author One, Author Two},
+    pdftitle={Paper Title: A Study of Something Important},
+    pdfsubject={Computer Science},
+    pdfkeywords={keyword one, keyword two, keyword three},
+    bookmarks=true,
+    bookmarksopen=true,
 }
 
+%=============================================================================
+% SMART CROSS-REFERENCES (must load after hyperref)
+%=============================================================================
+\usepackage{cleveref}
+\crefname{equation}{Eq.}{Eqs.}
+\crefname{figure}{Fig.}{Figs.}
+\crefname{table}{Table}{Tables}
+\crefname{section}{Sec.}{Secs.}
+\crefname{algorithm}{Algorithm}{Algorithms}
+
+%=============================================================================
+% CUSTOM MATH COMMANDS
+%=============================================================================
+% Common sets
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+
+% Operators
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+% Auto-sizing delimiters
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+\DeclarePairedDelimiter{\inner}{\langle}{\rangle}
+
+%=============================================================================
+% DOCUMENT METADATA
+%=============================================================================
 \title{\textbf{Paper Title: A Study of Something Important}}
-\author{
-    Author One\thanks{Department of Computer Science, University A. Email: author1@university.edu} \and
-    Author Two\thanks{Department of Mathematics, University B. Email: author2@university.edu}
-}
+
+\author[1]{Author One}
+\author[2]{Author Two}
+\affil[1]{Department of Computer Science, University A\\ \texttt{author1@university.edu}}
+\affil[2]{Department of Mathematics, University B\\ \texttt{author2@university.edu}}
+
 \date{\today}
 
+%=============================================================================
+% DOCUMENT
+%=============================================================================
 \begin{document}
 
 \maketitle
@@ -52,10 +166,10 @@ This paper presents [brief description of the work]. We propose [method/approach
 \section{Introduction}
 \label{sec:intro}
 
-The problem of [topic] has received significant attention in recent years \citep{author2024}. Despite progress in [area], challenges remain in [specific challenge].
+The problem of [topic] has received significant attention in recent years~\citep{author2024}. Despite progress in [area], challenges remain in [specific challenge].
 
 In this paper, we make the following contributions:
-\begin{itemize}[itemsep=0.3em]
+\begin{itemize}
     \item We propose [contribution 1].
     \item We demonstrate [contribution 2].
     \item We achieve [contribution 3] on [benchmark].
@@ -77,13 +191,12 @@ The field of [area] has explored [approaches]. Our work differs in [key distinct
 
 \subsection{Problem Formulation}
 
-Given input $x \in \mathbb{R}^n$, our goal is to find $f^* = \arg\min_{f \in \mathcal{F}} \mathcal{L}(f(x), y)$, where $\mathcal{L}$ is the loss function and $y$ is the target.
+Given input $x \in \R^n$, our goal is to find $f^* = \argmin_{f \in \mathcal{F}} \mathcal{L}(f(x), y)$, where $\mathcal{L}$ is the loss function and $y$ is the target.
 
 \subsection{Proposed Approach}
 
 Our method consists of two stages:
-
-\begin{enumerate}[itemsep=0.3em]
+\begin{enumerate}
     \item \textbf{Stage 1}: Description of first stage.
     \item \textbf{Stage 2}: Description of second stage.
 \end{enumerate}
@@ -91,10 +204,52 @@ Our method consists of two stages:
 The key equation governing our approach is:
 \begin{equation}
     \label{eq:main}
-    \mathcal{L}(f) = \frac{1}{N} \sum_{i=1}^{N} \ell(f(x_i), y_i) + \lambda \|f\|^2
+    \mathcal{L}(f) = \frac{1}{N} \sum_{i=1}^{N} \ell(f(x_i), y_i) + \lambda \norm{f}^2
 \end{equation}
-
 where $\lambda > 0$ is the regularization parameter.
+
+\begin{definition}[Regularity Condition]
+\label{def:regularity}
+A function $f \in \mathcal{F}$ satisfies the \emph{regularity condition} if $\norm{f}_\infty \leq M$ for some constant $M > 0$.
+\end{definition}
+
+\begin{theorem}[Convergence Guarantee]
+\label{thm:convergence}
+Under the regularity condition (\cref{def:regularity}), the iterates $\{f_t\}$ produced by \cref{alg:method} satisfy
+\begin{equation}
+    \label{eq:convergence}
+    \mathcal{L}(f_T) - \mathcal{L}(f^*) \leq \frac{C}{\sqrt{T}}
+\end{equation}
+where $C > 0$ depends on $M$ and the step size $\eta$.
+\end{theorem}
+
+\begin{proof}
+The proof follows by applying the descent lemma to \cref{eq:main}. At each step $t$, we have
+\[
+    \mathcal{L}(f_{t+1}) \leq \mathcal{L}(f_t) - \frac{\eta}{2}\norm{\nabla \mathcal{L}(f_t)}^2
+\]
+Summing over $t = 1, \ldots, T$ and rearranging yields the desired bound.
+\end{proof}
+
+\subsection{Algorithm}
+
+The complete procedure is summarized in \cref{alg:method}.
+
+\begin{algorithm}[tbp]
+\caption{Proposed Method}
+\label{alg:method}
+\begin{algorithmic}[1]
+\Require Training data $\{(x_i, y_i)\}_{i=1}^N$, learning rate $\eta$, iterations $T$
+\Ensure Trained function $f_T$
+\State Initialize $f_0$ randomly
+\For{$t = 1, 2, \ldots, T$}
+    \State Sample mini-batch $\mathcal{B} \subset \{1, \ldots, N\}$
+    \State Compute gradient $g_t = \nabla_{f} \mathcal{L}_\mathcal{B}(f_{t-1})$
+    \State Update $f_t = f_{t-1} - \eta \cdot g_t$
+\EndFor
+\State \Return $f_T$
+\end{algorithmic}
+\end{algorithm}
 
 % --- EXPERIMENTS ---
 \section{Experiments}
@@ -102,53 +257,66 @@ where $\lambda > 0$ is the regularization parameter.
 
 \subsection{Experimental Setup}
 
-We evaluate our method on [dataset] with [number] samples. All experiments use [hardware/software]. We compare against [baselines].
+We evaluate our method on [dataset] with \num{50000} training and \num{10000} test samples. All experiments use [hardware/software]. We compare against [baselines].
 
 \subsection{Results}
 
-Table~\ref{tab:results} summarizes our main results.
+\Cref{tab:results} summarizes our main results.
 
-\begin{table}[htbp]
+\begin{table}[tbp]
 \centering
 \caption{Comparison of methods on [benchmark]. Best results in \textbf{bold}.}
 \label{tab:results}
-\begin{tabular}{lccc}
+\begin{tabular}{@{}lrrr@{}}
 \toprule
-\textbf{Method} & \textbf{Accuracy} & \textbf{F1 Score} & \textbf{Runtime (s)} \\
+\textbf{Method} & \textbf{Accuracy (\%)} & \textbf{F1 Score} & \textbf{Runtime (s)} \\
 \midrule
 Baseline A & 85.2 & 83.1 & 12.3 \\
 Baseline B & 87.5 & 85.4 & 15.7 \\
-Ours & \textbf{91.3} & \textbf{89.8} & 14.2 \\
+Ours       & \textbf{91.3} & \textbf{89.8} & 14.2 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-As shown in Table~\ref{tab:results}, our method achieves [improvement] over the best baseline.
+As shown in \cref{tab:results}, our method achieves [improvement] over the best baseline.
 
-% Placeholder for figure:
-% \begin{figure}[htbp]
-%   \centering
-%   \includegraphics[width=0.8\textwidth]{results_plot.png}
-%   \caption{Performance comparison across different settings.}
-%   \label{fig:results}
-% \end{figure}
+\begin{figure}[tbp]
+\centering
+\begin{subfigure}[b]{0.48\textwidth}
+    \centering
+    \fbox{\parbox{0.9\textwidth}{\centering\vspace{1.5cm}[Training Curves]\vspace{1.5cm}}}
+    \caption{Training loss over epochs.}
+    \label{fig:train}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+    \centering
+    \fbox{\parbox{0.9\textwidth}{\centering\vspace{1.5cm}[Test Performance]\vspace{1.5cm}}}
+    \caption{Test accuracy across settings.}
+    \label{fig:test}
+\end{subfigure}
+\caption{Learning curves for (a)~training and (b)~test evaluation over \num{100} epochs.}
+\label{fig:results}
+\end{figure}
+
+\Cref{fig:results} shows the learning curves across both training and test sets.
 
 \subsection{Ablation Study}
 
-To understand the contribution of each component, we conduct an ablation study (Table~\ref{tab:ablation}).
+To understand the contribution of each component, we conduct an ablation study (\cref{tab:ablation}).
 
-\begin{table}[htbp]
+\begin{table}[tbp]
 \centering
 \caption{Ablation study results.}
 \label{tab:ablation}
-\begin{tabular}{lcc}
+\begin{tabular}{@{}lrr@{}}
 \toprule
-\textbf{Configuration} & \textbf{Accuracy} & \textbf{$\Delta$} \\
+\textbf{Configuration} & \textbf{Accuracy (\%)} & \textbf{$\Delta$} \\
 \midrule
-Full model & \textbf{91.3} & -- \\
-Without component A & 89.1 & $-2.2$ \\
-Without component B & 88.7 & $-2.6$ \\
-Without both & 86.4 & $-4.9$ \\
+Full model          & \textbf{91.3} & --     \\
+w/o component A     & 89.1          & $-2.2$ \\
+w/o component B     & 88.7          & $-2.6$ \\
+w/o both            & 86.4          & $-4.9$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -158,6 +326,10 @@ Without both & 86.4 & $-4.9$ \\
 \label{sec:conclusion}
 
 We presented [method] for [problem]. Our approach achieves [result] on [benchmark], representing a [improvement] over prior work. Future work includes [direction 1] and [direction 2].
+
+\section*{Acknowledgments}
+
+We thank [reviewers/collaborators] for helpful discussions. This work was supported by [funding source].
 
 % --- REFERENCES ---
 % To use: create a references.bib file and compile with bibtex

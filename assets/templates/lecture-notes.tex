@@ -60,6 +60,7 @@
 \usepackage{mathrsfs}   % Script fonts (\mathscr)
 \usepackage{bbm}        % Blackboard bold with more symbols
 \usepackage{cancel}      % Strike-through in equations
+\usepackage[normalem]{ulem}  % Strikethrough text: \sout{}
 
 % ── Theorem Environments (tcolorbox — the beauty layer) ─────────────────────
 \usepackage[most]{tcolorbox}
@@ -188,7 +189,8 @@
   decorations.markings,
   backgrounds,
   fit,
-  matrix
+  matrix,
+  patterns
 }
 
 % --- Default graph styles ---
@@ -300,7 +302,7 @@
 }
 
 % ── Lists ───────────────────────────────────────────────────────────────────
-\usepackage{enumitem}
+\usepackage[shortlabels]{enumitem}
 \setlist[enumerate]{topsep=4pt, itemsep=2pt, parsep=2pt}
 \setlist[itemize]{topsep=4pt, itemsep=2pt, parsep=2pt}
 \setlist[enumerate,1]{label=(\roman*)}
@@ -373,7 +375,7 @@
 \newcommand{\V}{\mathrm{V}}              % Vertex set
 \newcommand{\E}{\mathrm{E}}              % Edge set
 \newcommand{\adj}{\mathrm{adj}}          % Adjacency
-\newcommand{\deg}{\mathrm{deg}}          % Degree
+\renewcommand{\deg}{\mathrm{deg}}        % Degree (overrides amsmath built-in)
 \newcommand{\diam}{\mathrm{diam}}        % Diameter
 \newcommand{\dist}{\mathrm{dist}}        % Distance
 \newcommand{\Aut}{\mathrm{Aut}}          % Automorphism group
@@ -384,6 +386,10 @@
 \DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
 \DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor}
 \DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+
+% Circled numbers/letters for annotations (e.g., ①②③)
+\newcommand{\circled}[1]{\tikz[baseline=(char.base)]{%
+  \node[shape=circle,draw,inner sep=1pt] (char) {\small #1};}}
 
 % ── Title Styling ───────────────────────────────────────────────────────────
 \usepackage{graphicx}

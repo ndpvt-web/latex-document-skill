@@ -106,11 +106,62 @@ RULES:
 - Be faithful to the original content
 - Close ALL open environments before the end of your output
 - Be CONCISE -- write the LaTeX, nothing else
+
+CRITICAL LATEX CONSTRAINTS (violation = compilation failure):
+
+1. UNDEFINED COMMANDS -- Do NOT use:
+   - \sout{} (use \cancel{} instead, or plain strikethrough text)
+   - \circled{} (use \textcircled{1} or the \circled command if defined in preamble)
+   - \pentagon, \hexagon, or invented symbol commands (draw shapes with TikZ instead)
+   - Any command you are not certain exists. Check the preamble first.
+
+2. TIKZ SYNTAX:
+   - EVERY \node, \draw, \path command MUST end with semicolon ;
+   - EVERY \node MUST have label text in braces: \node[vertex] (v1) at (0,0) {$v_1$};
+   - Empty labels still need braces: \node[vertex] (v1) at (0,0) {};
+   - ALL TikZ commands MUST be inside \begin{tikzpicture}...\end{tikzpicture}
+   - Use POLAR coordinates for circular layouts: (60:1.5cm) not ({cos(60)},{sin(60)})
+   - edge/dedge/hedge are EDGE styles: use \draw[edge], NEVER \node[edge]
+
+3. ENVIRONMENT NESTING:
+   - Do NOT use \begin{table}[H] or \begin{figure}[H] inside tcolorbox environments (theorem, example, definition, etc.)
+   - Use \begin{tabular} directly inside boxes (no table wrapper needed)
+   - Do NOT put \begin{tabular} inside align* or equation* environments
+   - \begin{proof} inside \begin{example} is allowed, but you MUST close proof BEFORE closing example
+
+4. ENUMERATE/ITEMIZE:
+   - Use \begin{enumerate} without inline label options (labels are pre-configured in preamble)
+   - First level: (i), (ii), (iii); second level: (a), (b), (c)
+   - If you need a specific label, use: \begin{enumerate}[label=(\alph*)]
+
+5. COMMANDS AVAILABLE IN PREAMBLE (beautiful mode):
+   - Number sets: \R, \N, \Z, \Q, \C
+   - Graph theory: \V, \E, \deg, \diam, \dist, \Aut, \chr
+   - Delimiters: \abs{}, \norm{}, \floor{}, \ceil{}
+   - Circled numbers: \circled{1}, \circled{2}
+   - Strikethrough: \sout{text} (ulem loaded), \cancel{expr} (in math)
 ```
 
-## Step 6: Assemble and Compile
+## Step 6: Validate Batch Outputs
 
-After all workers complete:
+Before assembling, run the validation script on each batch file to catch errors early:
+
+```bash
+python3 <skill_path>/scripts/validate_latex.py tmp/batch_*.tex --preamble tmp/preamble.tex
+```
+
+This checks for:
+- Balanced `\begin{}`/`\end{}` environments
+- Undefined commands not present in preamble
+- `\begin{table}[H]` or `\begin{figure}[H]` inside tcolorbox environments
+- TikZ commands (`\node`, `\draw`) outside `\begin{tikzpicture}`
+- Missing node labels (TikZ `\node` without `{};`)
+
+Fix any reported errors in the batch files BEFORE assembling.
+
+## Step 7: Assemble and Compile
+
+After all workers complete and validation passes:
 
 ```bash
 # 1. Build the full document
@@ -135,13 +186,18 @@ bash <skill_path>/scripts/compile_latex.sh outputs/document.tex --preview --prev
 ### If compilation fails:
 
 1. Read the `.log` file for error details
-2. Common fixes:
+2. For large documents (20+ pages), use **parallel error-fixing agents**: split the body into N sections (e.g., 5), assign each to an agent, fix independently, then reassemble
+3. Common fixes:
    - **Mismatched `\begin`/`\end`**: Find and close orphaned environments
    - **Misplaced `&`**: Ensure `&` only appears inside tabular/align environments
-   - **Undefined commands**: Add missing `\newcommand` to preamble
+   - **Undefined commands**: Add missing `\newcommand` to preamble or remove the command usage
    - **Package conflicts**: Remove `hyperref` if `\set@color` errors appear
    - **Missing `$`**: Find unclosed inline math
-3. Fix errors in the `.tex` file and recompile
+   - **`\newcommand` conflict**: Use `\renewcommand` if overriding a built-in command (e.g., `\deg`)
+   - **CT@row@color errors**: Caused by `\begin{tabular}` inside math environments -- move tabular outside
+   - **"Not in outer par mode"**: Caused by `\begin{table}[H]` inside tcolorbox -- remove the `table` wrapper
+   - **TikZ "Undefined control sequence"**: TikZ commands outside `\begin{tikzpicture}` -- find and wrap them
+4. Fix errors in the `.tex` file and recompile
 
 ## Scaling Examples
 

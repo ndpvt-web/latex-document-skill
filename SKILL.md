@@ -114,8 +114,9 @@ For converting existing PDFs (handwritten notes, printed reports, legal docs, an
 3. Create a shared preamble (scan a few pages, use profile as starting point)
 4. Apply the correct **scaling strategy** based on page count (see below)
 5. Each agent reads its page images and outputs body-only LaTeX
-6. Concatenate all batch files with the preamble
-7. Compile with `scripts/compile_latex.sh`
+6. Validate batch files: `python3 <skill_path>/scripts/validate_latex.py tmp/batch_*.tex --preamble tmp/preamble.tex`
+7. Concatenate all batch files with the preamble
+8. Compile with `scripts/compile_latex.sh`
 
 **Full pipeline details**: See [references/pdf-conversion.md](references/pdf-conversion.md).
 

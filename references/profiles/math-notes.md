@@ -267,6 +267,46 @@ When converting handwritten notes with diagrams, **generate TikZ code** instead 
 - **Section headings**: Use numbered sections (`\section{}`) -- they auto-style with blue headings and underline
 - **Labeled vertices in TikZ**: Use `{$v_1$}` or `{$1$}` for math-mode labels
 
+## Critical LaTeX Constraints (Beautiful Mode)
+
+Worker agents MUST follow these rules. Violation causes compilation failure.
+
+### Commands You MUST NOT Invent
+
+Do NOT use any command that is not defined in the preamble. Common mistakes:
+- `\pentagon`, `\hexagon`, `\octagon` -- these do NOT exist. Draw shapes with TikZ `\node[regular polygon, regular polygon sides=5]` or use `\draw` commands.
+- Any `\foo` command that "seems like it should exist" -- verify it is in the preamble first.
+
+### Commands Available in the Preamble
+
+| Command | Purpose | Example |
+|---|---|---|
+| `\R`, `\N`, `\Z`, `\Q`, `\C` | Number sets | `$f: \R \to \R$` |
+| `\V`, `\E` | Vertex/edge set | `$\V(G) = \{1,2,3\}$` |
+| `\deg` | Vertex degree | `$\deg(v) = 3$` |
+| `\diam`, `\dist` | Diameter, distance | `$\diam(G) = 4$` |
+| `\Aut`, `\chr` | Automorphism, chromatic | `$\chr(G) = 3$` |
+| `\abs{}`, `\norm{}`, `\floor{}`, `\ceil{}` | Delimiters | `$\abs{x-y}$` |
+| `\circled{n}` | Circled number (annotation) | `$\circled{1}$` |
+| `\sout{text}` | Strikethrough text | `\sout{deleted}` |
+| `\cancel{expr}` | Strikethrough in math | `$\cancel{x+1}$` |
+
+### TikZ Strict Rules
+
+1. **Every command ends with `;`**: `\node[vertex] (v1) at (0,0) {$v_1$};`
+2. **Every `\node` has label braces**: Even empty: `\node[vertex] (v1) at (0,0) {};`
+3. **All TikZ inside tikzpicture**: Never write `\node` or `\draw` outside `\begin{tikzpicture}...\end{tikzpicture}`
+4. **Polar coordinates for circular layouts**: Use `(60:1.5cm)` NOT `({cos(60)},{sin(60)})`
+5. **`edge`/`dedge`/`hedge` are EDGE styles**: Use `\draw[edge]`, NEVER `\node[edge]`
+6. **`vertex`/`svertex`/`hvertex` are NODE styles**: Use `\node[vertex]`, NEVER `\draw[vertex]`
+
+### Environment Nesting Rules
+
+1. **No floats inside tcolorbox**: Do NOT use `\begin{table}[H]` or `\begin{figure}[H]` inside `theorem`, `example`, `definition`, `lemma`, `corollary`, `remark`, `notebox`, or `proof`. Use `\begin{tabular}` directly (no `table` wrapper).
+2. **No `tabular` inside math**: Do NOT put `\begin{tabular}` inside `align*` or `equation*`. End the math first, then start the tabular.
+3. **`proof` inside `example`**: Allowed, but MUST close `\end{proof}` BEFORE `\end{example}`.
+4. **Enumerate labels**: Use `\begin{enumerate}` without options (labels pre-configured: level 1 = (i), level 2 = (a)). For custom labels: `\begin{enumerate}[label=(\alph*)]`.
+
 ## Common Pitfalls
 
 1. **Mismatched environments**: The #1 error source. Always pair `\begin{X}` with `\end{X}`. Count your opens and closes before finishing.

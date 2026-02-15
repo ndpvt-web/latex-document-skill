@@ -65,7 +65,7 @@ The `lecture-notes.tex` template produces publication-quality math and science n
 
 #### Thesis / Dissertation
 
-Full `book`-class document with front matter (title page, declaration, abstract, acknowledgments, TOC), main chapters, appendices, and bibliography. Bindingoffset for professional printing.
+Full `book`-class document with Palatino fonts (`newpxtext`+`newpxmath`), `microtype` with protrusion and expansion, `mathtools`, `cleveref`, `bookmark`, `emptypage`, `csquotes`, and `algorithm`+`algpseudocode`. Front matter (title page, declaration, abstract, acknowledgments, TOC), main chapters with proper theorem environments, appendices, and bibliography. Bindingoffset for professional printing.
 
 19 pages -- title page, abstract, TOC, chapters with math, algorithms, results tables, bibliography, appendix:
 
@@ -76,11 +76,11 @@ Full `book`-class document with front matter (title page, declaration, abstract,
 
 #### Academic Paper
 
-Standard research paper structure (Abstract, Introduction, Related Work, Method, Experiments, Conclusion) with natbib citations, theorem environments, and figure/table placeholders. Includes example `.bib` file.
+Professional research paper with Times fonts (`newtxtext`+`newtxmath`), `microtype`, `mathtools` with `\DeclarePairedDelimiter`, `cleveref` with custom `\crefname` configs, `authblk` for multi-author affiliations, `siunitx`, `algorithm`+`algpseudocode`, `amsthm` theorem environments, and colorblind-safe Tol palette. arXiv-compatible (`\pdfoutput=1`). Structure: Abstract, Introduction, Related Work, Method (with theorem/proof/algorithm), Experiments (with subfigures and ablation), Conclusion.
 
-| | | |
-|---|---|---|
-| ![p1](examples/academic-paper-p1.png) | ![p2](examples/academic-paper-p2.png) | ![p3](examples/academic-paper-p3.png) |
+| | | | |
+|---|---|---|---|
+| ![p1](examples/academic-paper-p1.png) | ![p2](examples/academic-paper-p2.png) | ![p3](examples/academic-paper-p3.png) | ![p4](examples/academic-paper-p4.png) |
 
 #### Academic CV
 
@@ -133,16 +133,16 @@ Both portrait and landscape templates include commented geometry presets for spe
 
 ### Book
 
-Full `book`-class document with half-title, full title, copyright page (ISBN, edition, disclaimers), dedication, preface ("Who Should Read This Book", "How This Book Is Organized"), acknowledgments, parts, chapters with epigraphs, index (`\printindex`), and bibliography. Custom chapter headings, microtype for professional typography.
+Full `book`-class document with Palatino fonts (`newpxtext`+`newpxmath`), `microtype` with protrusion and expansion, classical asymmetric margins (inner/outer/top/bottom), `\linespread{1.35}` for comfortable reading, `lettrine` drop caps at chapter openings, `emptypage` for blank verso pages, `amsthm` theorem environments, `algorithm`+`algpseudocode`, `cleveref`, `csquotes`, `imakeidx` (modern index), `bookmark`, and colophon. Includes half-title, full title, copyright page (ISBN, edition, disclaimers), dedication, preface, acknowledgments, parts, chapters with epigraphs, index, and bibliography.
 
-36 pages -- half title, full title, copyright, TOC, preface, acknowledgments, chapters with epigraphs, figures, bibliography:
+37 pages -- half title, full title, copyright, TOC, preface, acknowledgments, chapters with drop caps and epigraphs, theorems, algorithms, bibliography, index:
 
 | | | | | |
 |---|---|---|---|---|
 | ![p1](examples/book-p1.png) | ![p2](examples/book-p2.png) | ![p3](examples/book-p3.png) | ![p4](examples/book-p4.png) | ![p5](examples/book-p5.png) |
 | Half Title | Full Title | Copyright | TOC | Preface |
 | ![p6](examples/book-p6.png) | ![p7](examples/book-p7.png) | ![p8](examples/book-p8.png) | ![p9](examples/book-p9.png) | ![p10](examples/book-p10.png) |
-| Acknowledgments | Ch 1: Introduction | Ch 3: Advanced Theory | Figure Placeholder | Bibliography |
+| Acknowledgments | Ch 1: Drop Caps | Ch 3: Advanced Theory | Ch 4: Applications | Bibliography |
 
 ---
 
