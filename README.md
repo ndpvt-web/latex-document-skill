@@ -1,288 +1,384 @@
 # latex-document
 
-A Claude Code skill for creating, compiling, and converting any document to professional PDF with PNG previews. 19 templates, 6 scripts, and comprehensive reference guides covering resumes, reports, books, theses, posters, exams, letters, invoices, academic papers, presentations, charts, diagrams, format conversion, and PDF-to-LaTeX conversion.
+A Claude Code skill that turns natural language into production-grade PDFs. Say what you need -- a resume, a 300-page book, a conference poster, an exam -- and get a compiled PDF with PNG previews, charts, diagrams, and bibliography, all handled automatically.
 
-## Features
+**21 templates. 6 scripts. 12 reference guides. 4 conversion profiles. Zero LaTeX knowledge required.**
 
-- **19 production-ready templates** -- 5 ATS-optimized resume variants, book, thesis, academic CV, poster, exam, letter, report, cover letter, invoice, academic paper, presentation (Beamer), legacy resume, example .bib file
-- **ATS-compatible resumes** -- researched against industry standards (Workday, Greenhouse, Taleo, iCIMS); single-column, no graphics, standard section headings
-- **Book** -- full book with parts, chapters, front/back matter, index, epigraphs, custom chapter headings
-- **Thesis/dissertation** -- `book` class with title page, declaration, abstract, acknowledgments, chapters, appendices, bibliography
-- **Academic CV** -- multi-page CV with publications, grants, teaching, advising, service sections
-- **Scientific poster** -- `tikzposter` class (A0) with 3-column layout, diagrams, charts, tables
-- **Exam/quiz** -- `exam` class with grading table, MCQ, T/F, fill-in-blank, matching, short/long answer, solution toggle
-- **Business letter** -- formal letter with colored letterhead, logo placeholder, signature block
-- **Bibliography/citations** -- BibTeX and biblatex support with auto-detection in compile script; example `.bib` file with all entry types
-- **Charts and graphs** -- bar, line, scatter, pie, heatmap, box, histogram, area, radar charts via pgfplots + matplotlib
-- **Mermaid diagrams** -- flowcharts, sequence, class, ER, Gantt, pie, mindmap diagrams via mermaid-cli
-- **Tables** -- colored rows, multi-row/column, booktabs, long tables, CSV-to-LaTeX conversion
-- **Watermarks** -- text (DRAFT, CONFIDENTIAL), company logo background, header logos
-- **Landscape pages** -- mixed portrait/landscape in single documents (pdflscape/lscape)
-- **Multi-language** -- European (babel), CJK (xeCJK), RTL/Arabic (polyglossia), Cyrillic
-- **Format conversion** -- Pandoc-based conversion between Markdown, DOCX, HTML, and LaTeX
-- **PDF-to-LaTeX conversion** -- convert handwritten notes, printed reports, legal docs to LaTeX with empirically optimized scaling
-- **Multi-engine support** -- auto-detects XeLaTeX (fontspec/xeCJK), LuaLaTeX (luacode), or pdflatex; glossary + index support
-- **Auto-install** -- scripts automatically install TeX Live and poppler-utils if missing
-- **PNG previews** -- every compiled PDF generates page-by-page PNG previews
+---
 
-## Templates
+## What This Skill Does
 
-### Resume (ATS-Optimized)
+You describe a document. The skill:
 
-5 templates designed to pass Applicant Tracking Systems. 98% of Fortune 500 companies use ATS to filter resumes before a human sees them.
+1. Selects the right template from 21 production-tested options
+2. Asks clarifying questions (layout, color scheme, elements to include)
+3. Generates charts, diagrams, tables, and images as needed
+4. Compiles to PDF with the correct LaTeX engine (auto-detected)
+5. Delivers the PDF + page-by-page PNG previews
 
-| Template | Best For | ATS Score |
+It also converts between formats (Markdown/DOCX/HTML/LaTeX) and can reconstruct handwritten or printed PDFs into clean LaTeX using an empirically optimized batching strategy.
+
+---
+
+## Template Gallery
+
+### Resumes -- 5 ATS-Optimized Variants
+
+98% of Fortune 500 companies use Applicant Tracking Systems to filter resumes before a human sees them. These templates are designed to pass.
+
+| Template | Best For | ATS Score | Key Feature |
+|---|---|---|---|
+| **Classic ATS** | Finance, law, government | 10/10 | Zero graphics, maximum parse safety |
+| **Modern Professional** | Tech, corporate | 9/10 | Subtle color accents, clean design |
+| **Executive** | VP / Director / C-suite | 9/10 | Two-page, P&L focus, Board roles |
+| **Technical** | Software, data, engineering | 9/10 | Skills-first, projects section, GitHub |
+| **Entry-Level** | New graduates | 9/10 | Education-first, one page |
+
+| | | |
 |---|---|---|
-| Classic ATS | Finance, law, government -- maximum parse safety | 10/10 |
-| Modern Professional | Tech, corporate -- good ATS + human appeal | 9/10 |
-| Executive | VP/Director/C-suite -- two-page, leadership focus | 9/10 |
-| Technical | Software/data/engineering -- skills-first, projects | 9/10 |
-| Entry-Level | New graduates -- education-first, one page | 9/10 |
+| ![Classic ATS](examples/resume-classic-ats.png) | ![Modern Professional](examples/resume-modern-professional.png) | ![Executive](examples/resume-executive.png) |
+| Classic ATS | Modern Professional | Executive |
+| ![Technical](examples/resume-technical.png) | ![Entry-Level](examples/resume-entry-level.png) | |
+| Technical | Entry-Level | |
 
-![Classic ATS Resume](examples/resume-classic-ats.png)
+There is also a **legacy resume template** (`resume.tex`) with photo area and table layout -- not ATS-compatible, but useful for regions where photo resumes are standard.
 
-### Book
-![Book](examples/book.png)
+---
 
-### Scientific Poster
-![Poster](examples/poster.png)
+### Academic Documents
 
-### Exam / Quiz
-![Exam](examples/exam.png)
+#### Lecture Notes (Beautiful Mode)
 
-### Business Letter
-![Letter](examples/letter.png)
+The `lecture-notes.tex` template produces publication-quality math and science notes with color-coded theorem environments (tcolorbox), TikZ graph theory macros, and 3 font options (Palatino, Libertine, MLModern).
 
-### Thesis / Dissertation
+- Blue theorems, green definitions, orange examples, purple remarks, red warnings
+- Pre-built graph macros: `\CompleteGraph{n}`, `\CycleGraph{n}`, `\PathGraph{n}`
+- Custom math commands: `\R`, `\N`, `\Z`, `\Q`, `\C`, `\abs`, `\norm`, `\floor`, `\ceil`
+- Graph theory operators: `\adj`, `\deg`, `\diam`, `\chr`, `\Aut`
+
+![Lecture Notes](examples/lecture-notes.png)
+
+#### Thesis / Dissertation
+
+Full `book`-class document with front matter (title page, declaration, abstract, acknowledgments, TOC), main chapters, appendices, and bibliography. Bindingoffset for professional printing.
+
 ![Thesis](examples/thesis.png)
 
-### Academic CV
-![Academic CV](examples/academic-cv.png)
+#### Academic Paper
 
-### Report
-![Report](examples/report.png)
+Standard research paper structure (Abstract, Introduction, Related Work, Method, Experiments, Conclusion) with natbib citations, theorem environments, and figure/table placeholders. Includes example `.bib` file.
 
-### Cover Letter
-![Cover Letter](examples/cover-letter.png)
-
-### Invoice
-![Invoice](examples/invoice.png)
-
-### Academic Paper
 ![Academic Paper](examples/academic-paper.png)
 
+#### Academic CV
+
+Multi-page curriculum vitae with sections for publications (numbered: [J1], [C1], [W1]), grants with dollar amounts, teaching, student advising (current + graduated with placements), professional service, and invited talks. ORCID and Google Scholar links.
+
+![Academic CV](examples/academic-cv.png)
+
+---
+
+### Scientific Posters -- 2 Orientations, 5 Color Schemes, 3 Layouts
+
+Full conference poster system built on `tikzposter` class with interactive workflow:
+
+**Step A -- Conference & Orientation:**
+
+| Conference | Orientation | Dimensions |
+|---|---|---|
+| Most conferences (default) | Portrait A0 | 841mm x 1189mm |
+| NeurIPS / ICML / CVPR / ICLR | Landscape A0 | 1189mm x 841mm |
+| NeurIPS workshop | Custom | 24" x 36" |
+| CVPR | Custom | 84" x 42" |
+
+**Step B -- Layout Archetype:**
+
+| Layout | Usage | Description |
+|---|---|---|
+| **Traditional Column** | 70% of posters | 2-col (portrait) or 3-col (landscape) |
+| **#BetterPoster** | 10% (growing) | Central billboard with ONE key finding in 60-80pt text |
+| **Visual-Heavy** | 15% | Large central figure (40-50% of space) |
+
+**Step C -- Color Scheme:**
+
+| Scheme | Best For | Colors |
+|---|---|---|
+| Navy + Amber | Professional, high contrast | Dark navy headers, amber accents |
+| Tech Purple | CS / ML / AI conferences | Deep purple + hot pink |
+| Forest Green | Biology, environmental science | Deep green + lime |
+| Medical Teal | Healthcare, neuroscience | Teal headers + rose accents |
+| Minimal Dark | Modern, high contrast | Dark slate + white |
+
+Both portrait and landscape templates include commented geometry presets for specific conference sizes, QR code support, `tikzfigure` environments for captioned figures, and `innerblock`/`coloredbox` for highlighted callouts.
+
+| Portrait A0 | Landscape A0 |
+|---|---|
+| ![Portrait Poster](examples/poster.png) | ![Landscape Poster](examples/poster-landscape.png) |
+
+---
+
+### Book
+
+Full `book`-class document with half-title, full title, copyright page (ISBN, edition, disclaimers), dedication, preface ("Who Should Read This Book", "How This Book Is Organized"), acknowledgments, parts, chapters with epigraphs, index (`\printindex`), and bibliography. Custom chapter headings, microtype for professional typography.
+
+![Book](examples/book.png)
+
+---
+
+### Exam / Quiz
+
+Built on the `exam` class with automatic grading table, point tracking, and solution toggle (`\printanswers`).
+
+**Question types:** Multiple choice, True/False, fill-in-the-blank, matching, short answer, long answer/essay -- each with configurable point values and solution spaces.
+
+![Exam](examples/exam.png)
+
+---
+
+### Business Documents
+
+| | | |
+|---|---|---|
+| ![Letter](examples/letter.png) | ![Cover Letter](examples/cover-letter.png) | ![Invoice](examples/invoice.png) |
+| **Business Letter** -- Colored letterhead bar, logo placeholder, signature block, CC/enclosures | **Cover Letter** -- Job application format, 4-paragraph structure, color-matched to resume | **Invoice** -- Line items table, alternating row colors, totals with tax, payment terms |
+
+---
+
+### Report
+
+Executive summary, findings, recommendations structure with TOC, pgfplots bar charts, TikZ flowcharts, colored data tables, and fancyhdr headers.
+
+![Report](examples/report.png)
+
 ### Presentation (Beamer)
+
+Widescreen (16:9) slides with Madrid theme. Title slide, outline, section frames, two-column layouts, block environments, equations, TikZ diagrams, booktabs tables.
+
 ![Presentation](examples/presentation.png)
 
-### Charts and Graphs
-![Charts](examples/charts.png)
+---
 
-## Installation
+## Visual Elements
 
-Copy the skill directory to your Claude Code skills path:
+Every document can include any combination of:
 
-```bash
-cp -r latex-document ~/.claude/skills/
+### Charts & Graphs
+
+**Inline (pgfplots):** Line, bar, scatter, pie charts compiled directly in LaTeX -- no external tools needed.
+
+**External (matplotlib):** 9 chart types generated via script and included as images:
+
 ```
-
-Or install the `.skill` package if you have one.
-
-## Usage
-
-The skill triggers automatically when you ask Claude Code to:
-
-- Create a resume, CV, or cover letter
-- Write a thesis, dissertation, or book
-- Create an academic CV with publications
-- Make a scientific poster or exam
-- Write a formal business letter
-- Write any document in LaTeX
-- Create a PDF with tables, charts, or images
-- Generate Mermaid diagrams or matplotlib charts
-- Convert CSV data to LaTeX tables
-- Add watermarks (text or logo) to documents
-- Compile a `.tex` file
-- Make a report, invoice, or presentation
-- Convert between Markdown, DOCX, HTML, and LaTeX
-- Convert a PDF or handwritten notes to LaTeX
-- Create slides
-- Write multi-language documents (CJK, Arabic, European)
-
-### Quick Examples
-
-**"Make me a resume"** -- copies the resume template, customizes it with your info, compiles to PDF, and shows you the result.
-
-**"Create a 300-page book about machine learning"** -- uses the book template with parts, chapters, index, bibliography.
-
-**"Make an exam for my CS 101 class"** -- generates an exam with MCQ, T/F, short answer, essay questions with grading table.
-
-**"Create a conference poster about my research"** -- uses the tikzposter template with 3-column layout, charts, tables.
-
-**"Convert this PDF of my math notes to LaTeX"** -- splits the PDF into images, selects the math-notes conversion profile, and produces clean LaTeX.
-
-**"Convert my report.docx to LaTeX"** -- uses Pandoc to convert DOCX to LaTeX with proper formatting.
-
-**"Create a bar chart from this CSV data"** -- generates a matplotlib chart or pgfplots code, compiles, and delivers PDF + PNG.
-
-## Scripts
-
-### compile_latex.sh
-
-Compiles `.tex` to PDF with automatic engine detection, multi-pass compilation, and PNG preview generation.
-
-```bash
-# Basic compile (auto-detects engine)
-bash scripts/compile_latex.sh document.tex
-
-# Compile + PNG previews
-bash scripts/compile_latex.sh document.tex --preview
-
-# Compile + PNG in specific directory
-bash scripts/compile_latex.sh document.tex --preview --preview-dir ./outputs
-
-# Force a specific engine
-bash scripts/compile_latex.sh document.tex --engine xelatex
-bash scripts/compile_latex.sh document.tex --engine lualatex
+bar | line | scatter | pie | heatmap | box | histogram | area | radar
 ```
-
-Auto-detects: `fontspec`/`xeCJK`/`polyglossia` -> xelatex, `luacode`/`luatextra` -> lualatex, otherwise pdflatex. Auto-runs bibtex/biber, makeindex, makeglossaries as needed.
-
-### mermaid_to_image.sh
-
-Converts Mermaid `.mmd` diagram files to PNG or PDF for LaTeX inclusion.
-
-```bash
-bash scripts/mermaid_to_image.sh diagram.mmd output.png
-bash scripts/mermaid_to_image.sh diagram.mmd output.pdf --format pdf --theme forest
-```
-
-### generate_chart.py
-
-Generates publication-quality charts using matplotlib (9 chart types).
 
 ```bash
 python3 scripts/generate_chart.py bar \
     --data '{"x":["Q1","Q2","Q3","Q4"],"y":[120,150,180,210]}' \
     --output chart.png --title "Quarterly Revenue"
-
-python3 scripts/generate_chart.py line --csv data.csv --output trend.pdf
 ```
 
-Supports: bar, line, scatter, pie, heatmap, box, histogram, area, radar.
+Supports CSV input (`--csv data.csv`), custom colors, DPI, figure size, and matplotlib styles.
 
-### csv_to_latex.py
+![Charts](examples/charts.png)
 
-Converts CSV files to formatted LaTeX tabular code.
+### Diagrams
+
+**TikZ:** Flowcharts, architecture diagrams, block diagrams, graph theory diagrams -- compiled inline.
+
+**Mermaid:** Flowcharts, sequence diagrams, class diagrams, ER diagrams, Gantt charts, pie charts, mindmaps -- rendered to PNG/PDF via mermaid-cli:
 
 ```bash
-python3 scripts/csv_to_latex.py data.csv --caption "Results" --label "tab:results"
-python3 scripts/csv_to_latex.py data.csv --style booktabs --alternating-rows
+bash scripts/mermaid_to_image.sh diagram.mmd output.png --theme forest
 ```
 
-### convert_document.sh
+### Tables
 
-Pandoc wrapper for format conversion between Markdown, DOCX, HTML, and LaTeX.
+CSV-to-LaTeX conversion with 4 styles:
+
+```bash
+python3 scripts/csv_to_latex.py data.csv --style booktabs --alternating-rows --caption "Results"
+```
+
+Styles: `booktabs` (professional), `grid` (full borders), `simple` (minimal lines), `plain` (no lines).
+
+### Other Visual Elements
+
+- **QR codes** -- `\qrcode` package, used in posters and business documents
+- **Watermarks** -- text (DRAFT, CONFIDENTIAL) or logo background
+- **AI-generated images** -- via the `generate-image` skill
+- **Code listings** -- `listings` or `minted` packages with syntax highlighting
+- **Algorithms** -- `algorithm`/`algorithmic` packages
+- **Colored boxes** -- `tcolorbox` for callouts, theorems, warnings
+- **SI units** -- `siunitx` for consistent unit formatting
+
+---
+
+## Format Conversion
+
+### Document Conversion (Pandoc)
+
+Bidirectional conversion between any combination:
+
+```
+Markdown <-> LaTeX <-> DOCX <-> HTML <-> PDF
+```
 
 ```bash
 bash scripts/convert_document.sh input.md output.tex
-bash scripts/convert_document.sh input.docx output.tex --standalone --extract-media=./media
-bash scripts/convert_document.sh input.tex output.docx
+bash scripts/convert_document.sh input.docx output.tex --bibliography refs.bib --toc
+bash scripts/convert_document.sh input.tex output.pdf
 ```
 
-### pdf_to_images.sh
+Supports custom templates, bibliography (.bib), citation styles (.csl), table of contents, and MathJax for HTML output.
 
-Splits PDF into page images for the PDF-to-LaTeX conversion pipeline.
+### PDF-to-LaTeX Reconstruction
 
-```bash
-bash scripts/pdf_to_images.sh input.pdf ./output-dir
-bash scripts/pdf_to_images.sh input.pdf ./output-dir --dpi 300 --max-dim 2000
-```
-
-## PDF-to-LaTeX Scaling Strategy
-
-Empirically tested on a 115-page handwritten math PDF across batch sizes 3, 5, 7, 10, and 15:
+Converts scanned, handwritten, or printed PDFs back into clean, compilable LaTeX. Uses a 3-tier scaling strategy empirically validated on a 115-page handwritten math PDF:
 
 | PDF Size | Strategy | Agents | Error Rate |
 |---|---|---|---|
 | **1-10 pages** | Single agent | 1 | 0-2 minor (trivially fixable) |
 | **11-20 pages** | Split in half | 2 | Avoids error cliff at 10+ pages |
-| **21+ pages** | Batch-7 pipeline | ceil(N/7) | Optimal -- 0 errors per 7-page batch |
+| **21+ pages** | Batch-7 pipeline | ceil(N/7) | Optimal -- 0 errors per batch |
 
-**Why batch-7**: Testing showed 0 errors at 7 pages, 2 structural errors at 10, and 11 catastrophic errors at 15. The error cliff between 10 and 15 pages is steep.
+**Why batch-7:** Testing showed 0 errors at 7 pages, 2 structural errors at 10, and 11 catastrophic errors at 15. The error cliff between 10 and 15 pages is steep.
 
-## Conversion Profiles
+**4 conversion profiles** tune output for content type:
 
 | Content Type | Profile | Specialization |
 |---|---|---|
-| Math / science | `math-notes.md` | amsmath, amsthm, theorem environments, custom commands |
-| Business | `business-document.md` | fancyhdr, tabularx, financial tables, professional colors |
-| Legal | `legal-document.md` | Roman numeral sections, 1.5 spacing, footnotes, nested clauses |
-| General / mixed | `general-notes.md` | Minimal packages, adaptive structure |
+| Math / science | `math-notes.md` | amsmath, amsthm, theorem environments, beautiful mode |
+| Business | `business-document.md` | fancyhdr, tabularx, financial tables |
+| Legal | `legal-document.md` | Roman numeral sections, 1.5 spacing, nested clauses |
+| General | `general-notes.md` | Minimal packages, adaptive |
 
-## Reference Guides
+---
 
-| Guide | Topics |
+## Compilation Engine
+
+`compile_latex.sh` handles the entire build pipeline:
+
+```bash
+bash scripts/compile_latex.sh document.tex --preview --preview-dir ./outputs
+```
+
+**What it does automatically:**
+- Detects the right engine: `fontspec`/`xeCJK`/`polyglossia` -> XeLaTeX, `luacode`/`luatextra` -> LuaLaTeX, otherwise pdfLaTeX
+- Detects bibliography system: `\bibliography{}` -> bibtex, `\addbibresource{}` -> biber
+- Detects and runs `makeindex` and `makeglossaries` when needed
+- Runs 2-3 passes to resolve all cross-references
+- Generates page-by-page PNG previews (via pdftoppm)
+- Installs missing TeX Live packages automatically
+- Cleans up auxiliary files (.aux, .log, .toc, .bbl, .idx, etc.)
+
+**Options:**
+
+```bash
+--preview              # Generate PNG previews
+--preview-dir <dir>    # Where to put PNGs
+--scale <pixels>       # Max PNG dimension (default: 1200)
+--engine <engine>      # Force pdflatex, xelatex, or lualatex
+```
+
+---
+
+## Multi-Language Support
+
+| Language Family | Package | Engine |
+|---|---|---|
+| European (French, German, Spanish...) | `babel` | pdfLaTeX |
+| CJK (Chinese, Japanese, Korean) | `xeCJK` | XeLaTeX (auto-detected) |
+| RTL (Arabic, Hebrew, Farsi) | `polyglossia` | XeLaTeX (auto-detected) |
+| Cyrillic (Russian, Ukrainian) | `babel` or `polyglossia` | pdfLaTeX or XeLaTeX |
+
+The compile script auto-selects the correct engine based on package imports.
+
+---
+
+## Reference Documentation
+
+12 reference guides covering every aspect of the skill:
+
+| Guide | What It Covers |
 |---|---|
-| `bibliography-guide.md` | BibTeX, biblatex, citation styles, .bib format |
-| `advanced-features.md` | Watermarks, landscape, multi-lang, code listings, algorithms, tcolorbox, siunitx, advanced charts, AI images |
-| `charts-and-graphs.md` | pgfplots + TikZ chart reference |
-| `mermaid-diagrams.md` | Flowcharts, sequence, class, ER, Gantt, pie, mindmap diagrams |
-| `python-charts.md` | matplotlib chart generation (9 types) |
-| `format-conversion.md` | Pandoc conversion pipeline (MD/DOCX/HTML/LaTeX) |
-| `tables-and-images.md` | Tables, images, TikZ drawings |
-| `packages.md` | Common LaTeX packages reference |
-| `resume-ats-guide.md` | ATS rules, LaTeX pitfalls, keywords |
-| `pdf-conversion.md` | Full PDF-to-LaTeX pipeline |
+| `resume-ats-guide.md` | ATS parsing rules, LaTeX pitfalls, keyword optimization |
+| `poster-design-guide.md` | Conference presets, #BetterPoster, typography at distance, 5 color schemes |
+| `bibliography-guide.md` | BibTeX vs biblatex, citation commands, .bib format |
+| `advanced-features.md` | Watermarks, landscape, multi-language, algorithms, tcolorbox, siunitx, AI images |
+| `charts-and-graphs.md` | pgfplots patterns (line, bar, scatter, pie), TikZ chart examples |
+| `python-charts.md` | matplotlib generation (9 types), CSV input, styling |
+| `mermaid-diagrams.md` | Flowcharts, sequence, class, ER, Gantt, pie, mindmaps |
+| `format-conversion.md` | Pandoc pipeline, templates, bibliography integration |
+| `pdf-conversion.md` | Full PDF-to-LaTeX pipeline, scaling strategy, batch processing |
+| `tables-and-images.md` | Colored rows, multi-row/column, booktabs, long tables, TikZ |
+| `packages.md` | Common LaTeX package reference |
+| `profiles/` | 4 conversion profiles (math, business, legal, general) |
+
+---
+
+## Installation
+
+```bash
+cp -r latex-document ~/.claude/skills/
+```
+
+The skill triggers automatically when you ask Claude Code to create any document, resume, poster, exam, report, book, thesis, or anything that should be a PDF.
+
+---
 
 ## Project Structure
 
 ```
 latex-document/
-├── SKILL.md                          # Main skill file
-├── assets/
-│   └── templates/                    # 19 compile-tested LaTeX templates
-│       ├── resume-classic-ats.tex
-│       ├── resume-modern-professional.tex
-│       ├── resume-executive.tex
-│       ├── resume-technical.tex
-│       ├── resume-entry-level.tex
-│       ├── resume.tex                # Legacy (not ATS-optimized)
-│       ├── book.tex                  # Full book (book class)
-│       ├── thesis.tex                # Thesis/dissertation (book class)
-│       ├── academic-cv.tex           # Multi-page academic CV
-│       ├── poster.tex                # Scientific poster (tikzposter)
-│       ├── exam.tex                  # Exam/quiz (exam class)
-│       ├── letter.tex                # Formal business letter
-│       ├── report.tex
-│       ├── cover-letter.tex
-│       ├── invoice.tex
-│       ├── academic-paper.tex
-│       ├── presentation.tex
-│       └── references.bib            # Example bibliography file
-├── references/
+├── SKILL.md                              # Skill definition (workflow, rules, anti-patterns)
+├── README.md
+├── assets/templates/                     # 21 compile-tested templates
+│   ├── resume-classic-ats.tex            #   ATS 10/10 -- finance, law, government
+│   ├── resume-modern-professional.tex    #   ATS 9/10 -- tech, corporate
+│   ├── resume-executive.tex              #   ATS 9/10 -- VP, Director, C-suite
+│   ├── resume-technical.tex              #   ATS 9/10 -- software, data, engineering
+│   ├── resume-entry-level.tex            #   ATS 9/10 -- new graduates
+│   ├── resume.tex                        #   Legacy (photo, tables -- not ATS)
+│   ├── lecture-notes.tex                 #   Beautiful math notes (tcolorbox, TikZ graphs)
+│   ├── thesis.tex                        #   PhD dissertation (book class)
+│   ├── academic-paper.tex                #   Research paper (natbib)
+│   ├── academic-cv.tex                   #   Multi-page academic CV
+│   ├── book.tex                          #   Full book (parts, chapters, index)
+│   ├── poster.tex                        #   Portrait A0 poster (tikzposter)
+│   ├── poster-landscape.tex              #   Landscape A0 poster (tikzposter)
+│   ├── exam.tex                          #   Exam/quiz (exam class)
+│   ├── letter.tex                        #   Formal business letter
+│   ├── cover-letter.tex                  #   Job application cover letter
+│   ├── invoice.tex                       #   Invoice with line items
+│   ├── report.tex                        #   Business report with charts
+│   ├── presentation.tex                  #   Beamer slides (16:9)
+│   └── references.bib                    #   Example bibliography
+├── scripts/
+│   ├── compile_latex.sh                  #   .tex -> PDF + PNG (auto engine/bib/index)
+│   ├── generate_chart.py                 #   matplotlib charts (9 types)
+│   ├── csv_to_latex.py                   #   CSV -> LaTeX tables (4 styles)
+│   ├── mermaid_to_image.sh               #   Mermaid .mmd -> PNG/PDF
+│   ├── convert_document.sh               #   Pandoc format conversion
+│   └── pdf_to_images.sh                  #   PDF -> page images (for OCR pipeline)
+├── references/                           #   12 reference guides
 │   ├── resume-ats-guide.md
+│   ├── poster-design-guide.md
 │   ├── bibliography-guide.md
-│   ├── advanced-features.md          # Watermarks, landscape, multi-lang, algorithms, tcolorbox, siunitx, charts, AI images
+│   ├── advanced-features.md
 │   ├── charts-and-graphs.md
-│   ├── mermaid-diagrams.md           # Mermaid diagram integration
-│   ├── python-charts.md              # matplotlib chart generation
-│   ├── format-conversion.md          # Pandoc conversion guide
-│   ├── packages.md
+│   ├── python-charts.md
+│   ├── mermaid-diagrams.md
+│   ├── format-conversion.md
 │   ├── pdf-conversion.md
 │   ├── tables-and-images.md
-│   └── profiles/
+│   ├── packages.md
+│   └── profiles/                         #   4 conversion profiles
 │       ├── math-notes.md
 │       ├── business-document.md
 │       ├── legal-document.md
 │       └── general-notes.md
-├── scripts/
-│   ├── compile_latex.sh              # Compile .tex to PDF + PNG (auto engine/bib/index/glossary)
-│   ├── pdf_to_images.sh              # Split PDF into page images
-│   ├── mermaid_to_image.sh           # Mermaid .mmd to PNG/PDF
-│   ├── generate_chart.py             # matplotlib chart generation
-│   ├── csv_to_latex.py               # CSV to LaTeX tabular
-│   └── convert_document.sh           # Pandoc format conversion
-└── examples/                         # Preview images for README
+└── examples/                             #   Preview images
 ```
 
 ## License
