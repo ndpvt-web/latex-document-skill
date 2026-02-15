@@ -165,7 +165,7 @@ All 5 templates follow ATS rules: single-column, no graphics/images, no tables f
 - **`thesis.tex`** -- Thesis/dissertation (`book` class) with title page, declaration, abstract, acknowledgments, TOC, list of figures/tables, chapters, appendices, bibliography. Front matter uses roman numerals, main matter uses arabic. Includes theorem environments.
 - **`academic-cv.tex`** -- Multi-page academic CV with publications (journal/conference/preprint sections), grants and funding, teaching, advising (current/graduated students), awards, professional service, invited talks. ORCID and Google Scholar links.
 - **`book.tex`** -- Full book (`book` class) with half-title, title page, copyright page, dedication, preface, acknowledgments, TOC, list of figures/tables, parts, chapters, appendix, bibliography, index. Custom chapter headings, epigraphs, fancyhdr, microtype.
-- **`poster.tex`** -- Conference poster (`tikzposter` class, A0 landscape) with 30/40/30 column layout, navy+amber color scheme, tikzfigure charts, TikZ workflow diagram, coloredbox highlights, scatter plot. Designed for NeurIPS/ICML/CVPR-level conferences.
+- **`poster.tex`** -- Conference poster (`tikzposter` class, A0 portrait) with 2-column layout, custom color scheme, tikzfigure charts, tables, coloredbox highlights. Portrait is standard for most conferences; switch to `landscape` for ICML/CVPR.
 - **`letter.tex`** -- Formal business letter with colored letterhead bar, TikZ logo placeholder, company info, recipient block, date, subject line, signature. Professional corporate appearance.
 - **`exam.tex`** -- Exam/quiz (`exam` class) with grading table, multiple question types (multiple choice, true/false, fill-in-blank, matching, short answer, essay), point values, solution toggle via `\printanswers`.
 - **`report.tex`** -- Business report with TOC, headers/footers, data tables, bar chart (pgfplots), process flowchart (TikZ), recommendations
@@ -470,12 +470,12 @@ These cause `Undefined control sequence` -- always include the required package:
 - First-pass compilation of books/theses will always show "undefined references" and "Label(s) may have changed" warnings -- this is normal. The compile script runs multiple passes to resolve these.
 
 ### Poster (tikzposter) Pitfalls
-- Use **landscape** orientation (not portrait) -- standard for top conferences, avoids tall narrow columns with empty space at the bottom.
-- Do NOT use `\begin{figure}` inside tikzposter -- use `\begin{tikzfigure}[Caption]` instead or bare `\begin{center}\begin{tikzpicture}...\end{tikzpicture}\end{center}`.
+- **Orientation depends on conference.** Portrait (2-column, A0 841mm x 1189mm) is most common across academia. Landscape is used by specific CS/ML conferences (ICML, CVPR). Always check the conference guidelines. Default to **portrait** if unknown.
+- Portrait uses **2 equal columns** (50/50); landscape uses **3 columns** (e.g., 30/40/30).
+- Do NOT use `\begin{figure}` inside tikzposter -- use `\begin{tikzfigure}[Caption]` instead.
 - Always use **relative widths** for charts: `width=0.9\linewidth` (not `width=20cm`). Fixed dimensions overflow blocks on A0.
-- Set `bodyinnersep=15mm` (not 8mm) and `margin=15mm` in documentclass options -- 8mm padding causes content to collide with block edges on A0.
-- Use unequal column widths (e.g., 30/40/30) with the widest column for results/charts. Equal columns waste space.
-- Keep total text under 500 words -- posters are conversation starters, not papers. Use `\coloredbox` for key insights.
+- Set `bodyinnersep=15mm` (not 8mm) and `margin=15mm` -- 8mm padding causes content-edge collisions on A0.
+- Keep total text under 500 words. Use `\coloredbox` for key insights.
 
 ### hyperref Package
 - `hyperref` is fine for normal documents (most templates use it).
