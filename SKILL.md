@@ -4,16 +4,24 @@ description: >
   Universal LaTeX document skill: create, compile, and convert any document to
   professional PDF with PNG previews. Supports resumes, reports, cover letters,
   invoices, academic papers, theses/dissertations, academic CVs, presentations
-  (Beamer), charts (pgfplots), tables (booktabs), images (TikZ), watermarks,
-  landscape pages, bibliography/citations (BibTeX/biblatex), multi-language/CJK,
+  (Beamer), scientific posters, formal letters, exams/quizzes, books,
+  charts (pgfplots + matplotlib), tables (booktabs + CSV import), images (TikZ),
+  Mermaid diagrams, AI-generated images, watermarks, landscape pages,
+  bibliography/citations (BibTeX/biblatex), multi-language/CJK (auto XeLaTeX),
+  algorithms/pseudocode, colored boxes (tcolorbox), SI units (siunitx),
+  Pandoc format conversion (Markdown/DOCX/HTML ↔ LaTeX),
   and PDF-to-LaTeX conversion of handwritten or printed documents (math, business,
-  legal, general). Empirically optimized scaling: single agent 1-10 pages, split
+  legal, general). Compile script supports pdflatex, xelatex, lualatex with
+  auto-detection. Empirically optimized scaling: single agent 1-10 pages, split
   11-20, batch-7 pipeline 21+. Use when user asks to: (1) create a resume/CV/cover
   letter, (2) write a LaTeX document, (3) create PDF with tables/charts/images,
   (4) compile a .tex file, (5) make a report/invoice/presentation, (6) anything
   involving LaTeX or pdflatex, (7) convert/OCR a PDF to LaTeX, (8) convert
-  handwritten notes, (9) create charts/graphs, (10) create slides, (11) write a
-  thesis or dissertation, (12) create an academic CV with publications.
+  handwritten notes, (9) create charts/graphs/diagrams, (10) create slides,
+  (11) write a thesis or dissertation, (12) create an academic CV, (13) create
+  a poster, (14) create an exam/quiz, (15) create a book, (16) convert between
+  document formats (Markdown, DOCX, HTML to/from LaTeX), (17) generate Mermaid
+  diagrams for LaTeX, (18) create a formal business letter.
 ---
 
 # LaTeX Document Skill
@@ -22,11 +30,24 @@ Create any LaTeX document, compile to PDF, and generate PNG previews. Convert PD
 
 ## Workflow: Create Documents
 
-1. Determine document type (resume, report, letter, invoice, article, thesis, academic CV, presentation)
+1. Determine document type (resume, report, letter, invoice, article, thesis, academic CV, presentation, poster, exam, book)
 2. Copy the appropriate template from `assets/templates/` or write from scratch
 3. Customize content based on user requirements
-4. Compile with `scripts/compile_latex.sh`
-5. Show PNG preview to user, deliver PDF
+4. Generate any external assets (Mermaid diagrams, matplotlib charts, AI images) if needed
+5. Compile with `scripts/compile_latex.sh` (auto-detects XeLaTeX for CJK/RTL, glossaries, bibliography)
+6. Show PNG preview to user, deliver PDF
+
+## Workflow: Convert Document Formats
+
+For converting between Markdown, DOCX, HTML, and LaTeX using Pandoc:
+
+```bash
+bash <skill_path>/scripts/convert_document.sh input.md output.tex
+bash <skill_path>/scripts/convert_document.sh input.docx output.tex --standalone --extract-media=./media
+bash <skill_path>/scripts/convert_document.sh input.tex output.docx
+```
+
+See [references/format-conversion.md](references/format-conversion.md) for full Pandoc conversion guide.
 
 ## Workflow: Convert PDF to LaTeX
 
@@ -80,7 +101,7 @@ Use `run_in_background: true` for parallel agents. Do NOT use agent teams -- sim
 ## Compile Script
 
 ```bash
-# Basic compile
+# Basic compile (auto-detects engine)
 bash <skill_path>/scripts/compile_latex.sh document.tex
 
 # Compile + generate PNG previews
@@ -88,9 +109,15 @@ bash <skill_path>/scripts/compile_latex.sh document.tex --preview
 
 # Compile + PNG in specific directory
 bash <skill_path>/scripts/compile_latex.sh document.tex --preview --preview-dir ./outputs
+
+# Force a specific engine
+bash <skill_path>/scripts/compile_latex.sh document.tex --engine xelatex
+bash <skill_path>/scripts/compile_latex.sh document.tex --engine lualatex
 ```
 
-The script auto-installs `texlive` and `poppler-utils` if missing. It auto-detects `\bibliography{}` (runs bibtex) and `\addbibresource{}` (runs biber), detects `\makeindex` (runs makeindex), runs the correct number of pdflatex passes, generates PNG previews with `pdftoppm`, and cleans auxiliary files.
+**Engine auto-detection**: If the .tex file uses `fontspec`, `xeCJK`, or `polyglossia`, the script automatically uses `xelatex`. If it uses `luacode` or `luatextra`, it uses `lualatex`. Otherwise defaults to `pdflatex`. Override with `--engine`.
+
+The script auto-installs `texlive` (including `texlive-science`, `texlive-xetex`, `texlive-luatex`, `biber`) and `poppler-utils` if missing. It auto-detects `\bibliography{}` (runs bibtex), `\addbibresource{}` (runs biber), `\makeindex` (runs makeindex), `\makeglossaries` (runs makeglossaries), runs the correct number of passes, generates PNG previews with `pdftoppm`, and cleans auxiliary files.
 
 ## PDF-to-Images Script
 
@@ -126,6 +153,10 @@ All 5 templates follow ATS rules: single-column, no graphics/images, no tables f
 
 - **`thesis.tex`** -- Thesis/dissertation (`book` class) with title page, declaration, abstract, acknowledgments, TOC, list of figures/tables, chapters, appendices, bibliography. Front matter uses roman numerals, main matter uses arabic. Includes theorem environments.
 - **`academic-cv.tex`** -- Multi-page academic CV with publications (journal/conference/preprint sections), grants and funding, teaching, advising (current/graduated students), awards, professional service, invited talks. ORCID and Google Scholar links.
+- **`book.tex`** -- Full book (`book` class) with half-title, title page, copyright page, dedication, preface, acknowledgments, TOC, list of figures/tables, parts, chapters, appendix, bibliography, index. Custom chapter headings, epigraphs, fancyhdr, microtype.
+- **`poster.tex`** -- Scientific conference poster (`tikzposter` class, A0) with 3-column layout, color blocks, TikZ workflow diagram, pgfplots bar chart, booktabs table. Customizable color scheme.
+- **`letter.tex`** -- Formal business letter with colored letterhead bar, TikZ logo placeholder, company info, recipient block, date, subject line, signature. Professional corporate appearance.
+- **`exam.tex`** -- Exam/quiz (`exam` class) with grading table, multiple question types (multiple choice, true/false, fill-in-blank, matching, short answer, essay), point values, solution toggle via `\printanswers`.
 - **`report.tex`** -- Business report with TOC, headers/footers, data tables, bar chart (pgfplots), process flowchart (TikZ), recommendations
 - **`cover-letter.tex`** -- Professional cover letter with sender/recipient blocks
 - **`invoice.tex`** -- Invoice with company header, line items table, subtotal/tax/total
@@ -155,8 +186,13 @@ bash <skill_path>/scripts/compile_latex.sh ./outputs/my_resume.tex --preview --p
 | Cover letter | `cover-letter.tex` | `article` |
 | Invoice | `invoice.tex` | `article` |
 | Academic paper | `academic-paper.tex` + `references.bib` | `article` |
+| Book | `book.tex` | `book` |
+| Scientific poster | `poster.tex` | `tikzposter` |
+| Formal business letter | `letter.tex` | `article` |
+| Exam, quiz, test | `exam.tex` | `exam` |
 | Slides, presentation | `presentation.tex` | `beamer` |
 | **Convert PDF to LaTeX** | Select profile + see [pdf-conversion.md](references/pdf-conversion.md) | varies |
+| **Convert formats** | Use `scripts/convert_document.sh` + see [format-conversion.md](references/format-conversion.md) | varies |
 
 ## Key LaTeX Patterns
 
@@ -325,6 +361,68 @@ For CJK/RTL documents, compile with `xelatex` instead of `pdflatex`. Full guide:
 \end{tikzpicture}
 ```
 
+### Quick Mermaid Diagram
+
+```bash
+# Convert Mermaid .mmd file to PNG/PDF for LaTeX inclusion
+bash <skill_path>/scripts/mermaid_to_image.sh diagram.mmd output.png
+bash <skill_path>/scripts/mermaid_to_image.sh diagram.mmd output.pdf --format pdf --theme forest
+```
+
+```latex
+% Include in LaTeX
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{diagram.pdf}
+    \caption{System architecture diagram}
+\end{figure}
+```
+
+See [references/mermaid-diagrams.md](references/mermaid-diagrams.md) for flowcharts, sequence diagrams, class diagrams, ER diagrams, Gantt charts, and more.
+
+### Quick matplotlib Chart
+
+```bash
+# Generate publication-quality chart from JSON data
+python3 <skill_path>/scripts/generate_chart.py bar \
+    --data '{"x":["Q1","Q2","Q3","Q4"],"y":[120,150,180,210]}' \
+    --output chart.png --title "Quarterly Revenue" --ylabel "Revenue ($K)"
+
+# Generate from CSV file
+python3 <skill_path>/scripts/generate_chart.py line --csv data.csv --output trend.pdf
+```
+
+Supports: bar, line, scatter, pie, heatmap, box, histogram, area, radar. See [references/python-charts.md](references/python-charts.md).
+
+### Quick CSV-to-LaTeX Table
+
+```bash
+# Convert CSV to LaTeX table code
+python3 <skill_path>/scripts/csv_to_latex.py data.csv --caption "Results" --label "tab:results"
+python3 <skill_path>/scripts/csv_to_latex.py data.csv --style booktabs --alternating-rows --output table.tex
+```
+
+Supports: booktabs, grid, simple, plain styles. Auto-detects column alignment. See script help for options.
+
+### Quick AI-Generated Image
+
+```bash
+# Generate image with AI and include in LaTeX
+python3 /home/node/.claude/skills/generate-image/scripts/generate_image.py \
+    "Professional diagram of neural network, clean white background, technical illustration" \
+    --output ./outputs/figure.png
+```
+
+```latex
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figure.png}
+    \caption{Neural network architecture (AI-generated).}
+\end{figure}
+```
+
+Request "white background, clean, no text" for best results in documents. See [references/advanced-features.md](references/advanced-features.md).
+
 ## Visual Elements in Reports
 
 When creating reports, always include visual elements where they strengthen the content:
@@ -344,9 +442,17 @@ The `report.tex` template includes pgfplots, TikZ, and all required packages out
 
 - **Bibliography/Citations**: BibTeX and biblatex, citation styles, .bib file format, natbib vs biblatex commands. See [references/bibliography-guide.md](references/bibliography-guide.md).
 - **Watermarks, Landscape, Multi-Language, Code Listings**: Text/logo watermarks, mixed portrait/landscape, CJK/RTL/European languages, syntax highlighting. See [references/advanced-features.md](references/advanced-features.md).
+- **Algorithms and Pseudocode**: algorithm2e and algorithmicx packages with complete examples. See [references/advanced-features.md](references/advanced-features.md).
+- **Colored Boxes (tcolorbox)**: Theorem boxes, code example boxes, warning/info/tip callouts. See [references/advanced-features.md](references/advanced-features.md).
+- **SI Units (siunitx)**: Proper number formatting, unit typesetting, table decimal alignment. See [references/advanced-features.md](references/advanced-features.md).
+- **Advanced Charts**: 3D surface, heatmap, box plot, Gantt chart (pgfgantt), radar/spider chart. See [references/advanced-features.md](references/advanced-features.md).
+- **AI-Generated Images**: Workflow for generate-image skill + LaTeX integration. See [references/advanced-features.md](references/advanced-features.md).
+- **Mermaid Diagrams**: Flowcharts, sequence, class, ER, Gantt, pie, mindmap diagrams. See [references/mermaid-diagrams.md](references/mermaid-diagrams.md).
+- **Python Charts (matplotlib)**: Bar, line, scatter, pie, heatmap, box, histogram, area, radar charts. See [references/python-charts.md](references/python-charts.md).
+- **Format Conversion (Pandoc)**: Markdown/DOCX/HTML to/from LaTeX. See [references/format-conversion.md](references/format-conversion.md).
 - **Tables**: Colored rows, multi-row/column, borderless booktabs, long tables spanning pages. See [references/tables-and-images.md](references/tables-and-images.md).
 - **Images**: External images, TikZ drawings, circular clipped photos, side-by-side, text wrapping. See [references/tables-and-images.md](references/tables-and-images.md).
-- **Charts and Graphs**: Line plots, bar charts, scatter plots, pie charts, pgfplots. See [references/charts-and-graphs.md](references/charts-and-graphs.md).
+- **Charts and Graphs (pgfplots)**: Line plots, bar charts, scatter plots, pie charts. See [references/charts-and-graphs.md](references/charts-and-graphs.md).
 - **Package reference**: Common packages and their purposes. See [references/packages.md](references/packages.md).
 - **Resume ATS guide**: ATS compatibility rules, LaTeX-specific pitfalls, keyword optimization, action verbs. See [references/resume-ats-guide.md](references/resume-ats-guide.md).
 - **PDF-to-LaTeX conversion**: Full pipeline with scaling strategy and profiles. See [references/pdf-conversion.md](references/pdf-conversion.md).
@@ -356,10 +462,12 @@ The `report.tex` template includes pgfplots, TikZ, and all required packages out
 - Run compile script from the directory containing the .tex file, or use absolute paths
 - For documents with `\tableofcontents`, the script runs pdflatex twice automatically
 - Use `\usepackage{colortbl}` when using `\rowcolor` -- missing this causes `Undefined control sequence` errors
+- Use `\usepackage{url}` when using `\url{}` in bibliography entries with natbib -- missing this causes `Undefined control sequence` errors
 - PNG previews require `poppler-utils` (auto-installed by script)
 - Place output .tex files in `./outputs/` for user visibility
 - After compilation, read the PNG files to show the user how the document looks
+- The `hyperref` package is fine for normal documents (most templates use it). Only avoid it in **PDF-to-LaTeX converted documents** with theorem environments, where it causes `\set@color` errors.
 - **PDF conversion**: Do NOT use `sed` to clean control characters from LaTeX -- it breaks `\begin`, `\end`, `\newpage`, etc.
-- **PDF conversion**: Do NOT use `hyperref` package in converted documents -- causes `\set@color` errors
+- **PDF conversion**: Do NOT use `hyperref` package in converted documents -- causes `\set@color` errors with theorem environments
 - **PDF conversion**: Use `run_in_background` agents, NOT agent teams -- simpler, more reliable
 - **PDF conversion**: Select the correct conversion profile for the document type -- a math profile on a business doc produces unnecessary theorem environments

@@ -1,0 +1,383 @@
+%% Exam/Quiz Template
+%% Using exam document class for educational assessments
+%% Compile with: pdflatex exam.tex
+%%
+%% SOLUTION TOGGLE:
+%% - To show answers: Uncomment the \printanswers line below
+%% - To hide answers: Keep \printanswers commented out (default)
+
+\documentclass[11pt, addpoints]{exam}
+
+% Uncomment the next line to print answers/solutions
+% \printanswers
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage[margin=1in]{geometry}
+\usepackage{xcolor}
+
+% Color scheme
+\definecolor{headerblue}{HTML}{1E3A5F}
+
+% Header and footer customization
+\pagestyle{headandfoot}
+\firstpageheader{}{}{}
+\runningheader{\textbf{EXAM}}{\textbf{Page \thepage\ of \numpages}}{\textbf{\today}}
+\runningheadrule
+\footer{}{}{Student ID: \underline{\hspace{2in}}}
+
+% Custom commands
+% CUSTOMIZATION: Change these to match your course/exam
+\newcommand{\coursename}{CS 101: Introduction to Computer Science}
+\newcommand{\examtitle}{Midterm Examination}
+\newcommand{\examdate}{March 15, 2026}
+\newcommand{\timeallowed}{120 minutes (2 hours)}
+\newcommand{\instructorname}{Dr. Jane Smith}
+
+\begin{document}
+
+% Title block
+\begin{center}
+    \textcolor{headerblue}{\Large\bfseries \coursename} \\[0.5em]
+    \textcolor{headerblue}{\LARGE\bfseries \examtitle} \\[0.5em]
+    \large \examdate \\
+    \large Time Allowed: \timeallowed
+\end{center}
+
+\vspace{1em}
+
+% Student information
+\noindent
+\fbox{\parbox{\textwidth}{
+    \textbf{Student Name:} \hrulefill \\[1em]
+    \textbf{Student ID:} \hrulefill \\[1em]
+    \textbf{Section:} \hrulefill
+}}
+
+\vspace{1em}
+
+% Instructions section
+\begin{center}
+\fbox{\parbox{0.95\textwidth}{
+    \textbf{INSTRUCTIONS:}
+    \begin{itemize}[leftmargin=*, nosep]
+        \item Write your name and student ID on this exam
+        \item This exam contains \numquestions\ questions on \numpages\ pages
+        \item Total points: \numpoints
+        \item Read each question carefully before answering
+        \item Show all work for partial credit
+        \item No calculators, phones, or other electronic devices allowed
+        \item Use the back of pages for scratch work if needed
+        \item Good luck!
+    \end{itemize}
+}}
+\end{center}
+
+\vspace{1em}
+
+% Grading table
+\begin{center}
+\gradetable[h][questions]
+\end{center}
+
+\vspace{1em}
+
+\begin{questions}
+
+%% SECTION 1: Multiple Choice Questions
+\fullwidth{\section*{Part A: Multiple Choice}}
+\fullwidth{\textit{Circle the letter of the best answer. Each question is worth 2 points.}}
+
+\question[2] What is the time complexity of binary search on a sorted array of size $n$?
+
+\begin{choices}
+    \choice $O(n^2)$
+    \correctchoice $O(\log n)$
+    \choice $O(n)$
+    \choice $O(n \log n)$
+\end{choices}
+
+\begin{solution}
+Binary search repeatedly divides the search space in half, resulting in logarithmic time complexity $O(\log n)$.
+\end{solution}
+
+\question[2] Which data structure uses Last-In-First-Out (LIFO) ordering?
+
+\begin{choices}
+    \choice Queue
+    \correctchoice Stack
+    \choice Heap
+    \choice Hash Table
+\end{choices}
+
+\begin{solution}
+A stack follows LIFO ordering, where the most recently added element is removed first.
+\end{solution}
+
+\question[2] In object-oriented programming, what does inheritance allow?
+
+\begin{choices}
+    \choice Hiding implementation details
+    \correctchoice Creating new classes based on existing classes
+    \choice Storing multiple data types in one variable
+    \choice Executing multiple functions simultaneously
+\end{choices}
+
+\begin{solution}
+Inheritance allows new classes (derived/child classes) to be created based on existing classes (base/parent classes), inheriting their properties and methods.
+\end{solution}
+
+%% SECTION 2: True/False Questions
+\fullwidth{\section*{Part B: True or False}}
+\fullwidth{\textit{Circle T for True or F for False. Each question is worth 2 points.}}
+
+\question[2] \textbf{T \quad F} \quad A linked list allows constant-time access to any element.
+
+\begin{solution}
+\textbf{False.} Linked lists require $O(n)$ time to access an element since you must traverse from the head. Arrays provide constant-time access.
+\end{solution}
+
+\question[2] \textbf{T \quad F} \quad In Python, strings are immutable.
+
+\begin{solution}
+\textbf{True.} Strings in Python cannot be modified after creation; any operation that appears to modify a string actually creates a new string.
+\end{solution}
+
+\question[2] \textbf{T \quad F} \quad Recursion always uses less memory than iteration.
+
+\begin{solution}
+\textbf{False.} Recursion typically uses more memory due to the call stack, with each recursive call adding a new stack frame.
+\end{solution}
+
+%% SECTION 3: Fill in the Blank
+\fullwidth{\section*{Part C: Fill in the Blank}}
+\fullwidth{\textit{Write the correct answer in the blank. Each question is worth 3 points.}}
+
+\question[3] The \fillin\ algorithm is used to find the shortest path from a single source to all other vertices in a weighted graph.
+
+\begin{solution}
+\textbf{Dijkstra's} (also acceptable: Dijkstra)
+\end{solution}
+
+\question[3] In database normalization, \fillin\ normal form eliminates transitive dependencies.
+
+\begin{solution}
+\textbf{Third} (or 3NF)
+\end{solution}
+
+\question[3] The \fillin[\textbf{Big O}][1.5in] notation describes the upper bound of an algorithm's time complexity.
+
+\begin{solution}
+Already shown in the question format.
+\end{solution}
+
+%% SECTION 4: Matching Questions
+\fullwidth{\section*{Part D: Matching}}
+\fullwidth{\textit{Match each term with its correct definition. Write the letter in the blank. Each match is worth 2 points.}}
+
+\question[10] Match the algorithm with its average time complexity:
+
+\begin{parts}
+    \part[2] Bubble Sort \quad \fillin
+    \part[2] Merge Sort \quad \fillin
+    \part[2] Quick Sort \quad \fillin
+    \part[2] Insertion Sort \quad \fillin
+    \part[2] Heap Sort \quad \fillin
+\end{parts}
+
+\vspace{1em}
+\noindent
+\begin{minipage}{0.5\textwidth}
+\textbf{Options:}
+\begin{enumerate}[label=\Alph*., leftmargin=*]
+    \item $O(n^2)$
+    \item $O(n \log n)$
+    \item $O(n)$
+    \item $O(\log n)$
+    \item $O(2^n)$
+\end{enumerate}
+\end{minipage}
+
+\begin{solution}
+\begin{enumerate}[label=(\alph*)]
+    \item A - $O(n^2)$
+    \item B - $O(n \log n)$
+    \item B - $O(n \log n)$
+    \item A - $O(n^2)$
+    \item B - $O(n \log n)$
+\end{enumerate}
+\end{solution}
+
+%% SECTION 5: Short Answer Questions
+\fullwidth{\section*{Part E: Short Answer}}
+\fullwidth{\textit{Provide a brief answer (2-3 sentences). Show your work where applicable.}}
+
+\question[5] Explain the difference between a compiler and an interpreter.
+
+\begin{solution}[2in]
+A compiler translates the entire source code into machine code before execution, creating an executable file that can run independently. An interpreter translates and executes code line-by-line at runtime, without creating a separate executable. Compiled programs generally run faster, while interpreted programs offer more flexibility and easier debugging.
+\end{solution}
+
+\question[5] What is the purpose of a hash function in a hash table? What property should a good hash function have?
+
+\begin{solution}[2in]
+A hash function maps keys to array indices (buckets) in a hash table, enabling fast lookup, insertion, and deletion operations. A good hash function should uniformly distribute keys across the available buckets to minimize collisions and maintain $O(1)$ average-case performance.
+\end{solution}
+
+\question[6] Given the following array: [64, 34, 25, 12, 22, 11, 90], show the first two passes of bubble sort.
+
+\begin{solution}[2.5in]
+\textbf{Initial:} [64, 34, 25, 12, 22, 11, 90]
+
+\textbf{Pass 1:}
+\begin{itemize}[nosep]
+    \item Compare 64 and 34, swap: [34, 64, 25, 12, 22, 11, 90]
+    \item Compare 64 and 25, swap: [34, 25, 64, 12, 22, 11, 90]
+    \item Compare 64 and 12, swap: [34, 25, 12, 64, 22, 11, 90]
+    \item Compare 64 and 22, swap: [34, 25, 12, 22, 64, 11, 90]
+    \item Compare 64 and 11, swap: [34, 25, 12, 22, 11, 64, 90]
+    \item Compare 64 and 90, no swap: [34, 25, 12, 22, 11, 64, 90]
+\end{itemize}
+
+\textbf{Pass 2:}
+\begin{itemize}[nosep]
+    \item Compare 34 and 25, swap: [25, 34, 12, 22, 11, 64, 90]
+    \item Compare 34 and 12, swap: [25, 12, 34, 22, 11, 64, 90]
+    \item Compare 34 and 22, swap: [25, 12, 22, 34, 11, 64, 90]
+    \item Compare 34 and 11, swap: [25, 12, 22, 11, 34, 64, 90]
+    \item Compare 34 and 64, no swap: [25, 12, 22, 11, 34, 64, 90]
+\end{itemize}
+
+\textbf{After Pass 2:} [25, 12, 22, 11, 34, 64, 90]
+\end{solution}
+
+%% SECTION 6: Long Answer/Essay Questions
+\fullwidth{\section*{Part F: Long Answer}}
+\fullwidth{\textit{Provide a detailed answer. Use the space provided or continue on the next blank page if needed.}}
+
+\question[15] Compare and contrast arrays and linked lists. Discuss their advantages, disadvantages, and appropriate use cases. Include time complexity analysis for common operations (access, insertion, deletion).
+
+\begin{solution}[4in]
+\textbf{Arrays:}
+
+\textit{Advantages:}
+\begin{itemize}
+    \item Constant-time access: $O(1)$ to access any element by index
+    \item Better cache locality due to contiguous memory
+    \item Lower memory overhead (no pointers)
+\end{itemize}
+
+\textit{Disadvantages:}
+\begin{itemize}
+    \item Fixed size (in most languages) or expensive resizing
+    \item Insertion/deletion in middle requires shifting: $O(n)$
+    \item Wasted space if array not fully utilized
+\end{itemize}
+
+\textbf{Linked Lists:}
+
+\textit{Advantages:}
+\begin{itemize}
+    \item Dynamic size, easy to grow/shrink
+    \item Efficient insertion/deletion at known positions: $O(1)$
+    \item No wasted space for unused capacity
+\end{itemize}
+
+\textit{Disadvantages:}
+\begin{itemize}
+    \item Linear-time access: $O(n)$ to reach specific element
+    \item Extra memory for storing pointers
+    \item Poor cache performance due to non-contiguous memory
+\end{itemize}
+
+\textbf{Time Complexity Comparison:}
+\begin{itemize}
+    \item Access: Array $O(1)$, Linked List $O(n)$
+    \item Insert at beginning: Array $O(n)$, Linked List $O(1)$
+    \item Insert at end: Array $O(1)$ amortized, Linked List $O(n)$ or $O(1)$ with tail pointer
+    \item Delete: Array $O(n)$, Linked List $O(1)$ if position known
+\end{itemize}
+
+\textbf{Use Cases:}
+\begin{itemize}
+    \item Arrays: Random access patterns, known size, cache-sensitive applications
+    \item Linked Lists: Frequent insertions/deletions, unknown size, implementing stacks/queues
+\end{itemize}
+\end{solution}
+
+\newpage
+
+\question[15] Describe the concept of recursion in programming. Explain how recursion works using the call stack, and provide an example of a recursive function. What are the advantages and disadvantages of using recursion versus iteration?
+
+\begin{solution}[5in]
+\textbf{What is Recursion:}
+
+Recursion is a programming technique where a function calls itself to solve a problem by breaking it down into smaller, similar subproblems. Every recursive function must have:
+\begin{itemize}
+    \item Base case(s): Conditions that stop the recursion
+    \item Recursive case(s): Function calls itself with modified parameters
+\end{itemize}
+
+\textbf{How Recursion Uses the Call Stack:}
+
+Each recursive call creates a new stack frame containing:
+\begin{itemize}
+    \item Function parameters
+    \item Local variables
+    \item Return address
+\end{itemize}
+
+Stack frames are pushed on with each call and popped off when functions return, working in LIFO order.
+
+\textbf{Example - Factorial Function:}
+
+\begin{verbatim}
+def factorial(n):
+    # Base case
+    if n == 0 or n == 1:
+        return 1
+    # Recursive case
+    else:
+        return n * factorial(n - 1)
+
+# factorial(4) = 4 * factorial(3)
+#              = 4 * (3 * factorial(2))
+#              = 4 * (3 * (2 * factorial(1)))
+#              = 4 * (3 * (2 * 1))
+#              = 24
+\end{verbatim}
+
+\textbf{Advantages of Recursion:}
+\begin{itemize}
+    \item Elegant, clean code for naturally recursive problems (trees, divide-and-conquer)
+    \item Easier to understand for certain algorithms (quicksort, traversals)
+    \item Reduces code complexity for problems with recursive structure
+\end{itemize}
+
+\textbf{Disadvantages of Recursion:}
+\begin{itemize}
+    \item Higher memory usage due to call stack
+    \item Risk of stack overflow with deep recursion
+    \item Generally slower than iteration due to function call overhead
+    \item Can be harder to debug
+\end{itemize}
+
+\textbf{Recursion vs. Iteration:}
+
+Iteration is often more efficient in terms of both time and space, but recursion can be more intuitive for problems with inherent recursive structure. Many recursive solutions can be converted to iterative ones (and vice versa), and tail-call optimization can mitigate some of recursion's drawbacks in supporting languages.
+\end{solution}
+
+% Blank page for additional work
+\newpage
+\begin{center}
+    \textbf{Extra Space for Additional Work}
+
+    \textit{Clearly indicate which question number this work belongs to.}
+\end{center}
+
+\end{questions}
+
+\end{document}

@@ -1,0 +1,188 @@
+%% Formal Business Letter Template with Letterhead
+%% Using article class with custom geometry for maximum flexibility
+%% Compile with: pdflatex letter.tex
+
+\documentclass[11pt]{article}
+
+% Page setup
+\usepackage[
+    top=1in,
+    bottom=1in,
+    left=1in,
+    right=1in,
+    headheight=80pt,
+    headsep=20pt,
+    footskip=30pt
+]{geometry}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+\usepackage{setspace}
+\usepackage[hidelinks]{hyperref}
+
+% Remove page numbers from body (handled by footer)
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Color scheme
+% CUSTOMIZATION: Change these colors to match your brand
+\definecolor{headerblue}{HTML}{1E3A5F}
+\definecolor{accentblue}{HTML}{3A7CA5}
+\definecolor{textgray}{HTML}{333333}
+
+% Custom commands for company info
+% CUSTOMIZATION: Replace with your company details
+\newcommand{\companyname}{TechCorp Solutions Inc.}
+\newcommand{\companyaddress}{123 Business Avenue, Suite 456}
+\newcommand{\companycity}{New York, NY 10001}
+\newcommand{\companyphone}{+1 (555) 123-4567}
+\newcommand{\companyemail}{contact@techcorp.com}
+\newcommand{\companywebsite}{www.techcorp.com}
+\newcommand{\companyfooter}{TechCorp Solutions Inc. | Reg. No. 123456789 | VAT No. GB123456789}
+
+% Sender information
+% CUSTOMIZATION: Replace with sender's details
+\newcommand{\sendername}{John Smith}
+\newcommand{\sendertitle}{Director of Operations}
+\newcommand{\senderemail}{john.smith@techcorp.com}
+\newcommand{\senderphone}{+1 (555) 123-4567 ext. 101}
+
+\begin{document}
+
+% Set text color
+\color{textgray}
+
+% Letterhead
+\noindent
+\begin{tikzpicture}[remember picture, overlay]
+    % Colored header bar
+    \fill[headerblue] (current page.north west) rectangle ++(\paperwidth, -3cm);
+
+    % Company logo placeholder (TikZ drawn)
+    % CUSTOMIZATION: Replace this TikZ logo with \includegraphics[]{yourlogo.png}
+    \node[anchor=north west] at ([xshift=1in, yshift=-0.5in]current page.north west) {
+        \begin{tikzpicture}
+            % Simple logo placeholder - replace with actual logo
+            \fill[white] (0,0) circle (0.4cm);
+            \fill[accentblue] (0,0) circle (0.3cm);
+            \node[white, font=\bfseries\Large] at (0,0) {TC};
+        \end{tikzpicture}
+    };
+
+    % Company name and contact info
+    \node[anchor=north west, text=white] at ([xshift=1.5in, yshift=-0.5in]current page.north west) {
+        \begin{minipage}{5in}
+            \raggedright
+            \fontsize{16pt}{18pt}\selectfont\bfseries\companyname \\[0.3em]
+            \fontsize{9pt}{11pt}\selectfont
+            \companyaddress, \companycity \\
+            Tel: \companyphone \quad Email: \companyemail \\
+            Web: \companywebsite
+        \end{minipage}
+    };
+\end{tikzpicture}
+
+\vspace{3cm}
+
+% Date
+% CUSTOMIZATION: Use specific date or keep \today for automatic date
+\noindent
+\today
+
+\vspace{1.5em}
+
+% Recipient address
+% CUSTOMIZATION: Fill in recipient details
+\noindent
+\begin{minipage}[t]{3in}
+Ms. Sarah Johnson \\
+Chief Technology Officer \\
+Innovation Partners LLC \\
+456 Corporate Drive \\
+San Francisco, CA 94102
+\end{minipage}
+
+\vspace{1.5em}
+
+% Subject line
+% CUSTOMIZATION: Change subject to match letter content
+\noindent
+\textbf{Subject: Proposal for Strategic Partnership Initiative}
+
+\vspace{1em}
+
+% Salutation
+% CUSTOMIZATION: Adjust salutation as appropriate
+\noindent
+Dear Ms. Johnson,
+
+\vspace{1em}
+
+% Body paragraphs
+% CUSTOMIZATION: Replace with your letter content
+\setstretch{1.2}
+
+I am writing to express our interest in establishing a strategic partnership between TechCorp Solutions and Innovation Partners LLC. Following our recent conversation at the Tech Summit 2026, I believe there are significant opportunities for collaboration that would benefit both organizations.
+
+Our company has been at the forefront of enterprise software solutions for over fifteen years, serving more than 500 clients across North America and Europe. We specialize in cloud-based infrastructure, data analytics, and cybersecurity solutions. Your company's expertise in artificial intelligence and machine learning presents a compelling opportunity to create innovative products that address emerging market needs.
+
+\textbf{Proposed Collaboration Areas:}
+
+\begin{itemize}
+    \item Joint development of AI-powered security solutions
+    \item Integration of machine learning capabilities into our existing platform
+    \item Co-marketing initiatives to reach new market segments
+    \item Shared research and development resources
+\end{itemize}
+
+We believe this partnership could generate significant value for both parties. Our preliminary analysis suggests potential revenue growth of 25-30\% over the next three years through combined offerings. Additionally, pooling our technical expertise would accelerate product development cycles and enhance our competitive positioning.
+
+I would welcome the opportunity to discuss this proposal in greater detail at your earliest convenience. Our team has prepared a comprehensive partnership framework that outlines potential structures, investment requirements, and projected outcomes. I am available for a meeting or video conference at your convenience.
+
+Please feel free to contact me directly at \senderphone\ or via email at \senderemail. I look forward to exploring this exciting opportunity with you.
+
+\vspace{1em}
+
+% Closing
+\noindent
+Yours sincerely,
+
+\vspace{2em}
+
+% Signature line
+% CUSTOMIZATION: Add actual signature image here if desired
+% \includegraphics[height=1cm]{signature.png}
+
+\noindent
+\sendername \\
+\sendertitle \\
+\companyname \\
+Email: \senderemail \\
+Phone: \senderphone
+
+\vspace{1em}
+
+% Enclosures or CC (optional)
+% CUSTOMIZATION: Uncomment and modify if needed
+% \noindent
+% \textbf{Enclosures:} Partnership Framework Document, Financial Projections
+
+% \vspace{0.5em}
+% \noindent
+% \textbf{CC:} Michael Chen, VP of Business Development
+
+% Footer with legal/company info
+\vfill
+\begin{tikzpicture}[remember picture, overlay]
+    \node[anchor=south, text=gray, font=\tiny] at ([yshift=0.5in]current page.south) {
+        \companyfooter
+    };
+\end{tikzpicture}
+
+\end{document}
