@@ -1,0 +1,707 @@
+% ============================================================================
+% PROGRAMMING / CODE REFERENCE CARD TEMPLATE
+% ============================================================================
+% Landscape, 4-column layout optimized for command/syntax reference
+% Paper: Letter/A4 landscape | Columns: 4 | Base font: 7pt
+% Focus: Code snippets, command syntax, keyboard shortcuts, API reference
+% Syntax highlighting with listings package
+% Compile: pdflatex (auto-detected by compile script)
+% ============================================================================
+
+\documentclass[7pt,landscape]{extarticle}
+
+% --- GEOMETRY ---
+\usepackage[
+    landscape,
+    margin=4mm,
+    top=5mm,
+    bottom=3mm
+]{geometry}
+
+% --- ENCODING & FONTS ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+
+% --- LAYOUT ---
+\usepackage{multicol}
+\usepackage{enumitem}
+
+% --- VISUAL ---
+\usepackage[table]{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable,skins,listings}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{array}
+
+% --- CODE ---
+\usepackage{listings}
+
+% --- MATH (light, for Big-O etc.) ---
+\usepackage{amsmath}
+
+% ============================================================================
+% COLOR SCHEME — Dark header, syntax-highlight-friendly
+% ============================================================================
+\definecolor{cdPrimary}{RGB}{0,122,204}         % VS Code blue
+\definecolor{cdSecondary}{RGB}{30,30,30}         % Dark header bar
+\definecolor{cdAccent1}{RGB}{215,58,73}          % Red (warnings/destructive)
+\definecolor{cdAccent2}{RGB}{40,167,69}          % Green (success/safe)
+\definecolor{cdAccent3}{RGB}{227,98,9}           % Orange (deprecated/caution)
+\definecolor{cdLightBg}{RGB}{246,248,250}        % GitHub light bg
+\definecolor{cdCodeBg}{RGB}{250,251,252}         % Code block bg
+\definecolor{cdBorder}{RGB}{208,215,222}         % Subtle borders
+
+% --- Syntax colors ---
+\definecolor{synKeyword}{RGB}{0,0,200}
+\definecolor{synString}{RGB}{163,21,21}
+\definecolor{synComment}{RGB}{106,115,125}
+\definecolor{synNumber}{RGB}{0,128,128}
+
+% ============================================================================
+% GLOBAL SPACING
+% ============================================================================
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\setlength{\columnsep}{2.5mm}
+\setlength{\columnseprule}{0.15pt}
+\def\columnseprulecolor{\color{cdBorder}}
+\setlength{\premulticols}{0pt}
+\setlength{\postmulticols}{0pt}
+\setlength{\multicolsep}{0pt}
+
+% --- Ultra-compact lists ---
+\setlist{nosep, leftmargin=*, topsep=0pt, partopsep=0pt, parsep=0pt, itemsep=0.2pt}
+\setlist[itemize]{leftmargin=2.5mm, label={\textcolor{cdPrimary}{\scriptsize\textbullet}}}
+
+% --- Tight line spacing ---
+\linespread{0.92}
+
+% ============================================================================
+% CUSTOM ENVIRONMENTS
+% ============================================================================
+
+% --- Section header (dark banner) ---
+\newtcolorbox{codesection}[1]{%
+    colback=cdPrimary,
+    colframe=cdPrimary,
+    coltext=white,
+    fontupper=\bfseries\fontsize{7pt}{8pt}\selectfont\centering,
+    boxrule=0pt,
+    arc=0.8mm,
+    top=0.3mm, bottom=0.3mm,
+    left=1mm, right=1mm,
+    before skip=0.8mm, after skip=0.4mm,
+    halign=center,
+    after upper={\par\noindent #1\par\vspace{-2pt}}
+}
+
+% --- Command reference box (titled, for tables/lists) ---
+\newtcolorbox{cmdbox}[2][]{%
+    colback=cdLightBg,
+    colframe=cdBorder,
+    fonttitle=\bfseries\fontsize{6.5pt}{7.5pt}\selectfont,
+    title=#2,
+    boxrule=0.3pt,
+    arc=0.5mm,
+    top=0.3mm, bottom=0.3mm,
+    left=0.8mm, right=0.8mm,
+    toptitle=0.2mm, bottomtitle=0.2mm,
+    before skip=0.4mm, after skip=0.4mm,
+    #1
+}
+
+% --- Code block box (for syntax examples) ---
+\newtcolorbox{codeblock}[2][]{%
+    colback=cdCodeBg,
+    colframe=cdBorder,
+    fonttitle=\bfseries\fontsize{6pt}{7pt}\selectfont\ttfamily,
+    title=#2,
+    boxrule=0.25pt,
+    arc=0.3mm,
+    top=0.2mm, bottom=0.2mm,
+    left=0.5mm, right=0.5mm,
+    toptitle=0.2mm, bottomtitle=0.2mm,
+    before skip=0.4mm, after skip=0.4mm,
+    #1
+}
+
+% --- Danger/warning box ---
+\newtcolorbox{dangerbox}[1][]{%
+    colback=cdAccent1!5,
+    colframe=cdAccent1!80!black,
+    boxrule=0.3pt,
+    arc=0.3mm,
+    top=0.3mm, bottom=0.3mm,
+    left=0.8mm, right=0.8mm,
+    before skip=0.4mm, after skip=0.4mm,
+    #1
+}
+
+% --- Tip/success box ---
+\newtcolorbox{safebox}[1][]{%
+    colback=cdAccent2!5,
+    colframe=cdAccent2!80!black,
+    boxrule=0.3pt,
+    arc=0.3mm,
+    top=0.3mm, bottom=0.3mm,
+    left=0.8mm, right=0.8mm,
+    before skip=0.4mm, after skip=0.4mm,
+    #1
+}
+
+% ============================================================================
+% CUSTOM COMMANDS
+% ============================================================================
+\newcommand{\code}[1]{\texttt{\fontsize{5.5pt}{6.5pt}\selectfont#1}}
+\newcommand{\cmd}[1]{\textcolor{cdPrimary}{\texttt{\textbf{#1}}}}
+\newcommand{\key}[1]{\colorbox{cdLightBg}{\texttt{\fontsize{5.5pt}{6.5pt}\selectfont#1}}}
+\newcommand{\flag}[1]{\textcolor{cdAccent3}{\texttt{#1}}}
+
+% ============================================================================
+% CODE LISTING STYLE
+% ============================================================================
+\lstdefinestyle{refcode}{%
+    basicstyle=\ttfamily\fontsize{5.5pt}{6.5pt}\selectfont,
+    backgroundcolor=\color{cdCodeBg},
+    frame=none,
+    numbers=none,
+    breaklines=true,
+    breakatwhitespace=true,
+    tabsize=2,
+    columns=flexible,
+    keepspaces=true,
+    xleftmargin=0.5mm,
+    xrightmargin=0.5mm,
+    aboveskip=0.5mm,
+    belowskip=0.5mm,
+    keywordstyle=\color{synKeyword}\bfseries,
+    commentstyle=\color{synComment}\itshape,
+    stringstyle=\color{synString},
+    numberstyle=\color{synNumber}
+}
+\lstset{style=refcode}
+
+% ============================================================================
+% DOCUMENT
+% ============================================================================
+\begin{document}
+
+% --- TITLE BAR ---
+\noindent\colorbox{cdSecondary}{%
+    \parbox{\dimexpr\textwidth-2\fboxsep\relax}{%
+        \centering\color{white}%
+        \fontsize{9pt}{11pt}\selectfont\textbf{PYTHON QUICK REFERENCE CARD}%
+        \hfill%
+        \fontsize{6pt}{7pt}\selectfont Python 3.12+ \textbar{} v1.0 \textbar{} 2026%
+    }%
+}
+
+\vspace{0.5mm}
+
+% ============================================================================
+% PAGE 1
+% ============================================================================
+\begin{multicols}{4}
+
+% --- BASICS ---
+\begin{codesection}{Data Types}\end{codesection}
+
+\begin{cmdbox}{Primitive Types}
+{\fontsize{5.5pt}{6.5pt}\selectfont
+\renewcommand{\arraystretch}{0.95}
+\begin{tabular}{@{}ll@{}}
+\cmd{int} & \code{42}, \code{0xff}, \code{0b1010} \\
+\cmd{float} & \code{3.14}, \code{1e-3}, \code{float('inf')} \\
+\cmd{str} & \code{'hello'}, \code{f"\{x\}"} \\
+\cmd{bool} & \code{True}, \code{False} \\
+\cmd{None} & null/nil equivalent \\
+\cmd{complex} & \code{3+4j} \\
+\end{tabular}
+}
+\end{cmdbox}
+
+\begin{cmdbox}{Collections}
+{\fontsize{5.5pt}{6.5pt}\selectfont
+\renewcommand{\arraystretch}{0.95}
+\begin{tabular}{@{}ll@{}}
+\cmd{list} & \code{[1,2,3]} mutable, ordered \\
+\cmd{tuple} & \code{(1,2,3)} immutable \\
+\cmd{dict} & \code{\{'a':1\}} key-value \\
+\cmd{set} & \code{\{1,2,3\}} unique vals \\
+\cmd{frozenset} & immutable set \\
+\cmd{deque} & double-ended queue \\
+\end{tabular}
+}
+\end{cmdbox}
+
+% --- STRINGS ---
+\begin{codesection}{String Operations}\end{codesection}
+
+\begin{cmdbox}{Common Methods}
+{\fontsize{5.5pt}{6.5pt}\selectfont
+\renewcommand{\arraystretch}{0.95}
+\begin{tabular}{@{}lp{2.8cm}@{}}
+\cmd{.split(sep)} & Split by delimiter \\
+\cmd{.join(iter)} & Join iterable \\
+\cmd{.strip()} & Remove whitespace \\
+\cmd{.replace(a,b)} & Replace substring \\
+\cmd{.find(sub)} & Find index (-1 miss) \\
+\cmd{.startswith(s)} & Prefix check \\
+\cmd{.upper()/.lower()} & Case conversion \\
+\cmd{.format()} & String formatting \\
+\end{tabular}
+}
+\end{cmdbox}
+
+\begin{codeblock}{f-string Formatting}
+\begin{lstlisting}[language=Python]
+f"{x:.2f}"     # 2 decimals
+f"{x:>10}"     # right-align 10
+f"{x:#06x}"    # hex 0x00ff
+f"{d:%Y-%m-%d}" # date format
+f"{n:,}"       # thousands sep
+\end{lstlisting}
+\end{codeblock}
+
+% --- LISTS ---
+\begin{codesection}{List Operations}\end{codesection}
+
+\begin{cmdbox}{Methods}
+{\fontsize{5.5pt}{6.5pt}\selectfont
+\renewcommand{\arraystretch}{0.95}
+\begin{tabular}{@{}ll@{}}
+\cmd{.append(x)} & Add to end \\
+\cmd{.extend(iter)} & Append iterable \\
+\cmd{.insert(i, x)} & Insert at index \\
+\cmd{.pop(i)} & Remove by index \\
+\cmd{.remove(x)} & Remove first match \\
+\cmd{.sort(key=)} & In-place sort \\
+\cmd{.reverse()} & In-place reverse \\
+\cmd{.index(x)} & Find index \\
+\cmd{.count(x)} & Count occurrences \\
+\end{tabular}
+}
+\end{cmdbox}
+
+\begin{codeblock}{Slicing \& Comprehensions}
+\begin{lstlisting}[language=Python]
+a[1:5]     # index 1 to 4
+a[::2]     # every 2nd element
+a[::-1]    # reversed copy
+[x**2 for x in range(10)]
+[x for x in a if x > 0]
+{k:v for k,v in d.items()}
+\end{lstlisting}
+\end{codeblock}
+
+% --- DICTS ---
+\begin{codesection}{Dict Operations}\end{codesection}
+
+\begin{cmdbox}{Methods}
+{\fontsize{5.5pt}{6.5pt}\selectfont
+\renewcommand{\arraystretch}{0.95}
+\begin{tabular}{@{}ll@{}}
+\cmd{.get(k, def)} & Safe lookup \\
+\cmd{.keys()} & All keys \\
+\cmd{.values()} & All values \\
+\cmd{.items()} & Key-value pairs \\
+\cmd{.update(d2)} & Merge dicts \\
+\cmd{.pop(k)} & Remove + return \\
+\cmd{.setdefault(k,v)} & Get or set \\
+\cmd{d1 | d2} & Merge (3.9+) \\
+\end{tabular}
+}
+\end{cmdbox}
+
+% --- CONTROL FLOW ---
+\begin{codesection}{Control Flow}\end{codesection}
+
+\begin{codeblock}{Conditionals}
+\begin{lstlisting}[language=Python]
+if x > 0:
+    pass
+elif x == 0:
+    pass
+else:
+    pass
+
+# Ternary
+y = a if cond else b
+
+# Match (3.10+)
+match cmd:
+    case "q": quit()
+    case "h": help()
+    case _: unknown()
+\end{lstlisting}
+\end{codeblock}
+
+\begin{codeblock}{Loops}
+\begin{lstlisting}[language=Python]
+for x in iterable:
+    if skip: continue
+    if done: break
+else:  # no break
+
+while cond:
+    pass
+
+# Enumerate
+for i, v in enumerate(lst):
+
+# Zip
+for a, b in zip(l1, l2):
+\end{lstlisting}
+\end{codeblock}
+
+% --- FUNCTIONS ---
+\begin{codesection}{Functions}\end{codesection}
+
+\begin{codeblock}{Definition \& Args}
+\begin{lstlisting}[language=Python]
+def f(x, y=10, *args, **kw):
+    return x + y
+
+# Lambda
+sq = lambda x: x**2
+
+# Type hints
+def add(a: int, b: int) -> int:
+    return a + b
+
+# Decorators
+@decorator
+def func(): pass
+\end{lstlisting}
+\end{codeblock}
+
+\begin{cmdbox}{Built-in Functions}
+{\fontsize{5.5pt}{6.5pt}\selectfont
+\renewcommand{\arraystretch}{0.95}
+\begin{tabular}{@{}ll@{}}
+\cmd{map(f, iter)} & Apply f to each \\
+\cmd{filter(f, iter)} & Keep if f(x) true \\
+\cmd{sorted(iter)} & New sorted list \\
+\cmd{zip(*iters)} & Parallel iterate \\
+\cmd{any()/all()} & Boolean reduce \\
+\cmd{isinstance(x,T)} & Type check \\
+\end{tabular}
+}
+\end{cmdbox}
+
+% --- FILE I/O ---
+\begin{codesection}{File I/O}\end{codesection}
+
+\begin{codeblock}{Reading \& Writing}
+\begin{lstlisting}[language=Python]
+# Read
+with open('f.txt') as f:
+    text = f.read()
+    lines = f.readlines()
+
+# Write
+with open('f.txt','w') as f:
+    f.write("hello\n")
+
+# JSON
+import json
+d = json.load(open('f.json'))
+json.dump(d, open('o.json','w'))
+\end{lstlisting}
+\end{codeblock}
+
+% --- ERROR HANDLING ---
+\begin{codesection}{Error Handling}\end{codesection}
+
+\begin{codeblock}{try / except / finally}
+\begin{lstlisting}[language=Python]
+try:
+    risky()
+except ValueError as e:
+    handle(e)
+except (KeyError, IndexError):
+    fallback()
+else:
+    success()  # no exception
+finally:
+    cleanup()  # always runs
+
+# Raise
+raise ValueError("msg")
+\end{lstlisting}
+\end{codeblock}
+
+% --- CLASSES ---
+\begin{codesection}{Classes \& OOP}\end{codesection}
+
+\begin{codeblock}{Class Definition}
+\begin{lstlisting}[language=Python]
+class Dog(Animal):
+    def __init__(self, name):
+        super().__init__()
+        self.name = name
+
+    def speak(self) -> str:
+        return f"{self.name} barks"
+
+    @property
+    def info(self):
+        return self._info
+
+    @classmethod
+    def create(cls, name):
+        return cls(name)
+
+    @staticmethod
+    def species():
+        return "Canis"
+\end{lstlisting}
+\end{codeblock}
+
+\begin{cmdbox}{Dunder Methods}
+{\fontsize{5.5pt}{6.5pt}\selectfont
+\renewcommand{\arraystretch}{0.95}
+\begin{tabular}{@{}ll@{}}
+\cmd{\_\_init\_\_} & Constructor \\
+\cmd{\_\_str\_\_} & String repr \\
+\cmd{\_\_repr\_\_} & Debug repr \\
+\cmd{\_\_len\_\_} & \code{len(obj)} \\
+\cmd{\_\_getitem\_\_} & \code{obj[key]} \\
+\cmd{\_\_iter\_\_} & \code{for x in obj} \\
+\cmd{\_\_eq\_\_} & \code{obj == other} \\
+\cmd{\_\_hash\_\_} & Hash value \\
+\cmd{\_\_enter/exit\_\_} & Context mgr \\
+\end{tabular}
+}
+\end{cmdbox}
+
+\end{multicols}
+
+% ============================================================================
+% PAGE 2
+% ============================================================================
+\newpage
+
+\noindent\colorbox{cdSecondary}{%
+    \parbox{\dimexpr\textwidth-2\fboxsep\relax}{%
+        \centering\color{white}%
+        \fontsize{9pt}{11pt}\selectfont\textbf{PYTHON REFERENCE -- PAGE 2}%
+        \hfill%
+        \fontsize{6pt}{7pt}\selectfont Standard Library \textbar{} Common Patterns%
+    }%
+}
+
+\vspace{0.5mm}
+
+\begin{multicols}{4}
+
+% --- STDLIB ---
+\begin{codesection}{Standard Library}\end{codesection}
+
+\begin{cmdbox}{os / pathlib}
+{\fontsize{5.5pt}{6.5pt}\selectfont
+\renewcommand{\arraystretch}{0.95}
+\begin{tabular}{@{}lp{2.5cm}@{}}
+\cmd{Path('f').read\_text()} & Read file \\
+\cmd{Path('d').mkdir()} & Create dir \\
+\cmd{Path('f').exists()} & Check exists \\
+\cmd{Path('f').stem} & Filename no ext \\
+\cmd{os.environ['KEY']} & Env variable \\
+\cmd{os.getcwd()} & Working dir \\
+\end{tabular}
+}
+\end{cmdbox}
+
+\begin{cmdbox}{itertools}
+{\fontsize{5.5pt}{6.5pt}\selectfont
+\renewcommand{\arraystretch}{0.95}
+\begin{tabular}{@{}ll@{}}
+\cmd{chain(*iters)} & Flatten iterables \\
+\cmd{product(a,b)} & Cartesian product \\
+\cmd{combinations(a,n)} & n-choose combos \\
+\cmd{permutations(a,n)} & Ordered combos \\
+\cmd{groupby(iter,key)} & Group by key \\
+\cmd{islice(iter,n)} & Slice iterator \\
+\end{tabular}
+}
+\end{cmdbox}
+
+\begin{cmdbox}{collections}
+{\fontsize{5.5pt}{6.5pt}\selectfont
+\renewcommand{\arraystretch}{0.95}
+\begin{tabular}{@{}ll@{}}
+\cmd{Counter(iter)} & Count elements \\
+\cmd{defaultdict(type)} & Default values \\
+\cmd{OrderedDict()} & Insertion order \\
+\cmd{namedtuple(n,flds)} & Named fields \\
+\cmd{deque()} & Fast append/pop \\
+\end{tabular}
+}
+\end{cmdbox}
+
+\begin{cmdbox}{re (Regular Expressions)}
+{\fontsize{5.5pt}{6.5pt}\selectfont
+\renewcommand{\arraystretch}{0.95}
+\begin{tabular}{@{}ll@{}}
+\cmd{re.search(p, s)} & First match \\
+\cmd{re.findall(p, s)} & All matches \\
+\cmd{re.sub(p, r, s)} & Replace \\
+\cmd{re.split(p, s)} & Split by pattern \\
+\cmd{re.compile(p)} & Precompile \\
+\end{tabular}
+}
+\end{cmdbox}
+
+% --- ASYNC ---
+\begin{codesection}{Async / Concurrency}\end{codesection}
+
+\begin{codeblock}{asyncio}
+\begin{lstlisting}[language=Python]
+import asyncio
+
+async def fetch(url):
+    await asyncio.sleep(1)
+    return data
+
+async def main():
+    results = await asyncio.gather(
+        fetch(u1), fetch(u2)
+    )
+
+asyncio.run(main())
+\end{lstlisting}
+\end{codeblock}
+
+\begin{codeblock}{Threading / Multiprocessing}
+\begin{lstlisting}[language=Python]
+from concurrent.futures import (
+    ThreadPoolExecutor,
+    ProcessPoolExecutor
+)
+
+with ThreadPoolExecutor(4) as ex:
+    results = ex.map(fn, data)
+
+with ProcessPoolExecutor() as ex:
+    futures = [ex.submit(fn, x)
+               for x in data]
+\end{lstlisting}
+\end{codeblock}
+
+% --- TESTING ---
+\begin{codesection}{Testing}\end{codesection}
+
+\begin{codeblock}{pytest}
+\begin{lstlisting}[language=Python]
+def test_add():
+    assert add(1,2) == 3
+
+@pytest.fixture
+def db():
+    return setup_db()
+
+@pytest.mark.parametrize(
+    "x,y,z", [(1,2,3),(4,5,9)]
+)
+def test_sum(x, y, z):
+    assert x + y == z
+\end{lstlisting}
+\end{codeblock}
+
+% --- COMMON PATTERNS ---
+\begin{codesection}{Common Patterns}\end{codesection}
+
+\begin{codeblock}{Context Managers}
+\begin{lstlisting}[language=Python]
+from contextlib import (
+    contextmanager
+)
+
+@contextmanager
+def timer():
+    t0 = time.time()
+    yield
+    print(f"{time.time()-t0:.2f}s")
+
+with timer():
+    expensive_op()
+\end{lstlisting}
+\end{codeblock}
+
+\begin{codeblock}{Dataclasses}
+\begin{lstlisting}[language=Python]
+from dataclasses import (
+    dataclass, field
+)
+
+@dataclass
+class Point:
+    x: float
+    y: float
+    label: str = ""
+    tags: list = field(
+        default_factory=list
+    )
+
+    def dist(self, other):
+        return ((self.x-other.x)**2
+              + (self.y-other.y)**2)**0.5
+\end{lstlisting}
+\end{codeblock}
+
+\begin{codeblock}{Type Hints}
+\begin{lstlisting}[language=Python]
+from typing import (
+    Optional, Union, TypeAlias
+)
+
+Vector: TypeAlias = list[float]
+
+def process(
+    data: list[dict[str, int]],
+    flag: bool = False,
+) -> Optional[str]:
+    ...
+
+# Python 3.10+ union
+def f(x: int | str) -> None: ...
+\end{lstlisting}
+\end{codeblock}
+
+% --- KEYBOARD SHORTCUTS ---
+\begin{codesection}{Useful Shortcuts}\end{codesection}
+
+\begin{cmdbox}{REPL / IPython}
+{\fontsize{5.5pt}{6.5pt}\selectfont
+\renewcommand{\arraystretch}{0.95}
+\begin{tabular}{@{}ll@{}}
+\key{Tab} & Autocomplete \\
+\key{Ctrl+D} & Exit \\
+\code{\_} & Last result \\
+\code{help(obj)} & Documentation \\
+\code{dir(obj)} & List attributes \\
+\code{type(obj)} & Object type \\
+\code{vars(obj)} & Instance dict \\
+\end{tabular}
+}
+\end{cmdbox}
+
+\begin{safebox}
+\textbf{Pro tip:} Use \code{python -m pdb script.py} for debugging. \code{breakpoint()} in code drops into debugger.
+\end{safebox}
+
+% --- Footer ---
+\vfill
+\begin{center}
+{\fontsize{4.5pt}{5.5pt}\selectfont\textcolor{cdBorder}{%
+Programming Reference Card Template \textbar{} Customize for any language%
+}}
+\end{center}
+
+\end{multicols}
+
+\end{document}

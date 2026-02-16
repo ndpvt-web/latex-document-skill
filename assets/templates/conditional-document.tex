@@ -1,0 +1,389 @@
+% Conditional Content / Template Variable Document
+% Demonstrates show/hide sections, document profiles, and configurable content.
+%
+% All configuration is done in the "DOCUMENT CONFIGURATION" block below.
+% Toggle features on/off, set template variables, choose visual profiles.
+%
+% To pass variables at compile time (CI/CD), use:
+%   pdflatex "\def\doctitle{My Title}\def\draftmode{true}\input{document.tex}"
+%
+\documentclass[11pt,a4paper]{article}
+
+% =============================================
+% DOCUMENT CONFIGURATION
+% Change these values to customize the document
+% =============================================
+
+% --- Template Variables ---
+% Override these with \def before \input{this-file} for CI/CD usage
+\providecommand{\doctitle}{Quarterly Business Report}
+\providecommand{\docsubtitle}{Q4 2025 Financial Analysis}
+\providecommand{\docauthor}{Jane Smith}
+\providecommand{\docdate}{\today}
+\providecommand{\docversion}{1.0}
+\providecommand{\orgname}{Acme Corporation}
+\providecommand{\orgdept}{Finance Division}
+\providecommand{\doclang}{english}
+
+% --- Feature Toggles ---
+% Set \toggletrue or \togglefalse for each feature
+\usepackage{etoolbox}
+
+\newtoggle{showTOC}           % Table of contents
+\newtoggle{showLOF}           % List of figures
+\newtoggle{showLOT}           % List of tables
+\newtoggle{showAppendix}      % Appendix section
+\newtoggle{showAcknowledgments} % Acknowledgments section
+\newtoggle{showAbstract}      % Abstract/executive summary
+\newtoggle{showWatermark}     % Watermark overlay
+\newtoggle{isDraft}           % Draft mode (enables line numbers, draft watermark)
+\newtoggle{isConfidential}    % Confidential marking
+\newtoggle{showCoverPage}     % Title/cover page
+\newtoggle{showPageNumbers}   % Page numbers in footer
+\newtoggle{showHeaders}       % Running headers
+
+% === Set your toggles here ===
+\toggletrue{showTOC}
+\toggletrue{showLOF}
+\togglefalse{showLOT}
+\toggletrue{showAppendix}
+\toggletrue{showAcknowledgments}
+\toggletrue{showAbstract}
+\togglefalse{showWatermark}
+\togglefalse{isDraft}
+\togglefalse{isConfidential}
+\toggletrue{showCoverPage}
+\toggletrue{showPageNumbers}
+\toggletrue{showHeaders}
+
+% --- Visual Profile ---
+% Options: corporate, academic, minimal
+\providecommand{\docprofile}{corporate}
+
+% --- Watermark Text (if showWatermark is true) ---
+\providecommand{\watermarktext}{DRAFT}
+
+% =============================================
+% END CONFIGURATION
+% =============================================
+
+% === Core packages ===
+\usepackage[margin=1in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{comment}         % For excluding large blocks
+
+% === Conditional packages ===
+
+% Draft mode: line numbers
+\iftoggle{isDraft}{
+    \usepackage{lineno}
+    \linenumbers
+    % Also enable draft watermark
+    \toggletrue{showWatermark}
+    \renewcommand{\watermarktext}{DRAFT}
+}{}
+
+% Watermark
+\iftoggle{showWatermark}{
+    \usepackage{draftwatermark}
+    \SetWatermarkText{\watermarktext}
+    \SetWatermarkScale{1.5}
+    \SetWatermarkColor[gray]{0.85}
+}{}
+
+% Confidential mode: red watermark + header notice
+\iftoggle{isConfidential}{
+    \usepackage{draftwatermark}
+    \SetWatermarkText{CONFIDENTIAL}
+    \SetWatermarkScale{1.2}
+    \SetWatermarkColor[rgb]{0.8, 0, 0}
+}{}
+
+% === Visual Profile Configuration ===
+% Each profile defines: colors, fonts, section styling, header/footer style
+
+% -- Default values (overridden by profiles) --
+\definecolor{primaryColor}{RGB}{0, 70, 140}
+\definecolor{secondaryColor}{RGB}{100, 130, 170}
+\definecolor{accentColor}{RGB}{200, 80, 40}
+\definecolor{bgLight}{RGB}{245, 248, 252}
+
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+
+% -- Profile: Corporate --
+\makeatletter
+\@ifundefined{docprofile}{}{%
+\ifdefstring{\docprofile}{corporate}{%
+    \definecolor{primaryColor}{RGB}{0, 51, 102}
+    \definecolor{secondaryColor}{RGB}{51, 102, 153}
+    \definecolor{accentColor}{RGB}{204, 85, 0}
+    \definecolor{bgLight}{RGB}{240, 245, 250}
+    \titleformat{\section}{\Large\bfseries\color{primaryColor}}{\thesection}{1em}{}
+    \titleformat{\subsection}{\large\bfseries\color{secondaryColor}}{\thesubsection}{0.8em}{}
+}{}%
+}
+\makeatother
+
+\makeatletter
+\@ifundefined{docprofile}{}{%
+\ifdefstring{\docprofile}{academic}{%
+    \definecolor{primaryColor}{RGB}{100, 30, 30}
+    \definecolor{secondaryColor}{RGB}{60, 60, 60}
+    \definecolor{accentColor}{RGB}{0, 100, 60}
+    \definecolor{bgLight}{RGB}{255, 252, 245}
+    \usepackage{palatino}
+    \titleformat{\section}{\Large\bfseries}{\thesection}{1em}{}
+    \titleformat{\subsection}{\large\bfseries}{\thesubsection}{0.8em}{}
+}{}%
+}
+\makeatother
+
+\makeatletter
+\@ifundefined{docprofile}{}{%
+\ifdefstring{\docprofile}{minimal}{%
+    \definecolor{primaryColor}{RGB}{40, 40, 40}
+    \definecolor{secondaryColor}{RGB}{100, 100, 100}
+    \definecolor{accentColor}{RGB}{60, 60, 60}
+    \definecolor{bgLight}{RGB}{250, 250, 250}
+    \titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+    \titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.8em}{}
+    \geometry{margin=1.2in}
+}{}%
+}
+\makeatother
+
+% === Headers and Footers ===
+\iftoggle{showHeaders}{
+    \pagestyle{fancy}
+    \fancyhf{}
+    \fancyhead[L]{\small\textcolor{secondaryColor}{\orgname}}
+    \fancyhead[R]{\small\textcolor{secondaryColor}{\doctitle}}
+    \iftoggle{showPageNumbers}{
+        \fancyfoot[C]{\small\thepage}
+    }{}
+    \iftoggle{isConfidential}{
+        \fancyfoot[R]{\small\textcolor{red}{\textbf{CONFIDENTIAL}}}
+    }{}
+    \renewcommand{\headrulewidth}{0.4pt}
+}{
+    \iftoggle{showPageNumbers}{
+        \pagestyle{plain}
+    }{
+        \pagestyle{empty}
+    }
+}
+
+% === Hyperref (load last) ===
+\usepackage[
+    colorlinks=true,
+    linkcolor=primaryColor,
+    urlcolor=secondaryColor,
+    pdftitle={\doctitle},
+    pdfauthor={\docauthor},
+]{hyperref}
+
+% === List compaction ===
+\setlist[itemize]{nosep, leftmargin=*, topsep=2pt, partopsep=0pt}
+\setlist[enumerate]{nosep, leftmargin=*, topsep=2pt, partopsep=0pt}
+
+\begin{document}
+
+% ============================================================
+% COVER PAGE (conditional)
+% ============================================================
+\iftoggle{showCoverPage}{
+    \begin{titlepage}
+        \centering
+        \vspace*{3cm}
+
+        {\Huge\bfseries\textcolor{primaryColor}{\doctitle}\par}
+        \vspace{0.5cm}
+        {\Large\textcolor{secondaryColor}{\docsubtitle}\par}
+
+        \vspace{2cm}
+        \textcolor{secondaryColor}{\rule{0.6\textwidth}{0.5pt}}
+        \vspace{1cm}
+
+        {\large\textbf{\docauthor}\par}
+        \vspace{0.3cm}
+        {\normalsize\textcolor{secondaryColor}{\orgname~---~\orgdept}\par}
+
+        \vfill
+
+        {\normalsize Version \docversion\par}
+        {\normalsize\docdate\par}
+
+        \iftoggle{isConfidential}{
+            \vspace{1cm}
+            {\large\textcolor{red}{\textbf{CONFIDENTIAL}}\par}
+            {\small\textcolor{red}{This document contains proprietary information.}\par}
+            {\small\textcolor{red}{Distribution is strictly controlled.}\par}
+        }{}
+
+        \iftoggle{isDraft}{
+            \vspace{0.5cm}
+            {\large\textcolor{orange}{\textbf{DRAFT --- NOT FOR DISTRIBUTION}}\par}
+        }{}
+    \end{titlepage}
+}{
+    % Simple header instead of cover page
+    \begin{center}
+        {\LARGE\bfseries\textcolor{primaryColor}{\doctitle}\par}
+        \vspace{0.3cm}
+        {\large\textcolor{secondaryColor}{\docauthor~---~\docdate}\par}
+    \end{center}
+    \vspace{1em}
+}
+
+% ============================================================
+% TABLE OF CONTENTS (conditional)
+% ============================================================
+\iftoggle{showTOC}{
+    \tableofcontents
+    \newpage
+}{}
+
+% ============================================================
+% LIST OF FIGURES (conditional)
+% ============================================================
+\iftoggle{showLOF}{
+    \listoffigures
+    \vspace{1em}
+}{}
+
+% ============================================================
+% LIST OF TABLES (conditional)
+% ============================================================
+\iftoggle{showLOT}{
+    \listoftables
+    \vspace{1em}
+}{}
+
+% ============================================================
+% ABSTRACT / EXECUTIVE SUMMARY (conditional)
+% ============================================================
+\iftoggle{showAbstract}{
+    \section*{Executive Summary}
+    \addcontentsline{toc}{section}{Executive Summary}
+
+    This report presents the quarterly financial analysis for \orgname{}
+    covering the period ending \docdate{}. Key findings include strong revenue
+    growth across all divisions, improved operational efficiency, and strategic
+    positioning for the upcoming fiscal year.
+
+    \vspace{1em}
+}{}
+
+% ============================================================
+% MAIN CONTENT
+% ============================================================
+
+\section{Introduction}
+
+This document demonstrates the conditional content system for LaTeX documents.
+Every section, feature, and visual element is controlled by the configuration
+block at the top of the file.
+
+The current configuration:
+\begin{itemize}
+    \item \textbf{Profile:} \docprofile
+    \item \textbf{Draft mode:} \iftoggle{isDraft}{Enabled}{Disabled}
+    \item \textbf{Confidential:} \iftoggle{isConfidential}{Yes}{No}
+    \item \textbf{Version:} \docversion
+\end{itemize}
+
+\section{Financial Overview}
+
+Revenue for the quarter showed a 15\% increase compared to the same period
+last year. Operating margins improved by 2.3 percentage points, driven by
+cost optimization initiatives and increased automation in the supply chain.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Quarterly Revenue Summary (\$M)}
+    \label{tab:revenue}
+    \begin{tabular}{lrrrr}
+        \toprule
+        \textbf{Division} & \textbf{Q1} & \textbf{Q2} & \textbf{Q3} & \textbf{Q4} \\
+        \midrule
+        Products    & 45.2 & 48.1 & 52.3 & 58.7 \\
+        Services    & 22.1 & 23.8 & 25.4 & 27.2 \\
+        Licensing   & 12.5 & 13.1 & 14.0 & 15.8 \\
+        \midrule
+        \textbf{Total} & \textbf{79.8} & \textbf{85.0} & \textbf{91.7} & \textbf{101.7} \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\section{Strategic Initiatives}
+
+Three major initiatives shaped the quarter's performance. First, the digital
+transformation program reached 80\% completion, delivering measurable
+productivity gains across the organization. Second, the international
+expansion into Southeast Asian markets generated \$4.2M in new revenue.
+Third, the R\&D investment in next-generation products positions the company
+for sustained growth.
+
+\section{Outlook}
+
+Market conditions remain favorable for continued growth. The company is
+well-positioned to capitalize on emerging trends in enterprise software,
+with a strong pipeline of qualified opportunities.
+
+% ============================================================
+% ACKNOWLEDGMENTS (conditional)
+% ============================================================
+\iftoggle{showAcknowledgments}{
+    \section*{Acknowledgments}
+    \addcontentsline{toc}{section}{Acknowledgments}
+
+    The author wishes to thank the finance team for their thorough data
+    analysis and the division leads for their timely input on strategic
+    priorities.
+}{}
+
+% ============================================================
+% APPENDIX (conditional)
+% ============================================================
+\iftoggle{showAppendix}{
+    \newpage
+    \appendix
+
+    \section{Detailed Financial Data}
+    \label{app:data}
+
+    This appendix contains the detailed breakdown of financial data
+    referenced in the main body of the report.
+
+    \begin{table}[htbp]
+        \centering
+        \caption{Monthly Revenue Breakdown --- Q4 (\$M)}
+        \begin{tabular}{lrrr}
+            \toprule
+            \textbf{Division} & \textbf{Oct} & \textbf{Nov} & \textbf{Dec} \\
+            \midrule
+            Products    & 18.5 & 19.2 & 21.0 \\
+            Services    & 8.8  & 9.0  & 9.4  \\
+            Licensing   & 4.8  & 5.2  & 5.8  \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \section{Methodology}
+    \label{app:method}
+
+    Revenue figures are reported on an accrual basis in accordance with
+    GAAP standards. Year-over-year comparisons are adjusted for currency
+    fluctuations using the average exchange rate for each quarter.
+}{}
+
+\end{document}

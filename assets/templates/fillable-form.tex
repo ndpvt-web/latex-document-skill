@@ -1,0 +1,279 @@
+% Fillable PDF Form Template
+% Compile with pdflatex. Open in Adobe Reader/Acrobat for full form support.
+% Browser PDF viewers and Preview.app have limited form field support.
+%
+% Form field types demonstrated:
+%   - Text fields (single line, multi-line, password)
+%   - Checkboxes
+%   - Radio buttons
+%   - Dropdown menus (combo boxes)
+%   - List boxes
+%   - Push buttons (submit, reset)
+%   - Calculated fields (auto-sum)
+%
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{xcolor}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+
+% === HYPERREF SETUP (must be loaded last among URL/link packages) ===
+\usepackage[
+    colorlinks=true,
+    linkcolor=blue!70!black,
+    urlcolor=blue!70!black,
+    pdftitle={Application Form},
+    pdfauthor={Organization Name},
+    pdfsubject={Fillable PDF Form},
+    pdfkeywords={form, application, fillable}
+]{hyperref}
+
+% === FORM FIELD COLORS ===
+\definecolor{fieldBg}{RGB}{240, 245, 255}
+\definecolor{fieldBorder}{RGB}{100, 130, 180}
+\definecolor{sectionColor}{RGB}{30, 60, 120}
+\definecolor{headerBg}{RGB}{30, 60, 120}
+
+% === PAGE STYLE ===
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{gray}{Application Form}}
+\fancyhead[R]{\small\textcolor{gray}{\today}}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% === SECTION STYLING ===
+\titleformat{\section}
+    {\Large\bfseries\color{sectionColor}}
+    {\thesection}{1em}{}
+    [\vspace{-0.5em}\textcolor{sectionColor}{\rule{\textwidth}{0.5pt}}]
+
+\titleformat{\subsection}
+    {\large\bfseries\color{sectionColor!80}}
+    {\thesubsection}{0.8em}{}
+
+% === CUSTOM FORM FIELD HELPERS ===
+% Wider text field with label
+\newcommand{\FormField}[3][10cm]{%
+    \noindent\textbf{#2:}\hspace{0.5em}%
+    \TextField[name=#3, width=#1, bordercolor=fieldBorder, backgroundcolor=fieldBg,
+               charsize=10pt]{}%
+    \par\vspace{6pt}%
+}
+
+% Multi-line text area with label
+\newcommand{\FormTextArea}[4][10cm]{%
+    \noindent\textbf{#2:}\\[4pt]%
+    \TextField[name=#3, width=#1, height=#4, multiline=true,
+               bordercolor=fieldBorder, backgroundcolor=fieldBg,
+               charsize=10pt]{}%
+    \par\vspace{6pt}%
+}
+
+% Checkbox with label
+\newcommand{\FormCheck}[2]{%
+    \CheckBox[name=#2, bordercolor=fieldBorder, backgroundcolor=fieldBg,
+              width=12pt, height=12pt]{#1}%
+    \hspace{0.3em}%
+}
+
+% Dropdown with label
+\newcommand{\FormDropdown}[4][6cm]{%
+    \noindent\textbf{#2:}\hspace{0.5em}%
+    \ChoiceMenu[name=#3, width=#1, bordercolor=fieldBorder,
+                backgroundcolor=fieldBg, combo, charsize=10pt]{}{#4}%
+    \par\vspace{6pt}%
+}
+
+\setlist[itemize]{nosep, leftmargin=*, topsep=2pt, partopsep=0pt}
+
+\begin{document}
+
+% === FORM ENVIRONMENT (wraps all form fields) ===
+\begin{Form}
+
+% === HEADER ===
+\begin{center}
+    {\Huge\bfseries\textcolor{headerBg}{Application Form}}\\[8pt]
+    {\large\textcolor{gray}{Organization Name --- Department}}\\[4pt]
+    {\small\textcolor{gray}{Please fill out all required fields marked with *}}
+\end{center}
+
+\vspace{1em}
+
+% ============================================================
+\section{Personal Information}
+% ============================================================
+
+\begin{tabularx}{\textwidth}{@{}XX@{}}
+    % Left column
+    \textbf{First Name *:}\newline
+    \TextField[name=firstName, width=\linewidth, bordercolor=fieldBorder,
+               backgroundcolor=fieldBg, charsize=10pt]{} &
+
+    % Right column
+    \textbf{Last Name *:}\newline
+    \TextField[name=lastName, width=\linewidth, bordercolor=fieldBorder,
+               backgroundcolor=fieldBg, charsize=10pt]{} \\[12pt]
+
+    \textbf{Email *:}\newline
+    \TextField[name=email, width=\linewidth, bordercolor=fieldBorder,
+               backgroundcolor=fieldBg, charsize=10pt]{} &
+
+    \textbf{Phone:}\newline
+    \TextField[name=phone, width=\linewidth, bordercolor=fieldBorder,
+               backgroundcolor=fieldBg, charsize=10pt]{} \\[12pt]
+
+    \textbf{Date of Birth:}\newline
+    \TextField[name=dob, width=5cm, bordercolor=fieldBorder,
+               backgroundcolor=fieldBg, charsize=10pt, value={MM/DD/YYYY}]{} &
+
+    \textbf{Gender:}\newline
+    \ChoiceMenu[name=gender, width=5cm, bordercolor=fieldBorder,
+                backgroundcolor=fieldBg, combo, charsize=10pt]{}
+                {Select..., Male, Female, Non-binary, Prefer not to say} \\
+\end{tabularx}
+
+\vspace{8pt}
+
+\textbf{Address:}\\[4pt]
+\TextField[name=address1, width=\textwidth, bordercolor=fieldBorder,
+           backgroundcolor=fieldBg, charsize=10pt, value={Street Address}]{}\\[4pt]
+
+\begin{tabularx}{\textwidth}{@{}XlX@{}}
+    \TextField[name=city, width=\linewidth, bordercolor=fieldBorder,
+               backgroundcolor=fieldBg, charsize=10pt, value={City}]{} &
+    \hspace{8pt} &
+    \TextField[name=state, width=4cm, bordercolor=fieldBorder,
+               backgroundcolor=fieldBg, charsize=10pt, value={State}]{}
+\end{tabularx}
+
+\begin{tabularx}{\textwidth}{@{}lXlX@{}}
+    \textbf{ZIP:}\hspace{4pt} &
+    \TextField[name=zip, width=3cm, bordercolor=fieldBorder,
+               backgroundcolor=fieldBg, charsize=10pt]{} &
+    \textbf{Country:}\hspace{4pt} &
+    \ChoiceMenu[name=country, width=5cm, bordercolor=fieldBorder,
+                backgroundcolor=fieldBg, combo, charsize=10pt]{}
+                {United States, Canada, United Kingdom, Germany, France, Other}
+\end{tabularx}
+
+\vspace{6pt}
+
+% ============================================================
+\section{Education \& Experience}
+% ============================================================
+
+\FormDropdown{Highest Education Level}{education}{%
+    High School, Associate's Degree, Bachelor's Degree,%
+    Master's Degree, Doctorate, Professional Degree, Other%
+}
+
+\FormField{Field of Study}{fieldOfStudy}
+
+\FormField{Current Employer}{employer}
+
+\FormField{Job Title}{jobTitle}
+
+\textbf{Years of Experience:}\\[4pt]
+% Radio buttons for experience range
+\ChoiceMenu[name=experience, radio, bordercolor=fieldBorder,
+            backgroundcolor=fieldBg]{}{0--2 years, 3--5 years, 6--10 years, 10+ years}
+
+\vspace{8pt}
+
+% ============================================================
+\section{Skills \& Interests}
+% ============================================================
+
+\textbf{Select all that apply:}\\[6pt]
+
+\begin{tabularx}{\textwidth}{@{}XXXX@{}}
+    \FormCheck{Programming}{skill_prog} &
+    \FormCheck{Data Analysis}{skill_data} &
+    \FormCheck{Project Mgmt}{skill_pm} &
+    \FormCheck{Design}{skill_design} \\[4pt]
+    \FormCheck{Writing}{skill_write} &
+    \FormCheck{Marketing}{skill_mktg} &
+    \FormCheck{Finance}{skill_fin} &
+    \FormCheck{Leadership}{skill_lead} \\
+\end{tabularx}
+
+\vspace{8pt}
+
+\FormDropdown[\textwidth]{Preferred Work Mode}{workMode}{%
+    On-site, Remote, Hybrid, No Preference%
+}
+
+\FormDropdown[\textwidth]{Availability}{availability}{%
+    Immediately, 2 Weeks, 1 Month, 3+ Months%
+}
+
+% ============================================================
+\section{Additional Information}
+% ============================================================
+
+\FormTextArea[\textwidth]{Why are you interested in this position?}{motivation}{3cm}
+
+\FormTextArea[\textwidth]{Additional comments or special requirements}{comments}{2cm}
+
+\vspace{8pt}
+
+% ============================================================
+\section{Agreement \& Submission}
+% ============================================================
+
+\noindent
+\CheckBox[name=agree, bordercolor=red!70!black, backgroundcolor=fieldBg,
+          width=14pt, height=14pt]{}\hspace{0.5em}%
+\textbf{I certify that the information provided is accurate and complete. *}
+
+\vspace{4pt}
+
+\noindent
+\CheckBox[name=privacy, bordercolor=fieldBorder, backgroundcolor=fieldBg,
+          width=14pt, height=14pt]{}\hspace{0.5em}%
+I agree to the privacy policy and terms of service.
+
+\vspace{4pt}
+
+\noindent
+\CheckBox[name=newsletter, bordercolor=fieldBorder, backgroundcolor=fieldBg,
+          width=14pt, height=14pt]{}\hspace{0.5em}%
+I would like to receive updates and newsletters.
+
+\vspace{12pt}
+
+\textbf{Signature:}\hspace{0.5em}
+\TextField[name=signature, width=8cm, bordercolor=fieldBorder,
+           backgroundcolor=fieldBg, charsize=10pt]{}
+\hspace{1cm}
+\textbf{Date:}\hspace{0.5em}
+\TextField[name=signDate, width=4cm, bordercolor=fieldBorder,
+           backgroundcolor=fieldBg, charsize=10pt, value={\today}]{}
+
+\vspace{16pt}
+
+% === BUTTONS ===
+\begin{center}
+    \PushButton[name=resetBtn,
+                bordercolor=red!60!black,
+                backgroundcolor=red!10,
+                charsize=11pt]{~~Reset Form~~}
+    \hspace{2cm}
+    \PushButton[name=printBtn,
+                bordercolor=fieldBorder,
+                backgroundcolor=blue!10,
+                charsize=11pt]{~~Print Form~~}
+\end{center}
+
+\end{Form}
+
+\end{document}

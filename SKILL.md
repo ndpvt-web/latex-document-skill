@@ -5,6 +5,9 @@ description: >
   professional PDF with PNG previews. Supports resumes, reports, cover letters,
   invoices, academic papers, theses/dissertations, academic CVs, presentations
   (Beamer), scientific posters, formal letters, exams/quizzes, books,
+  cheat sheets, reference cards, exam formula sheets,
+  fillable PDF forms (hyperref form fields), conditional content (etoolbox toggles),
+  mail merge from CSV/JSON (Jinja2 templates), version diffing (latexdiff),
   charts (pgfplots + matplotlib), tables (booktabs + CSV import), images (TikZ),
   Mermaid diagrams, AI-generated images, watermarks, landscape pages,
   bibliography/citations (BibTeX/biblatex), multi-language/CJK (auto XeLaTeX),
@@ -21,7 +24,13 @@ description: >
   (11) write a thesis or dissertation, (12) create an academic CV, (13) create
   a poster, (14) create an exam/quiz, (15) create a book, (16) convert between
   document formats (Markdown, DOCX, HTML to/from LaTeX), (17) generate Mermaid
-  diagrams for LaTeX, (18) create a formal business letter.
+  diagrams for LaTeX, (18) create a formal business letter, (19) create a cheat
+  sheet or reference card, (20) create an exam formula sheet or crib sheet,
+  (21) condense lecture notes/PDFs into a cheat sheet,
+  (22) create a fillable PDF form with text fields/checkboxes/dropdowns,
+  (23) create a document with conditional content/toggles (show/hide sections),
+  (24) generate batch/mail-merge documents from CSV/JSON data,
+  (25) create a version diff PDF (latexdiff) highlighting changes between documents.
 ---
 
 # LaTeX Document Skill
@@ -30,9 +39,10 @@ Create any LaTeX document, compile to PDF, and generate PNG previews. Convert PD
 
 ## Workflow: Create Documents
 
-1. Determine document type (resume, report, letter, invoice, article, thesis, academic CV, presentation, poster, exam, book)
+1. Determine document type (resume, report, letter, invoice, article, thesis, academic CV, presentation, poster, exam, book, cheat sheet)
 2. **If poster:** Run the poster sub-workflow (see [Poster Sub-Workflow](#poster-sub-workflow) below), then skip to step 5.
-3. **Ask the user which enrichment elements they want** (use AskUserQuestion tool with multiSelect). Offer relevant options based on document type:
+3. **If cheat sheet / reference card:** Run the cheat sheet sub-workflow (see [Cheat Sheet / Reference Card Sub-Workflow](#cheat-sheet--reference-card-sub-workflow) below), then skip to step 5.
+4. **Ask the user which enrichment elements they want** (use AskUserQuestion tool with multiSelect). Offer relevant options based on document type:
    - **AI-generated images** -- custom illustrations, diagrams, photos (uses generate-image skill)
    - **Charts/graphs** -- bar, line, pie, scatter, heatmap (pgfplots or matplotlib)
    - **Flowcharts/diagrams** -- process flows, architecture, decision trees (TikZ or Mermaid)
@@ -40,15 +50,15 @@ Create any LaTeX document, compile to PDF, and generate PNG previews. Convert PD
    - **Tables with data** -- comparison matrices, financial data, statistics (booktabs)
    - **Watermarks** -- DRAFT, CONFIDENTIAL, or company logo background
    - Skip this step for simple documents (cover letters, invoices) or when the user has already specified exactly what they want.
-4. Copy the appropriate template from `assets/templates/` or write from scratch
-5. Customize content based on user requirements
-6. Generate external assets based on user's element choices:
+5. Copy the appropriate template from `assets/templates/` or write from scratch
+6. Customize content based on user requirements
+7. Generate external assets based on user's element choices:
    - AI images: `python3 <skill_path>/../generate-image/scripts/generate_image.py "prompt" --output ./outputs/figure.png`
    - matplotlib charts: `python3 <skill_path>/scripts/generate_chart.py <type> --data '<json>' --output chart.png`
    - Mermaid diagrams: `bash <skill_path>/scripts/mermaid_to_image.sh diagram.mmd output.png`
-7. **For documents 5+ pages:** Review the [Long-Form Document Anti-Patterns](#long-form-document-anti-patterns-must-read-for-reports-theses-books) section and run the Content Generation Checklist before compiling. Key rules: prefer prose over bullets, include global list compaction, escape `<`/`>` in text mode, vary section formats, limit `\newpage`, size images at 0.75-0.85 textwidth.
-8. Compile with `scripts/compile_latex.sh` (auto-detects XeLaTeX for CJK/RTL, glossaries, bibliography)
-9. Show PNG preview to user, deliver PDF
+8. **For documents 5+ pages:** Review the [Long-Form Document Anti-Patterns](#long-form-document-anti-patterns-must-read-for-reports-theses-books) section and run the Content Generation Checklist before compiling. Key rules: prefer prose over bullets, include global list compaction, escape `<`/`>` in text mode, vary section formats, limit `\newpage`, size images at 0.75-0.85 textwidth.
+9. Compile with `scripts/compile_latex.sh` (auto-detects XeLaTeX for CJK/RTL, glossaries, bibliography)
+10. Show PNG preview to user, deliver PDF
 
 ### Poster Sub-Workflow
 
@@ -92,6 +102,110 @@ If #BetterPoster is selected: use the commented #BetterPoster layout in `poster.
   - **Minimal Dark** -- High contrast, modern minimalist
 
 Then proceed to step 5 (customize content) with the selected template, layout, and color scheme. See [poster-design-guide.md](references/poster-design-guide.md) for typography standards, content guidelines, and common mistakes.
+
+### Cheat Sheet / Reference Card Sub-Workflow
+
+When the user requests a cheat sheet or reference card (step 1), follow these steps before proceeding to template customization:
+
+**Step A: Ask for cheat sheet type** (use AskUserQuestion):
+- "What type of cheat sheet do you need?"
+  - **General Reference Card (Recommended)** -- Multi-topic, landscape 3-column, colored sections. For command references, concept summaries, quick-reference guides.
+  - **Exam Formula Sheet** -- Maximum density, portrait 2-column, B&W-safe. For university exam "allowed cheat sheets" with formulas, theorems, definitions.
+  - **Programming Reference Card** -- Landscape 4-column, syntax highlighting. For language syntax, API reference, CLI commands, keyboard shortcuts.
+
+Based on the answer, select the template and configure layout:
+
+| Answer | Template | Layout |
+|---|---|---|
+| General Reference Card | `cheatsheet.tex` | Landscape, 3 columns, 7pt, colored boxes |
+| Exam Formula Sheet | `cheatsheet-exam.tex` | Portrait, 2 columns, 6pt, B&W grayscale |
+| Programming Reference Card | `cheatsheet-code.tex` | Landscape, 4 columns, 7pt, syntax highlighting |
+
+**Step B: Ask about source material** (use AskUserQuestion):
+- "Do you have source PDFs to condense into the cheat sheet?"
+  - **Yes, I'll upload PDFs** -- I'll extract and condense key content from your lecture notes, textbooks, or past papers
+  - **No, I'll describe what I need** -- I'll create content based on your topic description
+  - **Both** -- I'll use your PDFs as primary source and fill gaps based on your description
+
+**Step C: If PDFs provided, ask about content priority** (only if user selected Yes/Both):
+- "How should I prioritize content?"
+  - **Exam-focused (Recommended)** -- Prioritize formulas, theorems, and definitions likely to appear on exams
+  - **Comprehensive coverage** -- Cover all major topics equally
+  - **Past paper analysis** -- Cross-reference with past exam papers to identify high-yield topics (requires past papers)
+
+**Step D: Ask for customization** (use AskUserQuestion with multiSelect):
+- "Customize your cheat sheet (select all that apply):"
+  - **Custom color scheme** -- Choose your own colors instead of the default
+  - **Different column count** -- 2, 3, 4, or 5 columns
+  - **Different paper size** -- A3 (wall poster), A5 (pocket), or custom
+  - **Front-only (1 page)** -- Single page instead of front+back
+  - **Keep defaults** -- Use the template defaults
+
+Then proceed to customize the template and fill in content.
+
+**PDF-to-Cheatsheet Pipeline** (when source PDFs provided):
+1. Split PDF into images: `bash <skill_path>/scripts/pdf_to_images.sh input.pdf ./tmp/pages`
+2. Read page images and extract key content using LLM vision
+3. Prioritize: formulas > theorems > definitions > procedures > examples
+4. Compress content: abbreviate verbose definitions, use symbols over words
+5. Organize into logical sections matching the cheat sheet template
+6. Fill template sections with extracted content
+7. If past papers provided: cross-reference to weight high-frequency topics
+8. Compile and iterate until content fits within page constraints
+
+## Workflow: Mail Merge (Batch Personalized Documents)
+
+Generate N personalized documents from a LaTeX template + CSV/JSON data source:
+
+```bash
+# Basic mail merge from CSV
+python3 <skill_path>/scripts/mail_merge.py template.tex data.csv --output-dir ./outputs
+
+# With compilation via compile script
+python3 <skill_path>/scripts/mail_merge.py template.tex data.csv \
+    --output-dir ./outputs --compile-script <skill_path>/scripts/compile_latex.sh
+
+# Parallel compilation (4 workers), merge into single PDF
+python3 <skill_path>/scripts/mail_merge.py template.tex data.csv \
+    --output-dir ./outputs --workers 4 --merge --merge-name all_letters.pdf \
+    --compile-script <skill_path>/scripts/compile_latex.sh
+
+# Custom output naming by data field
+python3 <skill_path>/scripts/mail_merge.py template.tex data.csv \
+    --output-dir ./outputs --name-field "last_name" --prefix "letter"
+
+# Generate .tex files only (no compilation)
+python3 <skill_path>/scripts/mail_merge.py template.tex data.csv --output-dir ./outputs --no-compile
+
+# Dry run (preview)
+python3 <skill_path>/scripts/mail_merge.py template.tex data.csv --dry-run
+```
+
+**Template syntax**: Use `{{variable}}` for simple substitution (auto-detected). For conditionals/loops, use Jinja2 syntax: `<< variable >>` for variables, `<% if ... %>` for blocks. See `assets/templates/mail-merge-letter.tex` for a complete example. Full guide: [references/interactive-features.md](references/interactive-features.md).
+
+## Workflow: Version Diffing (latexdiff)
+
+Generate highlighted change-tracked PDFs between two document versions:
+
+```bash
+# Basic diff between two files
+bash <skill_path>/scripts/latex_diff.sh old.tex new.tex --compile --preview
+
+# Diff against a git revision
+bash <skill_path>/scripts/latex_diff.sh paper.tex --git-rev HEAD~1 --compile
+
+# Multi-file document (expands \input/\include)
+bash <skill_path>/scripts/latex_diff.sh old/main.tex new/main.tex --flatten --compile
+
+# Custom markup style (underline + change bars)
+bash <skill_path>/scripts/latex_diff.sh old.tex new.tex --type CULINECHBAR --compile
+
+# Custom colors
+bash <skill_path>/scripts/latex_diff.sh old.tex new.tex \
+    --color-add "green!70!black" --color-del "red!80!black" --compile
+```
+
+The script auto-installs `latexdiff` if not present. Markup types: UNDERLINE (default), CTRADITIONAL, CFONT, CHANGEBAR, CULINECHBAR. Full guide: [references/interactive-features.md](references/interactive-features.md).
 
 ## Workflow: Convert Document Formats
 
@@ -214,6 +328,9 @@ All 5 templates follow ATS rules: single-column, no graphics/images, no tables f
 - **`book.tex`** -- Full book (`book` class) with half-title, title page, copyright page, dedication, preface, acknowledgments, TOC, list of figures/tables, parts, chapters, appendix, bibliography, index. Custom chapter headings, epigraphs, fancyhdr, microtype.
 - **`poster.tex`** -- Conference poster (`tikzposter` class, A0 portrait) with 2-column layout, QR code, 5 color schemes, tikzfigure charts, tables, coloredbox highlights. Includes commented **#BetterPoster** layout variant (central billboard + sidebars). Portrait is standard for most conferences. See poster design guide for conference size presets.
 - **`poster-landscape.tex`** -- Landscape conference poster (`tikzposter` class, A0 landscape) with 3-column (30/40/30) layout, QR code, tech purple color scheme. For CS/ML conferences (NeurIPS, ICML, CVPR, ICLR). Includes commented `\geometry{}` presets for CVPR/NeurIPS custom sizes.
+- **`cheatsheet.tex`** -- General reference card (`extarticle` class, landscape A4, 7pt base font) with 3-column `multicols` layout, `tcolorbox` colored section boxes, tight spacing. For command references, concept summaries, quick-reference guides. Supports front+back printing.
+- **`cheatsheet-exam.tex`** -- Exam formula sheet (`extarticle` class, portrait A4, 6pt base font) with 2-column layout, maximum content density, black-and-white printer-safe. For university exam "allowed cheat sheets" with formulas, theorems, definitions. Optimized for single-sided printing.
+- **`cheatsheet-code.tex`** -- Programming reference card (`extarticle` class, landscape A4, 7pt base font) with 4-column layout, `minted` syntax highlighting, monospace font emphasis. For language syntax, API reference, CLI commands, keyboard shortcuts.
 - **`letter.tex`** -- Formal business letter with colored letterhead bar, TikZ logo placeholder, company info, recipient block, date, subject line, signature. Professional corporate appearance.
 - **`exam.tex`** -- Exam/quiz (`exam` class) with grading table, multiple question types (multiple choice, true/false, fill-in-blank, matching, short answer, essay), point values, solution toggle via `\printanswers`.
 - **`report.tex`** -- Business report with TOC, headers/footers, data tables, bar chart (pgfplots), process flowchart (TikZ), recommendations
@@ -221,6 +338,9 @@ All 5 templates follow ATS rules: single-column, no graphics/images, no tables f
 - **`invoice.tex`** -- Invoice with company header, line items table, subtotal/tax/total
 - **`academic-paper.tex`** -- Research paper with abstract, sections, bibliography, figures. Includes example `.bib` file (`references.bib`) for BibTeX citations.
 - **`presentation.tex`** -- Beamer presentation with title slide, content frames, columns
+- **`fillable-form.tex`** -- Fillable PDF form (`article` class) with hyperref form fields: text inputs, checkboxes, radio buttons, dropdowns, push buttons. Two-column layout with `tabularx`. Custom `\FormField`, `\FormCheck`, `\FormDropdown` helper commands. Requires Adobe Reader for full form support (browser PDF viewers have limited form capabilities).
+- **`conditional-document.tex`** -- Configurable document (`article` class) with etoolbox toggle system: show/hide TOC, appendix, watermark, draft mode, confidential marking, abstract. Template variables via `\providecommand` (title, author, org, version). Three visual profiles (corporate, academic, minimal). Supports command-line variable passing for CI/CD.
+- **`mail-merge-letter.tex`** -- Mail merge letter template with `{{variable}}` placeholders for use with `scripts/mail_merge.py`. Company-branded letterhead, recipient address block, body text with data-driven personalization. Pair with CSV/JSON data source.
 - **`resume.tex`** -- Legacy resume template (has photo area and tables -- not ATS-optimized)
 
 Usage:
@@ -249,11 +369,19 @@ bash <skill_path>/scripts/compile_latex.sh ./outputs/my_resume.tex --preview --p
 | Book | `book.tex` | `book` |
 | Scientific poster (portrait) | `poster.tex` | `tikzposter` |
 | Scientific poster (landscape) | `poster-landscape.tex` | `tikzposter` |
+| Cheat sheet, reference card | `cheatsheet.tex` | `extarticle` |
+| Exam formula sheet, crib sheet | `cheatsheet-exam.tex` | `extarticle` |
+| Programming reference card | `cheatsheet-code.tex` | `extarticle` |
 | Formal business letter | `letter.tex` | `article` |
 | Exam, quiz, test | `exam.tex` | `exam` |
 | Slides, presentation | `presentation.tex` | `beamer` |
+| Fillable PDF form | `fillable-form.tex` | `article` |
+| Conditional/configurable document | `conditional-document.tex` | `article` |
+| Mail merge, batch letters | `mail-merge-letter.tex` + `scripts/mail_merge.py` | `article` |
+| **Version diff (latexdiff)** | Use `scripts/latex_diff.sh` + see [interactive-features.md](references/interactive-features.md) | varies |
 | **Convert PDF to LaTeX** | Select profile + see [pdf-conversion.md](references/pdf-conversion.md) | varies |
 | **Convert formats** | Use `scripts/convert_document.sh` + see [format-conversion.md](references/format-conversion.md) | varies |
+| **Mail merge from CSV/JSON** | Use `scripts/mail_merge.py` + see [interactive-features.md](references/interactive-features.md) | varies |
 
 ## Key LaTeX Patterns
 
@@ -468,6 +596,66 @@ python3 <skill_path>/../generate-image/scripts/generate_image.py \
 
 Then include with `\includegraphics[width=0.6\textwidth]{figure.png}` in a `figure` environment. Request "white background, clean, no text" for best results. See [references/advanced-features.md](references/advanced-features.md).
 
+### Quick Fillable PDF Form
+
+```latex
+\usepackage[colorlinks=true]{hyperref}
+% ...
+\begin{Form}
+    \TextField[name=fullName, width=10cm, bordercolor=blue,
+               backgroundcolor={0.94 0.96 1.0}, charsize=10pt]{Full Name:}\\[8pt]
+    \TextField[name=email, width=10cm, bordercolor=blue,
+               backgroundcolor={0.94 0.96 1.0}, charsize=10pt]{Email:}\\[8pt]
+    \CheckBox[name=agree, width=12pt, height=12pt]{I agree to terms}\\[8pt]
+    \ChoiceMenu[name=dept, combo, width=6cm]{Department:}{Sales, Engineering, Marketing, HR}\\[8pt]
+    \TextField[name=comments, width=\textwidth, height=3cm, multiline=true,
+               bordercolor=blue, backgroundcolor={0.94 0.96 1.0}]{Comments:}
+\end{Form}
+```
+
+All form fields MUST be inside `\begin{Form}...\end{Form}`. See `assets/templates/fillable-form.tex` for full example. Full guide: [references/interactive-features.md](references/interactive-features.md).
+
+### Quick Conditional Content (Toggles)
+
+```latex
+\usepackage{etoolbox}
+\newtoggle{showAppendix}
+\newtoggle{isDraft}
+\toggletrue{showAppendix}
+\togglefalse{isDraft}
+% Template variables (overridable from command line)
+\providecommand{\doctitle}{My Document}
+\providecommand{\docauthor}{Author Name}
+% ...
+\iftoggle{isDraft}{\usepackage{lineno}\linenumbers}{}
+% In body:
+\iftoggle{showAppendix}{\appendix \section{Appendix} ...}{}
+```
+
+See `assets/templates/conditional-document.tex` for a full document with toggles, profiles, and variables. Full guide: [references/interactive-features.md](references/interactive-features.md).
+
+### Quick Mail Merge
+
+```bash
+# Generate personalized letters from CSV data
+python3 <skill_path>/scripts/mail_merge.py template.tex data.csv --output-dir ./outputs \
+    --compile-script <skill_path>/scripts/compile_latex.sh
+```
+
+Template uses `{{variable}}` placeholders. See `assets/templates/mail-merge-letter.tex`. Full guide: [references/interactive-features.md](references/interactive-features.md).
+
+### Quick Version Diff
+
+```bash
+# Diff two files and compile to PDF
+bash <skill_path>/scripts/latex_diff.sh old.tex new.tex --compile --preview
+
+# Diff against git revision
+bash <skill_path>/scripts/latex_diff.sh paper.tex --git-rev HEAD~1 --compile
+```
+
+Auto-installs `latexdiff`. Full guide: [references/interactive-features.md](references/interactive-features.md).
+
 ## Visual Elements in Reports
 
 When creating reports, use the enrichment elements the user selected in step 2. If the user selected "AI-generated images", generate relevant illustrations for key sections. Available visual elements:
@@ -499,6 +687,8 @@ The `report.tex` template includes pgfplots, TikZ, and all required packages out
 | Poster Design Guide | [poster-design-guide.md](references/poster-design-guide.md) | Conference size presets, typography, color schemes, layout archetypes, content guidelines |
 | Resume ATS Guide | [resume-ats-guide.md](references/resume-ats-guide.md) | ATS rules, LaTeX pitfalls, keywords |
 | PDF-to-LaTeX Pipeline | [pdf-conversion.md](references/pdf-conversion.md) | Full conversion pipeline with profiles |
+| Interactive Features (Forms, Conditionals, Mail Merge, Diffing) | [interactive-features.md](references/interactive-features.md) | Fillable PDF forms, conditional content toggles, mail merge from CSV/JSON, latexdiff version tracking |
+| Cheat Sheet / Reference Card Design | [cheatsheet-guide.md](references/cheatsheet-guide.md) | Template selection, typography, color schemes, layout techniques, PDF-to-cheatsheet workflow, print considerations |
 
 ## Critical Notes and Common Mistakes
 
@@ -538,6 +728,22 @@ These cause `Undefined control sequence` -- always include the required package:
 - Keep total text under 800 words (target 400-500). Use `\coloredbox` for key insights.
 - **QR codes:** Add with `\usepackage{qrcode}` and `\qrcode[height=3.5cm]{URL}`. Link to paper, code, or demo.
 - **Color schemes:** Both templates include 5 schemes (Navy+Amber, Forest Green, Medical Teal, Tech Purple, Minimal Dark). Uncomment the desired scheme.
+
+### Cheat Sheet / Reference Card Pitfalls
+- `extarticle` class is REQUIRED for 6-8pt base font -- standard `article` only supports 10pt, 11pt, 12pt
+- Do NOT use `\begin{figure}` floats inside `multicols` -- they silently disappear. Use inline `\includegraphics` or `tikzpicture` instead
+- `tcolorbox` with `breakable` option may not work well inside `multicols` -- use non-breakable boxes (the default) and keep content short per box
+- For 5+ columns, reduce `\columnsep` to 2-3mm and use `\scriptsize` or smaller
+- Math: use `\textstyle` for inline fractions inside cheat sheet boxes (saves vertical space vs `\displaystyle`)
+- Always test-print at actual size -- 6pt text may be illegible on some printers
+
+### Fillable PDF Forms Pitfalls
+- All form fields (`\TextField`, `\CheckBox`, `\ChoiceMenu`, `\PushButton`) MUST be inside `\begin{Form}...\end{Form}`. Fields outside this environment will not work.
+- Form field `backgroundcolor` uses space-separated RGB 0-1 values: `backgroundcolor={0.94 0.96 1.0}`, NOT xcolor syntax like `backgroundcolor=blue!10`.
+- Each field `name=` must be unique in the document. Duplicate names cause fields to sync values.
+- Form fields do NOT work inside `tikzposter` class -- use `article` or `report` class.
+- **PDF viewer support varies**: Text fields and checkboxes work in most viewers. Radio buttons, dropdowns, and JavaScript require Adobe Reader. Always test in the target viewer.
+- Tab order follows the order fields appear in the LaTeX source.
 
 ### hyperref Package
 - `hyperref` is fine for normal documents (most templates use it).

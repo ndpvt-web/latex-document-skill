@@ -2,7 +2,7 @@
 
 A Claude Code skill that turns natural language into production-grade PDFs. Say what you need -- a resume, a 300-page book, a conference poster, an exam -- and get a compiled PDF with PNG previews, charts, diagrams, and bibliography, all handled automatically.
 
-**21 templates. 6 scripts. 12 reference guides. 4 conversion profiles. Zero LaTeX knowledge required.**
+**27 templates. 8 scripts. 13 reference guides. 4 conversion profiles. Zero LaTeX knowledge required.**
 
 ---
 
@@ -10,7 +10,7 @@ A Claude Code skill that turns natural language into production-grade PDFs. Say 
 
 You describe a document. The skill:
 
-1. Selects the right template from 21 production-tested options
+1. Selects the right template from 27 production-tested options
 2. Asks clarifying questions (layout, color scheme, elements to include)
 3. Generates charts, diagrams, tables, and images as needed
 4. Compiles to PDF with the correct LaTeX engine (auto-detected)
@@ -160,6 +160,156 @@ Built on the `exam` class with automatic grading table, point tracking, and solu
 | | | | | | |
 |---|---|---|---|---|---|
 | ![p1](examples/exam-p1.png) | ![p2](examples/exam-p2.png) | ![p3](examples/exam-p3.png) | ![p4](examples/exam-p4.png) | ![p5](examples/exam-p5.png) | ![p6](examples/exam-p6.png) |
+
+---
+
+### Cheat Sheets / Reference Cards
+
+Purpose-built templates for condensing large amounts of information into compact, scannable reference cards. Three specialized variants:
+
+| Template | Best For | Layout | Features |
+|---|---|---|---|
+| **Cheat Sheet (General)** | Course references, quick lookups | Landscape 3-column | Colored sections, formulas, tables, code, lists. 7pt body text, front+back |
+| **Cheat Sheet (Exam)** | Formula sheets, exam aids | Portrait 2-column | Maximum density, 6pt text, B&W printer friendly, theorem/definition/formula boxes |
+| **Cheat Sheet (Code)** | Programming references, CLI guides | Landscape 4-column | Syntax highlighting, API docs, language quick references |
+
+#### System Capabilities
+
+- **3 purpose-built templates** optimized for different use cases (general reference, exam conditions, programming)
+- **Interactive configuration workflow** -- type selection, source material upload, customization options
+- **PDF-to-cheatsheet pipeline** -- condense lecture notes, textbooks, past papers into compact reference cards
+- **Customizable color schemes** -- change 6 color values in preamble to match your preferences
+- **Flexible layout** -- supports 2-5 columns, any paper size, portrait/landscape orientation
+- **Production-tested packages:**
+  - `extarticle` for small fonts (6pt-7pt body text)
+  - `tcolorbox` for colored definition/theorem/formula boxes
+  - `microtype` for maximum text density and readability
+  - `listings` or `minted` for syntax-highlighted code blocks
+- **Exam-aware design:**
+  - B&W safe option for grayscale printing
+  - Student name/ID header area
+  - Grayscale-only color scheme (no color dependencies)
+
+#### Usage Examples
+
+```
+"Create a calculus exam cheat sheet"
+"Condense my lecture notes PDF into a reference card"
+"Make a Python quick reference card"
+"Generate a data structures cheat sheet with complexity tables"
+"Create a physics formula sheet for my final exam"
+```
+
+The skill will:
+1. Ask which template type fits your use case (general/exam/code)
+2. Request source material (PDF, notes, or description of content)
+3. Configure layout (columns, color scheme, content density)
+4. Generate the cheat sheet with optimal typography for small-format printing
+5. Compile to PDF with page-by-page PNG previews
+
+---
+
+### Interactive / Dynamic Content
+
+Four systems for producing documents that go beyond static PDFs: fillable forms, conditional content, mail merge, and version diffing.
+
+#### Fillable PDF Forms
+
+The `fillable-form.tex` template produces PDFs with interactive form fields that can be filled in Adobe Reader or Acrobat. Built on hyperref's form support.
+
+**Field types supported:**
+| Field | Command | Usage |
+|---|---|---|
+| Text input | `\TextField` | Names, emails, addresses |
+| Multi-line text | `\TextField[multiline=true]` | Comments, essays |
+| Checkbox | `\CheckBox` | Agreement toggles, skill selection |
+| Radio buttons | `\ChoiceMenu[radio]` | Single-select options |
+| Dropdown | `\ChoiceMenu[combo]` | Country, education level |
+| Push button | `\PushButton` | Reset, print, submit |
+
+**Custom helpers** for rapid form building:
+
+```latex
+\FormField[10cm]{First Name}{firstName}        % labeled text field
+\FormTextArea[\textwidth]{Comments}{notes}{3cm} % multi-line area
+\FormCheck{Programming}{skill_prog}             % checkbox with label
+\FormDropdown{Education}{edu}{High School, BA, MA, PhD} % dropdown
+```
+
+> **Note:** Full form interactivity requires Adobe Reader/Acrobat. Browser PDF viewers have limited support.
+
+#### Conditional Content
+
+The `conditional-document.tex` template demonstrates toggle-based conditional sections using `etoolbox`. Configure documents by flipping switches at the top of the file:
+
+```latex
+\toggletrue{showTOC}         % include table of contents
+\togglefalse{showAppendix}   % exclude appendix
+\toggletrue{isConfidential}  % add CONFIDENTIAL watermark
+\toggletrue{isDraft}         % add line numbers + DRAFT watermark
+```
+
+**12 toggles:** showTOC, showLOF, showLOT, showAppendix, showAcknowledgments, showAbstract, showWatermark, isDraft, isConfidential, showCoverPage, showPageNumbers, showHeaders.
+
+**3 visual profiles:** corporate (Helvetica, navy), academic (Palatino, dark green), minimal (Latin Modern, grayscale). Switch with one line: `\def\docprofile{corporate}`.
+
+**Template variables** with CLI override:
+
+```latex
+\providecommand{\doctitle}{Default Title}  % override from command line:
+% pdflatex "\def\doctitle{Custom Title}\input{document.tex}"
+```
+
+#### Mail Merge
+
+Generate N personalized documents from a single template + CSV/JSON data source. The `mail_merge.py` script handles template rendering, compilation, and optional PDF merging.
+
+```bash
+# Basic: 3 records -> 3 personalized PDFs
+python3 scripts/mail_merge.py template.tex data.csv --output-dir ./outputs
+
+# With custom naming and merged output
+python3 scripts/mail_merge.py template.tex data.csv \
+    --output-dir ./outputs --name-field last_name \
+    --merge --merge-name all_letters.pdf
+
+# Parallel compilation (4 workers)
+python3 scripts/mail_merge.py template.tex data.csv \
+    --output-dir ./outputs --workers 4
+```
+
+**Two template modes:**
+| Mode | Syntax | Features |
+|---|---|---|
+| Simple | `{{variable}}` | Variable substitution, auto LaTeX escaping |
+| Jinja2 | `<< variable >>`, `<% if ... %>` | Conditionals, loops, filters |
+
+**Data sources:** CSV, JSON (array or `{records: [...]}` wrapper), JSONL.
+
+The `mail-merge-letter.tex` template is included as a starter -- company-branded letter with placeholders for name, title, company, address, salutation, and position.
+
+#### Version Diffing (latexdiff)
+
+Generate change-tracked PDFs that highlight additions and deletions between two versions of a document. The `latex_diff.sh` script wraps `latexdiff` with auto-installation, git integration, and compilation.
+
+```bash
+# Compare two files
+bash scripts/latex_diff.sh old.tex new.tex --output diff.tex --compile
+
+# Compare against a git commit
+bash scripts/latex_diff.sh document.tex --git-rev HEAD~3 --compile
+
+# Compare against a branch/tag
+bash scripts/latex_diff.sh document.tex --git-rev v1.0 --compile
+
+# Custom markup style and colors
+bash scripts/latex_diff.sh old.tex new.tex \
+    --type CFONT --color-add green --color-del red --compile
+```
+
+**6 markup types:** UNDERLINE (default), CTRADITIONAL, CFONT, CHANGEBAR, CULINECHBAR, FONTSTRIKE.
+
+Additions are shown in blue (underlined by default), deletions in red (strikethrough). The `--flatten` flag handles multi-file documents with `\input`/`\include`.
 
 ---
 
@@ -331,7 +481,7 @@ The compile script auto-selects the correct engine based on package imports.
 
 ## Reference Documentation
 
-12 reference guides covering every aspect of the skill:
+13 reference guides covering every aspect of the skill:
 
 | Guide | What It Covers |
 |---|---|
@@ -345,6 +495,7 @@ The compile script auto-selects the correct engine based on package imports.
 | `format-conversion.md` | Pandoc pipeline, templates, bibliography integration |
 | `pdf-conversion.md` | Full PDF-to-LaTeX pipeline, scaling strategy, batch processing |
 | `tables-and-images.md` | Colored rows, multi-row/column, booktabs, long tables, TikZ |
+| `interactive-features.md` | Forms, conditional content, mail merge, version diffing |
 | `packages.md` | Common LaTeX package reference |
 | `profiles/` | 4 conversion profiles (math, business, legal, general) |
 
@@ -366,7 +517,7 @@ The skill triggers automatically when you ask Claude Code to create any document
 latex-document/
 ├── SKILL.md                              # Skill definition (workflow, rules, anti-patterns)
 ├── README.md
-├── assets/templates/                     # 21 compile-tested templates
+├── assets/templates/                     # 27 compile-tested templates
 │   ├── resume-classic-ats.tex            #   ATS 10/10 -- finance, law, government
 │   ├── resume-modern-professional.tex    #   ATS 9/10 -- tech, corporate
 │   ├── resume-executive.tex              #   ATS 9/10 -- VP, Director, C-suite
@@ -381,6 +532,12 @@ latex-document/
 │   ├── poster.tex                        #   Portrait A0 poster (tikzposter)
 │   ├── poster-landscape.tex              #   Landscape A0 poster (tikzposter)
 │   ├── exam.tex                          #   Exam/quiz (exam class)
+│   ├── cheatsheet-general.tex            #   Landscape 3-col reference card (colored)
+│   ├── cheatsheet-exam.tex               #   Portrait 2-col exam formula sheet (B&W)
+│   ├── cheatsheet-code.tex               #   Landscape 4-col programming reference
+│   ├── fillable-form.tex                 #   Fillable PDF form (hyperref fields)
+│   ├── conditional-document.tex          #   Toggle-based conditional sections
+│   ├── mail-merge-letter.tex             #   Mail merge letter template
 │   ├── letter.tex                        #   Formal business letter
 │   ├── cover-letter.tex                  #   Job application cover letter
 │   ├── invoice.tex                       #   Invoice with line items
@@ -393,8 +550,10 @@ latex-document/
 │   ├── csv_to_latex.py                   #   CSV -> LaTeX tables (4 styles)
 │   ├── mermaid_to_image.sh               #   Mermaid .mmd -> PNG/PDF
 │   ├── convert_document.sh               #   Pandoc format conversion
-│   └── pdf_to_images.sh                  #   PDF -> page images (for OCR pipeline)
-├── references/                           #   12 reference guides
+│   ├── pdf_to_images.sh                  #   PDF -> page images (for OCR pipeline)
+│   ├── mail_merge.py                     #   Template + CSV/JSON -> N personalized PDFs
+│   └── latex_diff.sh                     #   latexdiff wrapper (auto-install, git, compile)
+├── references/                           #   13 reference guides
 │   ├── resume-ats-guide.md
 │   ├── poster-design-guide.md
 │   ├── bibliography-guide.md
@@ -405,6 +564,7 @@ latex-document/
 │   ├── format-conversion.md
 │   ├── pdf-conversion.md
 │   ├── tables-and-images.md
+│   ├── interactive-features.md
 │   ├── packages.md
 │   └── profiles/                         #   4 conversion profiles
 │       ├── math-notes.md

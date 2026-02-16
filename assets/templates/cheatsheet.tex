@@ -1,0 +1,502 @@
+% ============================================================================
+% GENERAL PURPOSE CHEAT SHEET / REFERENCE CARD TEMPLATE
+% ============================================================================
+% Landscape, 3-column layout optimized for maximum information density
+% Paper: Letter/A4 landscape | Columns: 3 | Base font: 7pt
+% Features: colored boxed sections, multiple content types, front+back
+% Compile: pdflatex (auto-detected by compile script)
+% ============================================================================
+
+\documentclass[7pt,landscape]{extarticle}
+
+% --- GEOMETRY: Ultra-tight margins for maximum content area ----------------
+\usepackage[
+    landscape,
+    margin=5mm,
+    top=5mm,
+    bottom=4mm,
+    left=5mm,
+    right=5mm
+]{geometry}
+
+% --- ENCODING & FONTS -----------------------------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}            % Clean font, good at small sizes
+\usepackage{microtype}          % Microtypographic improvements: protrusion + expansion
+
+% --- LAYOUT ----------------------------------------------------------------
+\usepackage{multicol}           % Multi-column layout
+\usepackage{enumitem}           % Compact list control
+\usepackage{titlesec}           % Section heading spacing
+
+% --- VISUAL ELEMENTS -------------------------------------------------------
+\usepackage[table]{xcolor}      % Color support with table option
+\usepackage{tcolorbox}          % Colored boxes for sections
+\tcbuselibrary{breakable,skins} % Breakable boxes + skins
+\usepackage{tabularx}           % Flexible-width tables
+\usepackage{booktabs}           % Professional table rules
+\usepackage{array}              % Enhanced column types
+
+% --- MATH & CODE -----------------------------------------------------------
+\usepackage{amsmath,amssymb,mathtools}  % Math support
+\usepackage{listings}           % Code listings
+
+% --- GRAPHICS (optional) ---------------------------------------------------
+\usepackage{graphicx}           % Image support
+\usepackage{tikz}               % Diagrams (load only if needed)
+
+% ============================================================================
+% COLOR SCHEME — Change these 6 values to restyle the entire sheet
+% ============================================================================
+% --- Preset: Professional Blue ---
+\definecolor{csPrimary}{RGB}{41,128,185}        % Section headers
+\definecolor{csSecondary}{RGB}{44,62,80}         % Title bar, dark accents
+\definecolor{csAccent1}{RGB}{230,126,34}         % Warnings, important callouts
+\definecolor{csAccent2}{RGB}{46,204,113}         % Tips, success notes
+\definecolor{csAccent3}{RGB}{155,89,182}         % Special/highlight
+\definecolor{csLightBg}{RGB}{236,240,241}        % Light box backgrounds
+
+% --- Alternative Preset: Warm Earth (uncomment to use) ---
+% \definecolor{csPrimary}{RGB}{120,66,18}
+% \definecolor{csSecondary}{RGB}{51,51,51}
+% \definecolor{csAccent1}{RGB}{192,57,43}
+% \definecolor{csAccent2}{RGB}{39,174,96}
+% \definecolor{csAccent3}{RGB}{142,68,173}
+% \definecolor{csLightBg}{RGB}{245,235,220}
+
+% --- Alternative Preset: Dark Mode (uncomment to use) ---
+% \definecolor{csPrimary}{RGB}{86,156,214}
+% \definecolor{csSecondary}{RGB}{30,30,30}
+% \definecolor{csAccent1}{RGB}{244,135,113}
+% \definecolor{csAccent2}{RGB}{78,201,176}
+% \definecolor{csAccent3}{RGB}{197,134,192}
+% \definecolor{csLightBg}{RGB}{45,45,45}
+
+% ============================================================================
+% GLOBAL SPACING — Every millimeter counts
+% ============================================================================
+\pagestyle{empty}                           % No headers/footers/page numbers
+\setlength{\parindent}{0pt}                % No paragraph indent
+\setlength{\parskip}{0pt}                  % No paragraph spacing
+\setlength{\columnsep}{3mm}                % Column gap
+\setlength{\columnseprule}{0.15pt}         % Hairline column separator
+\def\columnseprulecolor{\color{csLightBg}} % Subtle separator color
+\setlength{\premulticols}{0pt}             % No space before multicols
+\setlength{\postmulticols}{0pt}            % No space after multicols
+\setlength{\multicolsep}{0pt}             % No space around multicols
+
+% --- Ultra-compact lists ---
+\setlist{nosep, leftmargin=*, topsep=0pt, partopsep=0pt, parsep=0pt, itemsep=0.3pt}
+\setlist[itemize]{leftmargin=3mm, label={\textcolor{csPrimary}{\scriptsize\textbullet}}}
+\setlist[enumerate]{leftmargin=3.5mm}
+\setlist[description]{leftmargin=0mm, labelwidth=0mm, itemindent=0mm, font=\bfseries\color{csPrimary}\scriptsize}
+
+% --- Compact math spacing ---
+\AtBeginDocument{%
+    \setlength{\abovedisplayskip}{1.5pt}
+    \setlength{\belowdisplayskip}{1.5pt}
+    \setlength{\abovedisplayshortskip}{0pt}
+    \setlength{\belowdisplayshortskip}{0pt}
+    \setlength{\jot}{1.5pt}    % Space between align rows
+}
+
+% --- Compact line spacing ---
+\linespread{0.92}
+
+% ============================================================================
+% CUSTOM ENVIRONMENTS — Boxed sections with minimal overhead
+% ============================================================================
+
+% --- Section header box (full-width colored banner) ---
+\newtcolorbox{sheetsection}[1]{%
+    colback=csPrimary,
+    colframe=csPrimary,
+    coltext=white,
+    fontupper=\bfseries\fontsize{7.5pt}{8.5pt}\selectfont\centering,
+    boxrule=0pt,
+    arc=0.8mm,
+    top=0.4mm, bottom=0.4mm,
+    left=1mm, right=1mm,
+    before skip=1mm, after skip=0.5mm,
+    halign=center,
+    phantom={\phantomsection},
+    after upper={\par\noindent #1\par\vspace{-2pt}}
+}
+
+% --- Content box (light background, titled) ---
+\newtcolorbox{csbox}[2][]{%
+    colback=csLightBg,
+    colframe=csSecondary,
+    fonttitle=\bfseries\fontsize{6.5pt}{7.5pt}\selectfont,
+    title=#2,
+    boxrule=0.3pt,
+    arc=0.5mm,
+    top=0.4mm, bottom=0.4mm,
+    left=0.8mm, right=0.8mm,
+    toptitle=0.2mm, bottomtitle=0.2mm,
+    before skip=0.5mm, after skip=0.5mm,
+    #1
+}
+
+% --- Tip box (green accent) ---
+\newtcolorbox{cstip}[1][]{%
+    colback=csAccent2!8,
+    colframe=csAccent2!80!black,
+    boxrule=0.3pt,
+    arc=0.5mm,
+    top=0.4mm, bottom=0.4mm,
+    left=0.8mm, right=0.8mm,
+    before skip=0.5mm, after skip=0.5mm,
+    #1
+}
+
+% --- Warning box (orange accent) ---
+\newtcolorbox{cswarn}[1][]{%
+    colback=csAccent1!8,
+    colframe=csAccent1!80!black,
+    boxrule=0.3pt,
+    arc=0.5mm,
+    top=0.4mm, bottom=0.4mm,
+    left=0.8mm, right=0.8mm,
+    before skip=0.5mm, after skip=0.5mm,
+    #1
+}
+
+% --- Important/highlight box (purple accent) ---
+\newtcolorbox{cshighlight}[1][]{%
+    colback=csAccent3!8,
+    colframe=csAccent3!80!black,
+    boxrule=0.3pt,
+    arc=0.5mm,
+    top=0.4mm, bottom=0.4mm,
+    left=0.8mm, right=0.8mm,
+    before skip=0.5mm, after skip=0.5mm,
+    #1
+}
+
+% ============================================================================
+% CUSTOM COMMANDS — Compact formatting helpers
+% ============================================================================
+
+% Inline code
+\newcommand{\code}[1]{\texttt{\fontsize{6pt}{7pt}\selectfont#1}}
+% Key-value definition pair
+\newcommand{\kv}[2]{\textcolor{csPrimary}{\textbf{#1:}} #2}
+% Command syntax (purple monospace)
+\newcommand{\cmd}[1]{\textcolor{csAccent3}{\texttt{\textbf{#1}}}}
+% Compact section divider (just a colored rule)
+\newcommand{\csrule}{\vspace{0.3mm}\noindent\textcolor{csLightBg}{\rule{\linewidth}{0.3pt}}\vspace{0.3mm}}
+
+% ============================================================================
+% CODE LISTING STYLE
+% ============================================================================
+\lstdefinestyle{cheatcode}{%
+    basicstyle=\ttfamily\fontsize{5.5pt}{6.5pt}\selectfont,
+    backgroundcolor=\color{csLightBg},
+    frame=none,
+    numbers=none,
+    breaklines=true,
+    breakatwhitespace=true,
+    tabsize=2,
+    columns=flexible,
+    keepspaces=true,
+    xleftmargin=0.5mm,
+    xrightmargin=0.5mm,
+    aboveskip=0.5mm,
+    belowskip=0.5mm,
+    keywordstyle=\color{csPrimary}\bfseries,
+    commentstyle=\color{csAccent2!70!black}\itshape,
+    stringstyle=\color{csAccent1}
+}
+\lstset{style=cheatcode}
+
+% ============================================================================
+% DOCUMENT BEGINS
+% ============================================================================
+\begin{document}
+
+% --- TITLE BAR (spans all columns) ---
+\noindent\colorbox{csSecondary}{%
+    \parbox{\dimexpr\textwidth-2\fboxsep\relax}{%
+        \centering\color{white}%
+        \fontsize{10pt}{12pt}\selectfont\textbf{COMPREHENSIVE REFERENCE CARD}%
+        \hfill%
+        \fontsize{6.5pt}{7.5pt}\selectfont Subject / Topic Name \textbar{} v1.0 \textbar{} 2026%
+    }%
+}
+
+\vspace{0.8mm}
+
+% ============================================================================
+% PAGE 1 — FRONT SIDE
+% ============================================================================
+\begin{multicols}{3}
+
+% --- SECTION 1: Formulas / Math ---
+\begin{sheetsection}{Mathematical Formulas}\end{sheetsection}
+
+\begin{csbox}{Core Identities}
+\vspace{-1mm}
+\begin{align*}
+e^{i\pi} + 1 &= 0 &
+\sin^2\theta + \cos^2\theta &= 1 \\
+\frac{d}{dx}(x^n) &= nx^{n-1} &
+\int x^n\,dx &= \frac{x^{n+1}}{n+1}+C
+\end{align*}
+\vspace{-2mm}
+\end{csbox}
+
+\begin{csbox}{Probability}
+\vspace{-1mm}
+\begin{align*}
+P(A|B) &= \frac{P(B|A)\,P(A)}{P(B)} \\
+\mathbb{E}[X] &= \sum_i x_i\,p(x_i) \\
+\text{Var}(X) &= \mathbb{E}[X^2] - (\mathbb{E}[X])^2
+\end{align*}
+\vspace{-2mm}
+\end{csbox}
+
+\begin{cstip}
+\textbf{Tip:} $\text{Var}(aX+b) = a^2\text{Var}(X)$. The constant $b$ shifts but does not affect variance.
+\end{cstip}
+
+% --- SECTION 2: Command Reference ---
+\begin{sheetsection}{Command Reference}\end{sheetsection}
+
+\begin{csbox}{Git Commands}
+{\fontsize{6pt}{7pt}\selectfont
+\renewcommand{\arraystretch}{0.95}
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\cmd{git init} & Initialize repository \\
+\cmd{git clone <url>} & Clone remote repo \\
+\cmd{git add .} & Stage all changes \\
+\cmd{git commit -m ""} & Commit with message \\
+\cmd{git push} & Push to remote \\
+\cmd{git pull} & Fetch and merge \\
+\cmd{git branch <n>} & Create branch \\
+\cmd{git checkout <b>} & Switch branch \\
+\cmd{git merge <b>} & Merge branches \\
+\cmd{git stash} & Stash changes \\
+\end{tabularx}
+}
+\end{csbox}
+
+\begin{cswarn}
+\textbf{Warning:} Never \cmd{push --force} to shared branches!
+\end{cswarn}
+
+% --- SECTION 3: Code Quick Reference ---
+\begin{sheetsection}{Python Quick Reference}\end{sheetsection}
+
+\begin{csbox}{Data Structures}
+\begin{itemize}
+\item \textbf{List:} \code{[1, 2, 3]} -- mutable, ordered
+\item \textbf{Tuple:} \code{(1, 2, 3)} -- immutable, hashable
+\item \textbf{Dict:} \code{\{'k': 'v'\}} -- key-value pairs
+\item \textbf{Set:} \code{\{1, 2, 3\}} -- unique, unordered
+\end{itemize}
+\end{csbox}
+
+\begin{csbox}{List Comprehensions}
+\begin{lstlisting}[language=Python]
+[x**2 for x in range(10)]
+[x for x in lst if x > 0]
+{k: v**2 for k, v in d.items()}
+\end{lstlisting}
+\end{csbox}
+
+% --- SECTION 4: Algorithms ---
+\begin{sheetsection}{Algorithms \& Complexity}\end{sheetsection}
+
+\begin{csbox}{Big-O Reference}
+{\fontsize{6pt}{7pt}\selectfont
+\renewcommand{\arraystretch}{0.95}
+\begin{tabular}{@{}ll@{}}
+$O(1)$ & Constant \\
+$O(\log n)$ & Logarithmic \\
+$O(n)$ & Linear \\
+$O(n \log n)$ & Linearithmic \\
+$O(n^2)$ & Quadratic \\
+$O(2^n)$ & Exponential \\
+\end{tabular}
+}
+\end{csbox}
+
+\begin{csbox}{Sorting Algorithms}
+{\fontsize{5.5pt}{6.5pt}\selectfont
+\renewcommand{\arraystretch}{0.95}
+\begin{tabular}{@{}llll@{}}
+\textbf{Algo} & \textbf{Best} & \textbf{Avg} & \textbf{Worst} \\
+\midrule
+Bubble & $O(n)$ & $O(n^2)$ & $O(n^2)$ \\
+Quick & $O(n\!\log\!n)$ & $O(n\!\log\!n)$ & $O(n^2)$ \\
+Merge & $O(n\!\log\!n)$ & $O(n\!\log\!n)$ & $O(n\!\log\!n)$ \\
+Heap & $O(n\!\log\!n)$ & $O(n\!\log\!n)$ & $O(n\!\log\!n)$ \\
+\end{tabular}
+}
+\end{csbox}
+
+% --- SECTION 5: Data Structures ---
+\begin{csbox}{Data Structure Operations}
+{\fontsize{5.5pt}{6.5pt}\selectfont
+\renewcommand{\arraystretch}{0.95}
+\begin{tabular}{@{}lll@{}}
+\textbf{Structure} & \textbf{Access} & \textbf{Insert} \\
+\midrule
+Array & $O(1)$ & $O(n)$ \\
+Linked List & $O(n)$ & $O(1)$ \\
+Hash Table & $O(1)$ avg & $O(1)$ avg \\
+BST & $O(\log n)$ & $O(\log n)$ \\
+Heap & $O(1)$ top & $O(\log n)$ \\
+\end{tabular}
+}
+\end{csbox}
+
+% --- SECTION 6: Networking ---
+\begin{sheetsection}{Networking}\end{sheetsection}
+
+\begin{csbox}{HTTP Status Codes}
+{\fontsize{6pt}{7pt}\selectfont
+\renewcommand{\arraystretch}{0.95}
+\begin{tabular}{@{}rl@{}}
+\textbf{200} & OK \\
+\textbf{201} & Created \\
+\textbf{301} & Moved Permanently \\
+\textbf{400} & Bad Request \\
+\textbf{401} & Unauthorized \\
+\textbf{403} & Forbidden \\
+\textbf{404} & Not Found \\
+\textbf{500} & Internal Server Error \\
+\end{tabular}
+}
+\end{csbox}
+
+\begin{csbox}{Common Ports}
+{\fontsize{6pt}{7pt}\selectfont
+\renewcommand{\arraystretch}{0.95}
+\begin{tabular}{@{}rl@{}}
+22 & SSH \hfill 80 \hspace{1mm} HTTP \\
+443 & HTTPS \hfill 53 \hspace{1mm} DNS \\
+3306 & MySQL \hfill 5432 \hspace{1mm} PostgreSQL \\
+6379 & Redis \hfill 27017 \hspace{1mm} MongoDB \\
+\end{tabular}
+}
+\end{csbox}
+
+\end{multicols}
+
+% ============================================================================
+% PAGE 2 — BACK SIDE
+% ============================================================================
+\newpage
+
+\noindent\colorbox{csSecondary}{%
+    \parbox{\dimexpr\textwidth-2\fboxsep\relax}{%
+        \centering\color{white}%
+        \fontsize{10pt}{12pt}\selectfont\textbf{REFERENCE CARD -- PAGE 2}%
+        \hfill%
+        \fontsize{6.5pt}{7.5pt}\selectfont Additional Reference Material%
+    }%
+}
+
+\vspace{0.8mm}
+
+\begin{multicols}{3}
+
+% --- More sections here ---
+\begin{sheetsection}{SQL Quick Reference}\end{sheetsection}
+
+\begin{csbox}{Basic Queries}
+\begin{lstlisting}[language=SQL]
+SELECT col1, col2 FROM table
+WHERE condition
+ORDER BY col1 DESC LIMIT 10;
+
+SELECT * FROM t1
+INNER JOIN t2 ON t1.id = t2.id;
+
+SELECT COUNT(*), AVG(price)
+FROM products GROUP BY category
+HAVING COUNT(*) > 5;
+\end{lstlisting}
+\end{csbox}
+
+\begin{sheetsection}{Regular Expressions}\end{sheetsection}
+
+\begin{csbox}{Pattern Reference}
+{\fontsize{6pt}{7pt}\selectfont
+\renewcommand{\arraystretch}{0.95}
+\begin{tabular}{@{}ll@{}}
+\code{.} & Any character \\
+\code{\^{}} / \code{\$} & Start / end of line \\
+\code{*} / \code{+} / \code{?} & 0+, 1+, 0 or 1 \\
+\code{[abc]} & Character class \\
+\code{[a-z]} & Range \\
+\code{\textbackslash d} / \code{\textbackslash w} / \code{\textbackslash s} & Digit / word / space \\
+\code{()} & Capture group \\
+\code{|} & Alternation (OR) \\
+\code{\{n,m\}} & Repeat n to m times \\
+\end{tabular}
+}
+\end{csbox}
+
+\begin{sheetsection}{Docker Commands}\end{sheetsection}
+
+\begin{csbox}{Container Management}
+\begin{itemize}
+\item \cmd{docker run -it <img>} -- Run interactive
+\item \cmd{docker ps} -- List running containers
+\item \cmd{docker stop <id>} -- Stop container
+\item \cmd{docker rm <id>} -- Remove container
+\item \cmd{docker exec -it <id> bash} -- Enter shell
+\item \cmd{docker logs -f <id>} -- Follow logs
+\end{itemize}
+\end{csbox}
+
+\begin{csbox}{Image Management}
+\begin{itemize}
+\item \cmd{docker build -t <n> .} -- Build image
+\item \cmd{docker images} -- List images
+\item \cmd{docker pull <img>} -- Pull from registry
+\item \cmd{docker push <img>} -- Push to registry
+\end{itemize}
+\end{csbox}
+
+\begin{sheetsection}{Design Patterns}\end{sheetsection}
+
+\begin{csbox}{Creational}
+\begin{itemize}
+\item \textbf{Singleton:} Single instance per app
+\item \textbf{Factory:} Object creation abstraction
+\item \textbf{Builder:} Step-by-step construction
+\end{itemize}
+\end{csbox}
+
+\begin{csbox}{Structural}
+\begin{itemize}
+\item \textbf{Adapter:} Interface wrapper
+\item \textbf{Decorator:} Dynamic behavior addition
+\item \textbf{Facade:} Simplified interface
+\end{itemize}
+\end{csbox}
+
+\begin{csbox}{Behavioral}
+\begin{itemize}
+\item \textbf{Observer:} Event notification
+\item \textbf{Strategy:} Interchangeable algorithms
+\item \textbf{Command:} Request encapsulation
+\end{itemize}
+\end{csbox}
+
+% --- Footer ---
+\vfill
+\begin{center}
+{\fontsize{5pt}{6pt}\selectfont\textcolor{csSecondary!60}{%
+Generated with LaTeX Cheat Sheet Template \textbar{} Customize colors in preamble \textbar{} Compile with pdflatex%
+}}
+\end{center}
+
+\end{multicols}
+
+\end{document}

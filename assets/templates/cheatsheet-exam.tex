@@ -1,0 +1,460 @@
+% ============================================================================
+% EXAM FORMULA SHEET / CHEAT SHEET TEMPLATE
+% ============================================================================
+% Portrait, 2-column layout optimized for MAXIMUM density on exams
+% Paper: Letter/A4 portrait | Columns: 2 | Base font: 6pt
+% Focus: Mathematical formulas, theorems, definitions, procedures
+% B&W printing friendly — minimal color usage (grayscale only)
+% Front-and-back (2 pages) with student/course header
+% Compile: pdflatex (auto-detected by compile script)
+% ============================================================================
+
+\documentclass[6pt]{extarticle}  % extarticle supports 6pt base font
+
+% --- GEOMETRY: Ultra-tight margins ---
+\usepackage[
+    margin=5mm,
+    top=8mm,            % Slightly more top for header
+    bottom=4mm
+]{geometry}
+
+% --- ENCODING & FONTS ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}          % Protrusion + expansion for density
+
+% --- LAYOUT ---
+\usepackage{multicol}
+\usepackage{enumitem}
+
+% --- VISUAL ---
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable,skins}
+
+% --- MATH (comprehensive) ---
+\usepackage{amsmath,amssymb,mathtools,amsthm}
+\usepackage{array}
+\usepackage{booktabs}
+
+% ============================================================================
+% GRAYSCALE COLOR SCHEME — Prints perfectly on any B&W printer
+% ============================================================================
+\definecolor{exDark}{RGB}{50,50,50}         % Section headers
+\definecolor{exMed}{RGB}{110,110,110}       % Borders, accents
+\definecolor{exLight}{RGB}{235,235,235}     % Box backgrounds
+\definecolor{exRule}{RGB}{180,180,180}      % Column separator
+
+% ============================================================================
+% GLOBAL SPACING — Maximum density for exam use
+% ============================================================================
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\setlength{\columnsep}{3mm}
+\setlength{\columnseprule}{0.1pt}
+\def\columnseprulecolor{\color{exRule}}
+\setlength{\premulticols}{0pt}
+\setlength{\postmulticols}{0pt}
+\setlength{\multicolsep}{0pt}
+
+% --- Ultra-compact lists ---
+\setlist{nosep, leftmargin=*, topsep=0pt, partopsep=0pt, parsep=0pt, itemsep=0.2pt}
+\setlist[itemize]{leftmargin=2.5mm, label={\tiny\textbullet}}
+\setlist[enumerate]{leftmargin=3mm}
+
+% --- Minimal math spacing ---
+\AtBeginDocument{%
+    \setlength{\abovedisplayskip}{1pt}
+    \setlength{\belowdisplayskip}{1pt}
+    \setlength{\abovedisplayshortskip}{0pt}
+    \setlength{\belowdisplayshortskip}{0pt}
+    \setlength{\jot}{1pt}
+}
+
+% --- Tight line spacing ---
+\linespread{0.9}
+
+% ============================================================================
+% CUSTOM ENVIRONMENTS — Exam-focused, minimal chrome
+% ============================================================================
+
+% --- Section header (dark bar, white text, sharp corners) ---
+\newcommand{\sheetsection}[1]{%
+    \vspace{0.5mm}%
+    \noindent\colorbox{exDark}{%
+        \parbox{\dimexpr\linewidth-2\fboxsep\relax}{%
+            \centering\color{white}\bfseries\fontsize{7pt}{8pt}\selectfont #1%
+        }%
+    }%
+    \vspace{0.3mm}%
+}
+
+% --- Subsection header (bold, gray underline) ---
+\newcommand{\sheetsubsection}[1]{%
+    \vspace{0.3mm}%
+    \noindent{\color{exDark}\bfseries\fontsize{6.5pt}{7.5pt}\selectfont #1}%
+    \par\vspace{-0.5mm}\noindent\textcolor{exRule}{\rule{\linewidth}{0.2pt}}%
+    \vspace{0.2mm}%
+}
+
+% --- Theorem box (most important results) ---
+\newtcolorbox{thmbox}[1]{%
+    colback=white,
+    colframe=exDark,
+    fonttitle=\bfseries\fontsize{6pt}{7pt}\selectfont,
+    title=\textsc{Thm:} #1,
+    boxrule=0.4pt,
+    arc=0mm,            % Sharp corners — saves space
+    top=0.3mm, bottom=0.3mm,
+    left=0.8mm, right=0.8mm,
+    toptitle=0.2mm, bottomtitle=0.2mm,
+    before skip=0.5mm, after skip=0.5mm
+}
+
+% --- Definition box (key concepts) ---
+\newtcolorbox{defbox}[1]{%
+    colback=exLight,
+    colframe=exMed,
+    fonttitle=\bfseries\fontsize{6pt}{7pt}\selectfont,
+    title=\textsc{Def:} #1,
+    boxrule=0.3pt,
+    arc=0mm,
+    top=0.3mm, bottom=0.3mm,
+    left=0.8mm, right=0.8mm,
+    toptitle=0.2mm, bottomtitle=0.2mm,
+    before skip=0.5mm, after skip=0.5mm
+}
+
+% --- Formula box (important equations, no title bar) ---
+\newtcolorbox{formulabox}[1]{%
+    colback=white,
+    colframe=exMed,
+    fonttitle=\bfseries\fontsize{6pt}{7pt}\selectfont,
+    title=#1,
+    boxrule=0.25pt,
+    arc=0mm,
+    top=0.2mm, bottom=0.2mm,
+    left=0.8mm, right=0.8mm,
+    toptitle=0.2mm, bottomtitle=0.2mm,
+    before skip=0.4mm, after skip=0.4mm
+}
+
+% --- Procedure / algorithm box ---
+\newtcolorbox{procbox}[1]{%
+    colback=white,
+    colframe=exDark,
+    fonttitle=\bfseries\fontsize{6pt}{7pt}\selectfont,
+    title=\textsc{Procedure:} #1,
+    boxrule=0.3pt,
+    arc=0mm,
+    top=0.3mm, bottom=0.3mm,
+    left=0.8mm, right=0.8mm,
+    toptitle=0.2mm, bottomtitle=0.2mm,
+    before skip=0.4mm, after skip=0.4mm
+}
+
+% ============================================================================
+% CUSTOM COMMANDS — Math shortcuts for density
+% ============================================================================
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\nullity}{nullity}
+\DeclareMathOperator{\Span}{span}
+\DeclareMathOperator{\im}{im}
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\sgn}{sgn}
+\newcommand{\vect}[1]{\mathbf{#1}}
+\newcommand{\mat}[1]{\mathbf{#1}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\norm}[1]{\left\|#1\right\|}
+\newcommand{\abs}[1]{\left|#1\right|}
+\newcommand{\pd}[2]{\frac{\partial #1}{\partial #2}}
+
+% ============================================================================
+% DOCUMENT BEGINS
+% ============================================================================
+\begin{document}
+
+% --- HEADER: Course info + student name ---
+\begin{center}
+\fontsize{8pt}{9pt}\selectfont
+\textbf{MATH 401: Advanced Calculus \& Linear Algebra}\\
+{\fontsize{6pt}{7pt}\selectfont Exam Formula Sheet \textbar{} Midterm -- Spring 2026 \textbar{} Student: \underline{\hspace{3cm}}}
+\end{center}
+
+\vspace{0.3mm}
+\noindent\rule{\textwidth}{0.3pt}
+\vspace{0.3mm}
+
+% ============================================================================
+% PAGE 1 — FRONT SIDE
+% ============================================================================
+\begin{multicols}{2}
+
+\sheetsection{Differential Calculus}
+\begin{defbox}{Derivative}
+$f'(x) = \lim_{h \to 0} \dfrac{f(x+h) - f(x)}{h}$
+\end{defbox}
+\begin{formulabox}{Common Derivatives}
+\vspace{-1mm}
+\begin{align*}
+\textstyle\frac{d}{dx}(x^n) &= nx^{n-1} & \textstyle\frac{d}{dx}(e^x) &= e^x \\
+\textstyle\frac{d}{dx}(\ln x) &= \frac{1}{x} & \textstyle\frac{d}{dx}(\sin x) &= \cos x \\
+\textstyle\frac{d}{dx}(\cos x) &= -\sin x & \textstyle\frac{d}{dx}(\tan x) &= \sec^2 x \\
+\textstyle\frac{d}{dx}(\arcsin x) &= \frac{1}{\sqrt{1-x^2}} & \textstyle\frac{d}{dx}(\arctan x) &= \frac{1}{1+x^2}
+\end{align*}
+\vspace{-2mm}
+\end{formulabox}
+\begin{thmbox}{Chain Rule}
+$(f \circ g)'(x) = f'(g(x)) \cdot g'(x)$
+\end{thmbox}
+\begin{thmbox}{Product / Quotient Rules}
+$(fg)' = f'g + fg'$ \hfill $\left(\frac{f}{g}\right)' = \frac{f'g - fg'}{g^2}$
+\end{thmbox}
+\begin{thmbox}{L'H\^opital's Rule}
+If $\lim \frac{f}{g} = \frac{0}{0}$ or $\frac{\pm\infty}{\pm\infty}$, then
+$\lim \frac{f(x)}{g(x)} = \lim \frac{f'(x)}{g'(x)}$
+\end{thmbox}
+\sheetsubsection{Taylor Series}
+\begin{formulabox}{Taylor Expansion at $a$}
+$f(x) = \sum_{n=0}^\infty \frac{f^{(n)}(a)}{n!}(x-a)^n$
+\end{formulabox}
+\begin{formulabox}{Common Series}
+\vspace{-1mm}
+{\fontsize{5.5pt}{6.5pt}\selectfont
+\begin{align*}
+e^x &= \sum \frac{x^n}{n!} = 1 + x + \frac{x^2}{2!} + \cdots \\
+\sin x &= x - \frac{x^3}{3!} + \frac{x^5}{5!} - \cdots \\
+\cos x &= 1 - \frac{x^2}{2!} + \frac{x^4}{4!} - \cdots \\
+\ln(1+x) &= x - \frac{x^2}{2} + \frac{x^3}{3} - \cdots \\
+\frac{1}{1-x} &= 1 + x + x^2 + x^3 + \cdots
+\end{align*}
+}
+\vspace{-2mm}
+\end{formulabox}
+\sheetsection{Integral Calculus}
+\begin{thmbox}{Fundamental Thm of Calculus}
+If $F'(x) = f(x)$, then $\int_a^b f(x)\,dx = F(b) - F(a)$
+\end{thmbox}
+\begin{formulabox}{Common Integrals}
+\vspace{-1mm}
+{\fontsize{5.5pt}{6.5pt}\selectfont
+\begin{align*}
+\int x^n\,dx &= \frac{x^{n+1}}{n+1}+C\ (n\neq -1) &
+\int \frac{1}{x}\,dx &= \ln|x|+C \\
+\int e^x\,dx &= e^x+C &
+\int \sin x\,dx &= -\cos x+C \\
+\int \cos x\,dx &= \sin x+C &
+\int \frac{dx}{1+x^2} &= \arctan x+C
+\end{align*}
+}
+\vspace{-2mm}
+\end{formulabox}
+\begin{thmbox}{Integration by Parts}
+$\int u\,dv = uv - \int v\,du$
+\end{thmbox}
+\begin{procbox}{Trig Substitution}
+\begin{itemize}
+\item $\sqrt{a^2-x^2}$: let $x = a\sin\theta$
+\item $\sqrt{a^2+x^2}$: let $x = a\tan\theta$
+\item $\sqrt{x^2-a^2}$: let $x = a\sec\theta$
+\end{itemize}
+\end{procbox}
+\sheetsection{Multivariable Calculus}
+\begin{defbox}{Gradient}
+$\nabla f = \left(\pd{f}{x},\, \pd{f}{y},\, \pd{f}{z}\right)$
+\end{defbox}
+\begin{thmbox}{2nd Derivative Test}
+$D = f_{xx}f_{yy} - (f_{xy})^2$ at critical pt.\\
+$D>0,\, f_{xx}>0$: local min \hfill $D>0,\, f_{xx}<0$: local max\\
+$D<0$: saddle \hfill $D=0$: inconclusive
+\end{thmbox}
+\begin{formulabox}{Lagrange Multipliers}
+Optimize $f$ subject to $g = c$: Solve $\nabla f = \lambda\nabla g$ and $g = c$
+\end{formulabox}
+\sheetsubsection{Vector Calculus}
+\begin{thmbox}{Green's Theorem}
+$\oint_C (P\,dx + Q\,dy) = \iint_D \left(\pd{Q}{x} - \pd{P}{y}\right)dA$
+\end{thmbox}
+\begin{thmbox}{Divergence Theorem}
+$\iiint_V \nabla\cdot\vect{F}\,dV = \iint_S \vect{F}\cdot\hat{\vect{n}}\,dS$
+\end{thmbox}
+\begin{thmbox}{Stokes' Theorem}
+$\oint_C \vect{F}\cdot d\vect{r} = \iint_S (\nabla\times\vect{F})\cdot\hat{\vect{n}}\,dS$
+\end{thmbox}
+\sheetsection{Linear Algebra}
+\begin{thmbox}{Dimension Theorem}
+$\dim(V) = \rank(\mat{A}) + \nullity(\mat{A})$
+\end{thmbox}
+\begin{formulabox}{2$\times$2 Inverse}
+$\mat{A}^{-1} = \frac{1}{ad-bc}\begin{pmatrix}d&-b\\-c&a\end{pmatrix}$
+\end{formulabox}
+\begin{formulabox}{Determinant Properties}
+{\fontsize{5.5pt}{6.5pt}\selectfont
+$\det(AB) = \det A\cdot\det B$ \hfill
+$\det(A^T) = \det A$ \hfill
+$\det(A^{-1}) = \frac{1}{\det A}$
+
+Row swap $\Rightarrow$ sign change \hfill Row scale by $k$ $\Rightarrow$ det scales by $k$
+}
+\end{formulabox}
+\sheetsubsection{Eigenvalues \& Eigenvectors}
+\begin{procbox}{Finding Eigenvalues}
+\begin{enumerate}
+\item Solve char. eq.: $\det(\mat{A} - \lambda\mat{I}) = 0$
+\item For each $\lambda$: solve $(\mat{A} - \lambda\mat{I})\vect{v} = \vect{0}$
+\end{enumerate}
+\end{procbox}
+\begin{thmbox}{Spectral Theorem}
+Symmetric $\mat{A}$: all real eigenvalues, orthogonal eigenvectors.
+$\mat{A} = \mat{Q}\mat{\Lambda}\mat{Q}^T$ where $\mat{Q}$ orthogonal.
+\end{thmbox}
+\begin{formulabox}{Gram-Schmidt}
+{\fontsize{5.5pt}{6.5pt}\selectfont
+$\vect{u}_1 = \tfrac{\vect{v}_1}{\norm{\vect{v}_1}}$, \
+$\vect{u}_k = \tfrac{\vect{v}_k - \sum_{i<k}\langle\vect{v}_k,\vect{u}_i\rangle\vect{u}_i}{\norm{\vect{v}_k - \sum_{i<k}\langle\vect{v}_k,\vect{u}_i\rangle\vect{u}_i}}$}
+\end{formulabox}
+
+\end{multicols}
+
+% ============================================================================
+% PAGE 2 — BACK SIDE
+% ============================================================================
+\newpage
+
+\begin{center}
+\fontsize{8pt}{9pt}\selectfont
+\textbf{FORMULA SHEET -- PAGE 2}\\
+{\fontsize{6pt}{7pt}\selectfont Differential Equations \textbar{} Probability \textbar{} Series \textbar{} Identities}
+\end{center}
+
+\vspace{0.3mm}
+\noindent\rule{\textwidth}{0.3pt}
+\vspace{0.3mm}
+
+\begin{multicols}{2}
+
+\sheetsection{Differential Equations}
+\begin{formulabox}{Separable}
+$\frac{dy}{dx} = g(x)h(y) \Rightarrow \int\frac{dy}{h(y)} = \int g(x)\,dx$
+\end{formulabox}
+\begin{formulabox}{First-Order Linear}
+$y' + p(x)y = q(x)$. \quad IF: $\mu = e^{\int p\,dx}$.
+
+$y = \frac{1}{\mu}\left(\int \mu\, q\,dx + C\right)$
+\end{formulabox}
+\begin{formulabox}{2nd-Order Constant Coeff}
+$ay'' + by' + cy = 0$. \quad Char eq: $ar^2+br+c=0$.
+
+\textbf{Two real:} $y = c_1 e^{r_1 x} + c_2 e^{r_2 x}$\\
+\textbf{Repeated:} $y = (c_1+c_2 x)e^{rx}$\\
+\textbf{Complex $\alpha\pm\beta i$:} $y = e^{\alpha x}(c_1\cos\beta x + c_2\sin\beta x)$
+\end{formulabox}
+\begin{procbox}{Variation of Parameters}
+For $y''+p\,y'+q\,y = f(x)$ with solutions $y_1,y_2$:
+
+$y_p = -y_1\!\int\!\frac{y_2 f}{W}dx + y_2\!\int\!\frac{y_1 f}{W}dx$
+
+$W = y_1 y_2' - y_1' y_2$ (Wronskian)
+\end{procbox}
+\sheetsection{Sequences \& Series}
+\begin{thmbox}{Ratio Test}
+$L = \lim\left|\frac{a_{n+1}}{a_n}\right|$: \
+$L<1$ converges, $L>1$ diverges, $L=1$ inconclusive
+\end{thmbox}
+\begin{thmbox}{Root Test}
+$L = \lim\sqrt[n]{|a_n|}$: same criteria as ratio test
+\end{thmbox}
+\begin{thmbox}{Comparison Test}
+$0 \leq a_n \leq b_n$: $\sum b_n$ conv $\Rightarrow$ $\sum a_n$ conv;
+$\sum a_n$ div $\Rightarrow$ $\sum b_n$ div
+\end{thmbox}
+\begin{thmbox}{Alternating Series}
+$\sum(-1)^n a_n$ converges if $a_n>0$, $a_n$ decreasing, $\lim a_n = 0$
+\end{thmbox}
+\sheetsection{Probability \& Statistics}
+\begin{formulabox}{Expected Value \& Variance}
+$\mathbb{E}[X] = \sum x_i\,p(x_i)$ or $\int x\,f(x)\,dx$
+
+$\text{Var}(X) = \mathbb{E}[X^2] - (\mathbb{E}[X])^2$
+
+$\text{Var}(aX+b) = a^2\text{Var}(X)$
+\end{formulabox}
+\begin{formulabox}{Common Distributions}
+{\fontsize{5.5pt}{6.5pt}\selectfont
+\textbf{Normal:} $f(x) = \frac{1}{\sigma\sqrt{2\pi}}e^{-(x-\mu)^2/(2\sigma^2)}$
+
+\textbf{Exponential:} $f(x) = \lambda e^{-\lambda x},\ x\geq0$
+
+\textbf{Poisson:} $P(X=k) = \frac{\lambda^k e^{-\lambda}}{k!}$
+
+\textbf{Binomial:} $P(X=k) = \binom{n}{k}p^k(1-p)^{n-k}$
+}
+\end{formulabox}
+\begin{thmbox}{Central Limit Theorem}
+$X_1,\ldots,X_n$ i.i.d.\ with $\mu,\sigma^2$:
+$\frac{\bar{X}-\mu}{\sigma/\sqrt{n}} \xrightarrow{d} N(0,1)$
+\end{thmbox}
+\sheetsection{Trigonometric Identities}
+\begin{formulabox}{Pythagorean}
+$\sin^2\!\theta + \cos^2\!\theta = 1$ \hfill
+$1 + \tan^2\!\theta = \sec^2\!\theta$ \hfill
+$1 + \cot^2\!\theta = \csc^2\!\theta$
+\end{formulabox}
+\begin{formulabox}{Sum / Difference}
+\vspace{-1mm}
+{\fontsize{5.5pt}{6.5pt}\selectfont
+\begin{align*}
+\sin(a\pm b) &= \sin a\cos b \pm \cos a\sin b \\
+\cos(a\pm b) &= \cos a\cos b \mp \sin a\sin b \\
+\tan(a\pm b) &= \frac{\tan a \pm \tan b}{1 \mp \tan a\tan b}
+\end{align*}
+}
+\vspace{-2mm}
+\end{formulabox}
+\begin{formulabox}{Double Angle}
+$\sin 2\theta = 2\sin\theta\cos\theta$
+
+$\cos 2\theta = \cos^2\!\theta - \sin^2\!\theta = 2\cos^2\!\theta - 1 = 1 - 2\sin^2\!\theta$
+\end{formulabox}
+\sheetsection{Useful Inequalities \& Results}
+\begin{formulabox}{AM-GM Inequality}
+$\tfrac{a_1+\cdots+a_n}{n} \geq (a_1\cdots a_n)^{1/n}$ (equality iff all $a_i$ equal)
+\end{formulabox}
+\begin{thmbox}{Cauchy-Schwarz}
+$|\langle\vect{u},\vect{v}\rangle| \leq \norm{\vect{u}}\norm{\vect{v}}$
+\end{thmbox}
+\begin{thmbox}{Triangle Inequality}
+$\norm{\vect{u}+\vect{v}} \leq \norm{\vect{u}} + \norm{\vect{v}}$
+\end{thmbox}
+\sheetsection{Numerical Methods}
+\begin{procbox}{Newton's Method}
+$x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)}$ \quad (quadratic convergence)
+\end{procbox}
+\begin{formulabox}{Numerical Integration}
+{\fontsize{5.5pt}{6.5pt}\selectfont
+\textbf{Trap:} $\int_a^b f\approx \frac{h}{2}[f(x_0)+2\sum f(x_i)+f(x_n)]$
+
+\textbf{Simpson:} $\int_a^b f\approx \frac{h}{3}[f_0+4\sum f_{\text{odd}}+2\sum f_{\text{even}}+f_n]$
+
+where $h=(b-a)/n$
+}
+\end{formulabox}
+
+% --- Footer ---
+\vfill
+\begin{center}
+{\fontsize{4.5pt}{5.5pt}\selectfont\textcolor{exMed}{%
+Exam Formula Sheet Template \textbar{} Maximum density for exam use \textbar{} Good luck!%
+}}
+\end{center}
+
+\end{multicols}
+
+\end{document}

@@ -76,6 +76,26 @@
 | `natbib` | Author-year citations (`\citet`, `\citep`) |
 | `biblatex` | Modern bibliography management (more flexible than natbib) |
 
+## Interactive / Dynamic Content
+| Package | Purpose |
+|---------|---------|
+| `hyperref` (forms) | Fillable PDF form fields: `\TextField`, `\CheckBox`, `\ChoiceMenu`, `\PushButton` |
+| `etoolbox` | Boolean toggles for conditional content (`\newtoggle`, `\iftoggle`) |
+| `ifthen` | Conditional logic (`\ifthenelse`, `\equal`, `\boolean`) |
+| `comment` | Block-level conditional inclusion/exclusion (`\includecomment`, `\excludecomment`) |
+| `xkeyval` | Key-value option parsing for document configuration |
+| `draftwatermark` | Conditional DRAFT/CONFIDENTIAL watermarks |
+| `lineno` | Line numbering for drafts and review copies |
+| `datatool` | Read CSV/databases directly in LaTeX (`\DTLloaddb`, `\DTLforeach`) |
+| `csvsimple` | Simpler CSV processing (`\csvreader`, `\csvautotabular`) |
+
+## Version Control / Diffing
+| Tool | Purpose |
+|---------|---------|
+| `latexdiff` | Generate change-tracked LaTeX between two `.tex` files |
+| `latexdiff-vc` | Git-aware variant: diff against commits, branches, tags |
+| `latexrevise` | Accept/reject changes from latexdiff output |
+
 ## Legal / Long Documents
 | Package | Purpose |
 |---------|---------|
