@@ -1,0 +1,9 @@
+# Python dependencies for LaTeX document skill
+# Install: pip install -r requirements.txt
+
+# Chart generation (scripts/generate_chart.py)
+matplotlib>=3.5.0
+numpy>=1.21.0
+
+# CSV-to-LaTeX conversion (scripts/csv_to_latex.py) + chart CSV input
+pandas>=1.3.0

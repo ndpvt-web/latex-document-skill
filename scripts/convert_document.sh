@@ -42,6 +42,10 @@
 
 set -euo pipefail
 
+# --- Source cross-platform dependency installer ---
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/install_deps.sh"
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -80,25 +84,22 @@ check_pandoc() {
         return 0
     else
         warn "Pandoc not found. Attempting to install..."
-        if command -v apt-get >/dev/null 2>&1; then
-            sudo apt-get update && sudo apt-get install -y pandoc
-        elif command -v brew >/dev/null 2>&1; then
-            brew install pandoc
-        elif command -v dnf >/dev/null 2>&1; then
-            sudo dnf install -y pandoc
-        else
+        install_packages "pandoc" || {
             error "Unable to auto-install pandoc. Please install manually:"
-            error "  Ubuntu/Debian: sudo apt-get install pandoc"
-            error "  macOS: brew install pandoc"
-            error "  Fedora: sudo dnf install pandoc"
+            error "  Ubuntu/Debian:  sudo apt-get install pandoc"
+            error "  macOS:          brew install pandoc"
+            error "  Fedora/RHEL:    sudo dnf install pandoc"
+            error "  Alpine:         sudo apk add pandoc"
+            error "  Arch:           sudo pacman -S pandoc"
             error "  Or download from: https://pandoc.org/installing.html"
             exit 1
-        fi
+        }
 
         if command -v pandoc >/dev/null 2>&1; then
             success "Pandoc installed successfully"
         else
             error "Pandoc installation failed"
+            print_install_help "pandoc"
             exit 1
         fi
     fi

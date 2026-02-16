@@ -29,6 +29,10 @@
 
 set -euo pipefail
 
+# --- Source cross-platform dependency installer ---
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/install_deps.sh"
+
 # --- Parse arguments ---
 INPUT_TEX=""
 PREVIEW=false
@@ -73,25 +77,19 @@ ensure_texlive() {
   if command -v pdflatex &>/dev/null; then
     return 0
   fi
-  echo ":: pdflatex not found. Installing texlive (this may take several minutes)..." >&2
-  local INSTALL_CMD="texlive-latex-base texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra texlive-latex-recommended texlive-science texlive-xetex texlive-luatex texlive-bibtex-extra biber"
-  if command -v sudo &>/dev/null; then
-    sudo apt-get update -q >&2 || { echo "Error: apt-get update failed" >&2; exit 1; }
-    echo ":: Downloading and installing TeX Live packages..." >&2
-    sudo apt-get install -y -q $INSTALL_CMD >&2 || { echo "Error: apt-get install failed" >&2; exit 1; }
-  elif command -v apt-get &>/dev/null; then
-    apt-get update -q >&2 || { echo "Error: apt-get update failed" >&2; exit 1; }
-    echo ":: Downloading and installing TeX Live packages..." >&2
-    apt-get install -y -q $INSTALL_CMD >&2 || { echo "Error: apt-get install failed" >&2; exit 1; }
-  else
-    echo "Error: Cannot install texlive - apt-get not available" >&2
+  echo ":: pdflatex not found. Installing TeX Live (this may take several minutes)..." >&2
+  install_packages "texlive" || {
+    echo "Error: Failed to install TeX Live." >&2
+    print_install_help "texlive"
     exit 1
-  fi
+  }
+  _brew_post_texlive
   if ! command -v pdflatex &>/dev/null; then
     echo "Error: pdflatex still not available after install" >&2
+    print_install_help "texlive"
     exit 1
   fi
-  echo ":: texlive installed successfully" >&2
+  echo ":: TeX Live installed successfully" >&2
 }
 
 # --- Ensure poppler-utils for PDF-to-PNG ---
@@ -99,17 +97,12 @@ ensure_poppler() {
   if command -v pdftoppm &>/dev/null; then
     return 0
   fi
-  echo ":: pdftoppm not found. Installing poppler-utils..." >&2
-  if command -v sudo &>/dev/null; then
-    sudo apt-get update -q >&2 || { echo "Error: apt-get update failed" >&2; exit 1; }
-    sudo apt-get install -y -q poppler-utils >&2 || { echo "Error: apt-get install poppler-utils failed" >&2; exit 1; }
-  elif command -v apt-get &>/dev/null; then
-    apt-get update -q >&2 || { echo "Error: apt-get update failed" >&2; exit 1; }
-    apt-get install -y -q poppler-utils >&2 || { echo "Error: apt-get install poppler-utils failed" >&2; exit 1; }
-  else
-    echo "Error: Cannot install poppler-utils - apt-get not available" >&2
+  echo ":: pdftoppm not found. Installing poppler..." >&2
+  install_packages "poppler" || {
+    echo "Error: Failed to install poppler." >&2
+    print_install_help "poppler"
     exit 1
-  fi
+  }
 }
 
 # --- Auto-detect engine from document content ---

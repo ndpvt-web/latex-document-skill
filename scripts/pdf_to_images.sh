@@ -14,6 +14,10 @@
 
 set -euo pipefail
 
+# --- Source cross-platform dependency installer ---
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/install_deps.sh"
+
 INPUT_PDF=""
 OUTPUT_DIR=""
 DPI=200
@@ -40,19 +44,21 @@ if [[ -z "$INPUT_PDF" || -z "$OUTPUT_DIR" ]]; then
 fi
 
 # Ensure dependencies
-for cmd in pdftoppm mogrify pdfinfo; do
-  if ! command -v "$cmd" &>/dev/null; then
-    echo ":: Installing dependencies (poppler-utils, imagemagick)..." >&2
-    if command -v sudo &>/dev/null; then
-      sudo apt-get update -q >&2 || { echo "Error: apt-get update failed" >&2; exit 1; }
-      sudo apt-get install -y -q poppler-utils imagemagick >&2 || { echo "Error: apt-get install failed" >&2; exit 1; }
-    else
-      apt-get update -q >&2 || { echo "Error: apt-get update failed" >&2; exit 1; }
-      apt-get install -y -q poppler-utils imagemagick >&2 || { echo "Error: apt-get install failed" >&2; exit 1; }
-    fi
-    break
-  fi
-done
+MISSING_DEPS=()
+command -v pdftoppm &>/dev/null || MISSING_DEPS+=("poppler")
+command -v pdfinfo  &>/dev/null || { [[ ! " ${MISSING_DEPS[*]} " =~ " poppler " ]] && MISSING_DEPS+=("poppler"); }
+command -v mogrify  &>/dev/null || MISSING_DEPS+=("imagemagick")
+
+if [[ ${#MISSING_DEPS[@]} -gt 0 ]]; then
+  echo ":: Installing dependencies: ${MISSING_DEPS[*]}..." >&2
+  install_packages "${MISSING_DEPS[@]}" || {
+    echo "Error: Failed to install dependencies." >&2
+    for dep in "${MISSING_DEPS[@]}"; do
+      print_install_help "$dep"
+    done
+    exit 1
+  }
+fi
 
 mkdir -p "$OUTPUT_DIR"
 

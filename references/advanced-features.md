@@ -596,9 +596,10 @@ When the `generate-image` skill is available, you can create custom illustration
 
 1. Generate the image:
 ```bash
-python3 /home/node/.claude/skills/generate-image/scripts/generate_image.py \
+python3 <skill_path>/../generate-image/scripts/generate_image.py \
     "Professional diagram of a neural network architecture, clean white background, technical illustration style" \
     --output ./outputs/neural_net.png
+# Note: <skill_path> is resolved by Claude Code to your skills directory (typically ~/.claude/skills/latex-document)
 ```
 
 2. Include in LaTeX:

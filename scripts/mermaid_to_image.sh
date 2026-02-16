@@ -60,6 +60,29 @@ INPUT_FILE="$1"
 OUTPUT_FILE="$2"
 shift 2
 
+# --- Check for Node.js/npx ---
+if ! command -v npx &>/dev/null; then
+    echo "Error: npx not found. Mermaid diagram conversion requires Node.js and npm." >&2
+    echo "" >&2
+    echo "Install Node.js:" >&2
+    echo "  Debian/Ubuntu:  sudo apt-get install nodejs npm" >&2
+    echo "  macOS:          brew install node" >&2
+    echo "  Fedora/RHEL:    sudo dnf install nodejs npm" >&2
+    echo "  Alpine:         sudo apk add nodejs npm" >&2
+    echo "  Arch:           sudo pacman -S nodejs npm" >&2
+    echo "" >&2
+    echo "Or download from: https://nodejs.org/" >&2
+    exit 1
+fi
+
+if command -v node &>/dev/null; then
+    NODE_VERSION=$(node --version | sed 's/v//' | cut -d. -f1)
+    if [[ "$NODE_VERSION" -lt 18 ]]; then
+        echo "Warning: Node.js v${NODE_VERSION} detected. Mermaid CLI requires Node 18+." >&2
+        echo "Consider upgrading: https://nodejs.org/" >&2
+    fi
+fi
+
 # Parse options
 while [[ $# -gt 0 ]]; do
     case "$1" in

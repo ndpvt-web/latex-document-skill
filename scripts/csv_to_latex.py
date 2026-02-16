@@ -18,9 +18,41 @@ Examples:
 """
 
 import argparse
+import subprocess
 import sys
-import pandas as pd
 from pathlib import Path
+
+
+def _ensure_package(pip_name, import_name=None):
+    """Try importing a package; auto-install via pip if missing."""
+    if import_name is None:
+        import_name = pip_name
+    try:
+        __import__(import_name)
+    except ImportError:
+        print(f":: Package '{import_name}' not found. Installing {pip_name}...", file=sys.stderr)
+        try:
+            subprocess.check_call(
+                [sys.executable, "-m", "pip", "install", "-q", pip_name],
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            )
+        except subprocess.CalledProcessError:
+            # PEP 668: retry with --break-system-packages for externally-managed envs
+            try:
+                subprocess.check_call(
+                    [sys.executable, "-m", "pip", "install", "-q",
+                     "--break-system-packages", pip_name],
+                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                )
+            except Exception as e:
+                print(f"Error: Failed to install {pip_name}: {e}", file=sys.stderr)
+                print(f"Please install manually: pip install {pip_name}", file=sys.stderr)
+                sys.exit(1)
+
+
+_ensure_package("pandas")
+
+import pandas as pd
 
 def escape_latex(text):
     """Escape special LaTeX characters in text."""
