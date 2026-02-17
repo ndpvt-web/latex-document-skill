@@ -30,7 +30,18 @@ description: >
   (22) create a fillable PDF form with text fields/checkboxes/dropdowns,
   (23) create a document with conditional content/toggles (show/hide sections),
   (24) generate batch/mail-merge documents from CSV/JSON data,
-  (25) create a version diff PDF (latexdiff) highlighting changes between documents.
+  (25) create a version diff PDF (latexdiff) highlighting changes between documents,
+  (26) create a homework or assignment submission with problems and solutions,
+  (27) create a lab report with data tables, graphs, and error analysis,
+  (28) encrypt or password-protect a PDF,
+  (29) merge multiple PDFs into one,
+  (30) optimize/compress a PDF for web or email,
+  (31) lint or check a LaTeX document for common issues,
+  (32) count words in a LaTeX document,
+  (33) analyze document statistics (figures, tables, citations),
+  (34) fetch BibTeX from a DOI,
+  (35) convert a Graphviz .dot file to PDF/PNG,
+  (36) convert a PlantUML .puml file to PDF/PNG.
 ---
 
 # LaTeX Document Skill
@@ -144,14 +155,104 @@ Based on the answer, select the template and configure layout:
 Then proceed to customize the template and fill in content.
 
 **PDF-to-Cheatsheet Pipeline** (when source PDFs provided):
-1. Split PDF into images: `bash <skill_path>/scripts/pdf_to_images.sh input.pdf ./tmp/pages`
-2. Read page images and extract key content using LLM vision
-3. Prioritize: formulas > theorems > definitions > procedures > examples
-4. Compress content: abbreviate verbose definitions, use symbols over words
-5. Organize into logical sections matching the cheat sheet template
-6. Fill template sections with extracted content
-7. If past papers provided: cross-reference to weight high-frequency topics
-8. Compile and iterate until content fits within page constraints
+
+**Phase 1: PDF Ingestion & Structure Analysis**
+1. Convert PDF to processable format:
+   - For text-based PDFs: Use `python3 -c "import fitz; doc=fitz.open('input.pdf'); [open(f'tmp/page_{i}.txt','w').write(page.get_text()) for i,page in enumerate(doc)]"` for fast text extraction
+   - For scanned/handwritten PDFs: `bash <skill_path>/scripts/pdf_to_images.sh input.pdf ./tmp/pages` then use LLM vision
+   - Auto-detect: if extracted text is <50 chars/page, treat as scanned and fall back to vision
+2. Build document structure map (Pass 1 - send first 10-20 pages to LLM):
+   ```
+   Analyze this document and create a structured outline:
+   - Chapter/section titles with page numbers
+   - Content type per section (theoretical, applied, examples, exercises)
+   - Importance rating (high/medium/low) based on: theorem density, boxed content, "Important" markers
+   Output as structured list.
+   ```
+3. For 100+ page documents, use hierarchical chunking:
+   - Chunk at section/subsection boundaries (not arbitrary page counts)
+   - Keep chunks to 3000-6000 tokens each (leaves room for prompt + output)
+   - Maintain chapter/section metadata with each chunk
+   - Process high-importance sections first (from structure map)
+
+**Phase 2: Targeted Content Extraction (Pass 2)**
+4. Extract key content from each high-importance section using subject-specific prompts:
+   - **Mathematics**: "Extract ALL formulas, theorems (with conditions), definitions, and proof techniques. Preserve LaTeX notation exactly."
+   - **Computer Science**: "Extract algorithms with complexity, data structure operations, key theorems. Format algorithms as step-lists."
+   - **Physics**: "Extract equations with units, laws with applicability conditions, constants. Note coordinate system dependencies."
+   - **Chemistry**: "Extract reactions, mechanisms, equilibrium expressions, nomenclature rules, periodic trends."
+   - **Biology**: "Extract processes/cycles as stage-lists, pathways, classification hierarchies, comparative tables."
+   - **General**: "Extract formulas > theorems > definitions > procedures > reference tables. Skip motivational text and history."
+5. For each extracted item, capture:
+   - Type: FORMULA | THEOREM | DEFINITION | PROCEDURE | TABLE
+   - Content (preserving all math notation)
+   - Context (when to use it)
+   - Prerequisites (what must be known first)
+
+**Phase 3: Content Prioritization & Compression (Pass 3)**
+6. Score and rank all extracted items:
+   - Priority 1 (60-70% of lookups): Formulas with variable meanings
+   - Priority 2 (15-20%): Procedure steps and algorithms
+   - Priority 3 (10-15%): Constants, units, conversion factors
+   - Priority 4 (5-10%): Technical definitions
+   - Boost score for: items appearing in multiple sections, boxed/highlighted content, named theorems
+7. Compress content using density techniques:
+   - Convert verbose definitions to terse one-liners
+   - Use symbols: → instead of "implies", ∀ instead of "for all", ⇔ instead of "if and only if"
+   - Telegram-style writing: "The gradient is defined as..." → "Gradient:"
+   - Merge overlapping content from different chapters
+   - Use \tfrac instead of \frac, \textstyle in align environments
+   - Stack short equations horizontally: `$E=mc^2$ \hfill $F=ma$`
+8. If past papers provided: cross-reference to weight high-frequency topics (boost items that appear in 2+ exams)
+
+**Phase 4: Layout & Assembly**
+9. Space budget management:
+   - Estimate: ~45-50 lines per page at 6pt, ~40-45 at 7pt (landscape with 3 columns = 3× that)
+   - 2-page cheat sheet ≈ 60-80 distinct items (formulas, theorems, definitions)
+   - If extracted items > budget: cut lowest-priority items, merge related items, reduce font for less-critical sections
+10. Organize into logical sections matching template structure
+11. Apply LaTeX density optimizations:
+    - No blank lines between consecutive tcolorbox environments (causes `//` artifacts)
+    - Use `@{}` in tabular to suppress inter-column padding
+    - Use \smallmatrix instead of pmatrix for 2×2 matrices (saves 40% height)
+    - Use \hfill to stack two formulas per line
+    - Negative \vspace between sections if nearly fitting
+12. Compile, verify fits within page constraints, iterate if needed
+    - If overflow: use \scalebox{0.95}, \enlargethispage{1cm}, or cut lowest-priority items
+    - If underflow: add worked examples or expand compressed definitions
+
+### Content Budget Guidelines (from QA Testing)
+
+**CRITICAL: LLMs consistently generate 150-250% too much content for cheatsheets.**
+Always use these character budgets (LaTeX source, not rendered text):
+
+| Template | Layout | Budget per page | Total (2 pages) |
+|---|---|---|---|
+| Exam | Portrait 2-col 6pt | ~4,500 chars | ~9,000 chars |
+| General | Landscape 3-col 7pt | ~8,000 chars | ~16,000 chars |
+| Code | Landscape 4-col 7pt | ~9,000 chars | ~18,000 chars |
+
+**Mandatory compile-and-verify workflow:**
+1. Write page 1 content only (within budget)
+2. Compile with `pdflatex -interaction=nonstopmode`
+3. Verify page count with `pdfinfo <file>.pdf | grep Pages`
+4. If page 1 fits, write page 2 content
+5. Recompile and verify exactly 2 pages
+6. If >2 pages: cut lowest-priority content, recompile
+
+**Content distribution rules:**
+- End `\begin{multicols}` before `\newpage`, start new `\begin{multicols}` after
+- Use `\columnbreak` to force balanced column distribution
+- For 4-column layouts, add `\sloppy` after `\begin{multicols}{4}` to reduce underfull warnings
+- Target ~equal content per column (visually inspect previews)
+
+**Compression ratio guidelines:**
+- 5-20 page source → 2 pages: include most key content (2.5-10:1)
+- 20-50 page source → 2 pages: definitions + key theorems + formulas only (10-25:1)
+- 50-100+ page source → 2 pages: ruthless prioritization needed (25-50:1)
+  - Only core definitions, critical formulas, essential algorithms
+  - Use telegram-style text, symbol abbreviations, horizontal stacking
+  - Test with `pdfinfo` after every 3-4 sections added
 
 ## Workflow: Mail Merge (Batch Personalized Documents)
 
@@ -302,6 +403,102 @@ bash <skill_path>/scripts/pdf_to_images.sh input.pdf ./tmp/pages --dpi 200 --max
 
 Auto-installs `poppler-utils` and `imagemagick`, renders pages as PNG, resizes to fit within API image dimension limits (2000px max).
 
+## Compile Script: Auto-Fix Mode
+
+```bash
+# Compile with automatic fixes for common issues
+bash <skill_path>/scripts/compile_latex.sh document.tex --auto-fix
+
+# Auto-fix + preview
+bash <skill_path>/scripts/compile_latex.sh document.tex --auto-fix --preview --preview-dir ./outputs
+```
+
+`--auto-fix` creates a temporary copy and applies:
+- **Stage 1:** Adds `[htbp]` placement to naked `\begin{figure}` and `\begin{table}` (the #1 LaTeX complaint)
+- **Stage 2:** If overfull hbox warnings are detected, injects `\usepackage{microtype}` and recompiles
+
+The script also parses the `.log` file and translates cryptic LaTeX errors into actionable suggestions (missing `$`, undefined commands, missing packages, unbalanced braces, undefined citations).
+
+## PDF Utility Scripts
+
+### PDF Encryption
+
+**IMPORTANT: ALWAYS use the AskUserQuestion tool to ask the user what password they want BEFORE encrypting any PDF. NEVER use a default or auto-generated password. The user must explicitly choose their password.**
+
+```bash
+# Encrypt a PDF with AES-256
+bash <skill_path>/scripts/pdf_encrypt.sh document.pdf --user-password "<USER_PASSWORD>"
+
+# With separate owner password and restrictions
+bash <skill_path>/scripts/pdf_encrypt.sh document.pdf --user-password "<USER_PASSWORD>" --owner-password "<OWNER_PASSWORD>" --restrict-print --restrict-modify
+
+# Custom output path
+bash <skill_path>/scripts/pdf_encrypt.sh document.pdf --user-password "<USER_PASSWORD>" --output secure.pdf
+```
+
+When the user asks to encrypt, protect, or password-protect a PDF, use this workflow:
+1. Use **AskUserQuestion** to ask: "What password would you like to use to protect this PDF?"
+2. Wait for the user's response
+3. Run `pdf_encrypt.sh` with the password they provided
+4. Report success and remind the user to remember their password
+
+### PDF Merge
+
+```bash
+# Merge multiple PDFs into one
+bash <skill_path>/scripts/pdf_merge.sh file1.pdf file2.pdf file3.pdf -o merged.pdf
+```
+
+### PDF Optimize
+
+```bash
+# Compress and linearize a PDF for web delivery or email
+bash <skill_path>/scripts/pdf_optimize.sh document.pdf optimized.pdf
+```
+
+## LaTeX Quality Scripts
+
+### Lint (Pre-Compilation Check)
+
+```bash
+# Run chktex linter with formatted output
+bash <skill_path>/scripts/latex_lint.sh document.tex
+```
+
+### Word Count
+
+```bash
+# Count words (strips LaTeX commands)
+bash <skill_path>/scripts/latex_wordcount.sh document.tex
+```
+
+### Document Analysis
+
+```bash
+# Get statistics: word count, figures, tables, equations, citations, sections
+bash <skill_path>/scripts/latex_analyze.sh document.tex
+```
+
+## Bibliography Script
+
+```bash
+# Auto-download BibTeX from a DOI
+bash <skill_path>/scripts/fetch_bibtex.sh 10.1145/359576.359579
+
+# Append to an existing .bib file
+bash <skill_path>/scripts/fetch_bibtex.sh 10.1145/359576.359579 >> references.bib
+```
+
+## Diagram Scripts
+
+```bash
+# Convert Graphviz .dot to PDF
+bash <skill_path>/scripts/graphviz_to_pdf.sh diagram.dot output.pdf
+
+# Convert PlantUML .puml to PDF
+bash <skill_path>/scripts/plantuml_to_pdf.sh diagram.puml output.pdf
+```
+
 ## Templates
 
 Copy from `assets/templates/` and customize.
@@ -319,6 +516,11 @@ Select based on experience level, industry, and ATS requirements. See [reference
 | **`resume-entry-level.tex`** | New graduates, career starters | Education-first, one page, coursework, activities | 9/10 |
 
 All 5 templates follow ATS rules: single-column, no graphics/images, no tables for layout, standard section headings, contact info in body (not header/footer).
+
+### STEM Student Templates
+
+- **`homework.tex`** -- Homework/assignment submission template (`article` class, 11pt) with toggle-able solutions (`\showsolutionstrue`/`\showsolutionsfalse`), custom problem/solution environments, honor code section, `fancyhdr` headers, `amsmath`+`amssymb`+`amsthm` math, `listings` code highlighting (Python, Java, C++, Matlab styles), `enumitem` for (a), (b), (c) sub-parts, `hyperref`. Customization via `\coursename`, `\assignmentnumber`, `\studentname`, `\studentid`, `\duedate`. Example problems: calculus, proof by induction, Python coding, matrix algebra, kinematics, Java OOP.
+- **`lab-report.tex`** -- STEM lab report template (`article` class, 11pt) with `siunitx` for uncertainties and SI units, `pgfplots` for data visualization, `booktabs` for professional tables, `amsmath` for equations, `fancyhdr` headers, `caption`+`subcaption` for figures. Structured sections: abstract, theory, procedure, data/results (with uncertainty tables), analysis (pgfplots graphs), discussion (error analysis), conclusion, references, appendix. Example: pendulum period measurement with error propagation.
 
 ### Other Templates
 
@@ -359,6 +561,8 @@ bash <skill_path>/scripts/compile_latex.sh ./outputs/my_resume.tex --preview --p
 | Resume (senior/executive) | `resume-executive.tex` | `article` |
 | Resume (technical/engineering) | `resume-technical.tex` | `article` |
 | Resume (new graduate) | `resume-entry-level.tex` | `article` |
+| Homework, assignment, problem set | `homework.tex` | `article` |
+| Lab report, experiment writeup | `lab-report.tex` | `article` |
 | Lecture notes, math notes (beautiful) | `lecture-notes.tex` | `scrartcl` |
 | Thesis, dissertation | `thesis.tex` | `book` |
 | Academic CV (publications, grants) | `academic-cv.tex` | `article` |
@@ -688,7 +892,10 @@ The `report.tex` template includes pgfplots, TikZ, and all required packages out
 | Resume ATS Guide | [resume-ats-guide.md](references/resume-ats-guide.md) | ATS rules, LaTeX pitfalls, keywords |
 | PDF-to-LaTeX Pipeline | [pdf-conversion.md](references/pdf-conversion.md) | Full conversion pipeline with profiles |
 | Interactive Features (Forms, Conditionals, Mail Merge, Diffing) | [interactive-features.md](references/interactive-features.md) | Fillable PDF forms, conditional content toggles, mail merge from CSV/JSON, latexdiff version tracking |
-| Cheat Sheet / Reference Card Design | [cheatsheet-guide.md](references/cheatsheet-guide.md) | Template selection, typography, color schemes, layout techniques, PDF-to-cheatsheet workflow, print considerations |
+| Cheat Sheet / Reference Card Design | [cheatsheet-guide.md](references/cheatsheet-guide.md) | Template selection, typography, color schemes, layout techniques, density optimization, PDF-to-cheatsheet pipeline, print considerations |
+| PDF-to-Cheatsheet Prompt Templates | [pdf-extraction-prompts.md](references/pdf-extraction-prompts.md) | Ready-to-use LLM prompts for each extraction stage: structure analysis, subject-specific extraction (math/CS/physics/chem/bio/stats/engineering), compression, LaTeX formatting, quality verification |
+| Visual Packages (TikZ/Diagrams) | [visual-packages.md](references/visual-packages.md) | 24 installed TikZ/visualization packages (tikz-cd, forest, circuitikz, chemfig, mhchem, pgf-pie, tikz-feynman, etc.) with minimal working examples |
+| Graphviz & PlantUML Workflows | [graphviz-plantuml.md](references/graphviz-plantuml.md) | External diagram tool workflows: .dot to PDF/PNG, .puml to PDF/PNG, integration with LaTeX documents, examples, best practices |
 
 ## Critical Notes and Common Mistakes
 
@@ -730,12 +937,31 @@ These cause `Undefined control sequence` -- always include the required package:
 - **Color schemes:** Both templates include 5 schemes (Navy+Amber, Forest Green, Medical Teal, Tech Purple, Minimal Dark). Uncomment the desired scheme.
 
 ### Cheat Sheet / Reference Card Pitfalls
-- `extarticle` class is REQUIRED for 6-8pt base font -- standard `article` only supports 10pt, 11pt, 12pt
-- Do NOT use `\begin{figure}` floats inside `multicols` -- they silently disappear. Use inline `\includegraphics` or `tikzpicture` instead
-- `tcolorbox` with `breakable` option may not work well inside `multicols` -- use non-breakable boxes (the default) and keep content short per box
-- For 5+ columns, reduce `\columnsep` to 2-3mm and use `\scriptsize` or smaller
-- Math: use `\textstyle` for inline fractions inside cheat sheet boxes (saves vertical space vs `\displaystyle`)
-- Always test-print at actual size -- 6pt text may be illegible on some printers
+
+**Critical Layout Issues:**
+- **No blank lines between consecutive tcolorbox environments inside `multicols`** — blank lines create `\par` tokens that render as visible `//` artifacts at small font sizes. Always place `\end{thmbox}` immediately followed by `\begin{formulabox}` with NO blank line between them.
+- **Never name a `\newtcolorbox` using existing LaTeX commands** — e.g., `\newtcolorbox{fbox}` conflicts with LaTeX's built-in `\fbox`. Use distinctive names like `formulabox`, `thmbox`, `defbox`.
+- **No trailing commas in tcolorbox option lists** — `after skip=0.5mm,` before `}` causes errors. The last option before `}` must NOT have a trailing comma.
+- **Don't use `parbox=false` in tcolorbox definitions** — causes compilation errors in some tcolorbox versions.
+
+**Space & Typography Issues:**
+- **Don't use `\linespread{<0.85}`** — descenders (g, y, p, q) will visually touch ascenders (h, t, l, d) on the next line, making text illegible.
+- **Don't use `margin=<3mm` for printed documents** — most laser printers have 3-5mm non-printable margins and will clip content.
+- **Always call `\selectfont` after `\fontsize{X}{Y}`** — without it, the font size change doesn't take effect.
+- **Don't use `\displaystyle` in cheat sheets** — use `\textstyle` or `\tfrac` instead; displaystyle wastes 20-40% vertical space per equation.
+
+**Content & Density Issues:**
+- **Don't try to fit everything** — a 200-page textbook cannot fit on 2 pages. Target a 100:1 compression ratio. Prioritize formulas > theorems > definitions > procedures.
+- **Use the 5-second lookup test** — every formula should be findable within 5 seconds of scanning. If sections are too dense to scan, add visual hierarchy (headers, boxes, bold labels).
+- **Don't skip variable definitions** — "What does σ represent?" is the #1 exam lookup (60-70% of all lookups). Always include variable legends with formulas.
+- **Don't use proofs on cheat sheets** — unless the exam specifically tests proof reproduction. Proofs consume massive space for low exam utility.
+- **Always verify page count after compilation** — use `pdfinfo file.pdf | grep Pages` to confirm exactly 2 pages; LLMs consistently over-generate content by 50-150%
+
+**PDF Extraction Issues:**
+- **Auto-detect scanned vs text PDFs** — if extracted text averages <50 characters per page, the PDF is likely scanned. Fall back to LLM vision processing.
+- **Chunk at section boundaries, not arbitrary page counts** — splitting mid-theorem or mid-proof loses critical context.
+- **Deduplicate across chapters** — the same formula often appears in multiple chapters (e.g., chain rule in both differentiation and integration chapters).
+- **Verify extracted math** — OCR and text extraction frequently corrupt mathematical notation. Always verify LaTeX renders correctly before finalizing.
 
 ### Fillable PDF Forms Pitfalls
 - All form fields (`\TextField`, `\CheckBox`, `\ChoiceMenu`, `\PushButton`) MUST be inside `\begin{Form}...\end{Form}`. Fields outside this environment will not work.

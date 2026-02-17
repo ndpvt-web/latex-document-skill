@@ -1,0 +1,547 @@
+%% Homework/Assignment Submission Template
+%% Professional template for STEM homework assignments
+%% Compile with: pdflatex homework.tex
+%%
+%% CUSTOMIZATION INSTRUCTIONS:
+%% 1. Update the \newcommand values below (lines 35-38) with your info
+%% 2. Toggle solutions on/off with \showsolutionstrue or \showsolutionsfalse
+%% 3. Add problems using \begin{problem}...\end{problem}
+%% 4. Add solutions using \begin{solution}...\end{solution}
+%% 5. For sub-parts, use enumerate with (a), (b), (c) style
+
+\documentclass[11pt,a4paper]{article}
+
+% Encoding and fonts
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{microtype}
+
+% Page layout
+\usepackage[margin=1in]{geometry}
+
+% Math packages
+\usepackage{amsmath, amssymb, amsthm}
+
+% Headers and footers
+\usepackage{fancyhdr}
+
+% Lists with custom formatting
+\usepackage{enumitem}
+
+% Graphics
+\usepackage{graphicx}
+
+% Colors
+\usepackage{xcolor}
+
+% Hyperlinks
+\usepackage{hyperref}
+
+% Code listings with syntax highlighting
+\usepackage{listings}
+\newif\iflistingsavailable
+\listingsavailabletrue
+
+%% ============================================================
+%% CUSTOMIZATION SECTION - CHANGE THESE VALUES
+%% ============================================================
+\newcommand{\coursename}{MATH 101: Calculus I}
+\newcommand{\assignmentnumber}{Homework 5}
+\newcommand{\studentname}{Your Name Here}
+\newcommand{\studentid}{Student ID: 123456789}  % Optional, comment out if not needed
+\newcommand{\duedate}{\today}
+
+%% ============================================================
+%% SOLUTION TOGGLE
+%% Set to true to show solutions, false to hide them
+%% ============================================================
+\newif\ifshowsolutions
+\showsolutionstrue   % Change to \showsolutionsfalse to hide solutions
+
+%% ============================================================
+%% STYLING AND CONFIGURATION
+%% ============================================================
+
+% Color scheme
+\definecolor{problemcolor}{RGB}{0, 51, 102}
+\definecolor{solutioncolor}{RGB}{0, 102, 51}
+\definecolor{codecolor}{RGB}{40, 40, 40}
+\definecolor{commentcolor}{RGB}{128, 128, 128}
+\definecolor{keywordcolor}{RGB}{0, 0, 255}
+\definecolor{stringcolor}{RGB}{163, 21, 21}
+
+% Header and footer setup
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{gray}{\coursename}}
+\fancyhead[R]{\small\textcolor{gray}{\studentname}}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% Hyperlink setup
+\hypersetup{
+    colorlinks=true,
+    linkcolor=problemcolor,
+    urlcolor=problemcolor,
+    citecolor=problemcolor
+}
+
+% Problem counter
+\newcounter{problemnumber}
+\setcounter{problemnumber}{0}
+
+% Problem environment
+\makeatletter
+\newenvironment{problem}[1][]{%
+    \refstepcounter{problemnumber}%
+    \vspace{1em}%
+    \noindent%
+    \def\@tempa{#1}%
+    {\large\bfseries\textcolor{problemcolor}{Problem \theproblemnumber\ifx\@tempa\@empty\else: #1\fi}}%
+    \par\vspace{0.5em}%
+    \noindent%
+}{%
+    \vspace{0.5em}%
+    \hrule%
+    \vspace{1em}%
+}
+\makeatother
+
+% Solution environment (conditional display)
+\newenvironment{solution}{%
+    \ifshowsolutions%
+        \vspace{0.5em}%
+        \noindent%
+        {\bfseries\textcolor{solutioncolor}{Solution:}}%
+        \par\vspace{0.3em}%
+        \noindent%
+    \else%
+        \setbox0=\vbox\bgroup%
+    \fi%
+}{%
+    \ifshowsolutions%
+        \vspace{0.5em}%
+    \else%
+        \egroup%
+    \fi%
+}
+
+% Math theorem environments
+\theoremstyle{definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
+% Code listing setup (only if listings package available)
+\iflistingsavailable
+\lstset{
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{keywordcolor}\bfseries,
+    commentstyle=\color{commentcolor}\itshape,
+    stringstyle=\color{stringcolor},
+    backgroundcolor=\color{gray!5},
+    frame=single,
+    framesep=5pt,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    numbersep=8pt,
+    breaklines=true,
+    showstringspaces=false,
+    tabsize=4,
+    captionpos=b
+}
+\fi
+
+% Language-specific settings (only if listings available)
+\iflistingsavailable
+\lstdefinestyle{python}{
+    language=Python,
+    morekeywords={self, as, with, yield, lambda}
+}
+
+\lstdefinestyle{java}{
+    language=Java,
+    morekeywords={var}
+}
+
+\lstdefinestyle{cpp}{
+    language=C++,
+    morekeywords={nullptr, constexpr, auto}
+}
+
+\lstdefinestyle{matlab}{
+    language=Matlab,
+    morekeywords={function, end}
+}
+\fi
+
+%% ============================================================
+%% DOCUMENT BEGINS
+%% ============================================================
+\begin{document}
+
+% Custom title section
+\begin{center}
+    {\LARGE\bfseries\textcolor{problemcolor}{\coursename}} \\[0.5em]
+    {\Large\assignmentnumber} \\[0.3em]
+    {\large\studentname} \\
+    \studentid \\[0.2em]
+    {\large Due: \duedate}
+\end{center}
+
+\vspace{1em}
+
+% Optional: Honor code statement (comment out if not needed)
+\noindent
+\textit{I pledge that I have given nor received unauthorized assistance during the completion of this work.}
+
+\vspace{0.5em}
+\noindent
+Signature: \underline{\hspace{3in}} \quad Date: \underline{\hspace{1.5in}}
+
+\vspace{1.5em}
+
+%% ============================================================
+%% PROBLEM EXAMPLES
+%% Below are examples demonstrating different problem types
+%% ============================================================
+
+%% Example 1: Math problem with calculus
+\begin{problem}[Limits and Continuity]
+Consider the function $f(x) = \frac{x^2 - 4}{x - 2}$.
+
+\begin{enumerate}[label=(\alph*)]
+    \item Find $\lim_{x \to 2} f(x)$.
+    \item Is $f(x)$ continuous at $x = 2$? Explain why or why not.
+    \item How could you redefine $f(x)$ to make it continuous at $x = 2$?
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\begin{enumerate}[label=(\alph*)]
+    \item We can factor the numerator:
+    \begin{align*}
+        \lim_{x \to 2} \frac{x^2 - 4}{x - 2} &= \lim_{x \to 2} \frac{(x-2)(x+2)}{x - 2} \\
+        &= \lim_{x \to 2} (x + 2) \\
+        &= 4
+    \end{align*}
+    Therefore, $\lim_{x \to 2} f(x) = 4$.
+
+    \item No, $f(x)$ is \textbf{not continuous} at $x = 2$ because $f(2)$ is undefined (division by zero). For continuity at $x = 2$, we need:
+    \begin{itemize}
+        \item $f(2)$ to exist
+        \item $\lim_{x \to 2} f(x)$ to exist (it does, and equals 4)
+        \item $\lim_{x \to 2} f(x) = f(2)$
+    \end{itemize}
+    Since $f(2)$ does not exist, the function is discontinuous at $x = 2$.
+
+    \item We can redefine $f(x)$ as a piecewise function:
+    \[
+    f(x) = \begin{cases}
+        \frac{x^2 - 4}{x - 2} & \text{if } x \neq 2 \\
+        4 & \text{if } x = 2
+    \end{cases}
+    \]
+    This removes the discontinuity since now $f(2) = 4 = \lim_{x \to 2} f(x)$.
+\end{enumerate}
+\end{solution}
+
+%% Example 2: Proof problem
+\begin{problem}[Proof by Induction]
+Prove by mathematical induction that for all positive integers $n$,
+\[
+1 + 2 + 3 + \cdots + n = \frac{n(n+1)}{2}
+\]
+\end{problem}
+
+\begin{solution}
+\begin{proof}
+We proceed by mathematical induction.
+
+\textbf{Base case ($n = 1$):}
+\begin{align*}
+    \text{LHS} &= 1 \\
+    \text{RHS} &= \frac{1(1+1)}{2} = \frac{2}{2} = 1
+\end{align*}
+Since LHS = RHS, the base case holds.
+
+\textbf{Inductive hypothesis:} Assume the statement is true for some positive integer $k$:
+\[
+1 + 2 + 3 + \cdots + k = \frac{k(k+1)}{2}
+\]
+
+\textbf{Inductive step:} We must show the statement holds for $n = k + 1$:
+\begin{align*}
+    1 + 2 + 3 + \cdots + k + (k+1) &= \frac{k(k+1)}{2} + (k+1) \quad \text{(by inductive hypothesis)} \\
+    &= \frac{k(k+1)}{2} + \frac{2(k+1)}{2} \\
+    &= \frac{k(k+1) + 2(k+1)}{2} \\
+    &= \frac{(k+1)(k+2)}{2} \\
+    &= \frac{(k+1)((k+1)+1)}{2}
+\end{align*}
+
+This is exactly the formula with $n = k + 1$. Therefore, by the principle of mathematical induction, the statement is true for all positive integers $n$.
+\end{proof}
+\end{solution}
+
+%% Example 3: Coding problem with Python
+\begin{problem}[Algorithm Implementation]
+Write a Python function that implements the binary search algorithm. Your function should:
+\begin{itemize}
+    \item Accept a sorted list and a target value as parameters
+    \item Return the index of the target if found, or $-1$ if not found
+    \item Use an iterative approach (not recursive)
+    \item Have time complexity $O(\log n)$
+\end{itemize}
+\end{problem}
+
+\begin{solution}
+Here is an implementation of iterative binary search:
+
+\begin{lstlisting}[style=python, caption={Binary search implementation}]
+def binary_search(arr, target):
+    """
+    Performs binary search on a sorted array.
+
+    Args:
+        arr: A sorted list of comparable elements
+        target: The value to search for
+
+    Returns:
+        The index of target if found, otherwise -1
+    """
+    left = 0
+    right = len(arr) - 1
+
+    while left <= right:
+        # Use (left + right) // 2 to find middle
+        mid = left + (right - left) // 2  # Avoids overflow
+
+        if arr[mid] == target:
+            return mid  # Found the target
+        elif arr[mid] < target:
+            left = mid + 1  # Search right half
+        else:
+            right = mid - 1  # Search left half
+
+    return -1  # Target not found
+
+# Example usage:
+arr = [1, 3, 5, 7, 9, 11, 13, 15, 17]
+print(binary_search(arr, 7))   # Output: 3
+print(binary_search(arr, 10))  # Output: -1
+\end{lstlisting}
+
+\textbf{Time Complexity Analysis:}
+\begin{itemize}
+    \item At each iteration, we halve the search space
+    \item After $k$ iterations, the search space is $n / 2^k$
+    \item We stop when the search space is 1: $n / 2^k = 1 \implies k = \log_2 n$
+    \item Therefore, time complexity is $O(\log n)$
+\end{itemize}
+
+\textbf{Space Complexity:} $O(1)$ since we only use a constant amount of extra space.
+\end{solution}
+
+%% Example 4: Problem with matrix and linear algebra
+\begin{problem}[Matrix Operations]
+Let $A = \begin{pmatrix} 2 & 1 \\ 3 & 4 \end{pmatrix}$ and $B = \begin{pmatrix} 1 & 0 \\ -1 & 2 \end{pmatrix}$.
+
+\begin{enumerate}[label=(\alph*)]
+    \item Compute $AB$.
+    \item Find $\det(A)$ and determine if $A$ is invertible.
+    \item If invertible, find $A^{-1}$.
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\begin{enumerate}[label=(\alph*)]
+    \item Matrix multiplication:
+    \begin{align*}
+        AB &= \begin{pmatrix} 2 & 1 \\ 3 & 4 \end{pmatrix} \begin{pmatrix} 1 & 0 \\ -1 & 2 \end{pmatrix} \\
+        &= \begin{pmatrix}
+            (2)(1) + (1)(-1) & (2)(0) + (1)(2) \\
+            (3)(1) + (4)(-1) & (3)(0) + (4)(2)
+        \end{pmatrix} \\
+        &= \begin{pmatrix} 1 & 2 \\ -1 & 8 \end{pmatrix}
+    \end{align*}
+
+    \item The determinant of $A$ is:
+    \[
+    \det(A) = (2)(4) - (1)(3) = 8 - 3 = 5
+    \]
+    Since $\det(A) = 5 \neq 0$, the matrix $A$ is \textbf{invertible}.
+
+    \item Using the formula for $2 \times 2$ matrix inverse:
+    \[
+    A^{-1} = \frac{1}{\det(A)} \begin{pmatrix} d & -b \\ -c & a \end{pmatrix}
+    \]
+    where $A = \begin{pmatrix} a & b \\ c & d \end{pmatrix}$.
+
+    Therefore:
+    \begin{align*}
+        A^{-1} &= \frac{1}{5} \begin{pmatrix} 4 & -1 \\ -3 & 2 \end{pmatrix} \\
+        &= \begin{pmatrix} 4/5 & -1/5 \\ -3/5 & 2/5 \end{pmatrix}
+    \end{align*}
+
+    \textbf{Verification:}
+    \[
+    AA^{-1} = \begin{pmatrix} 2 & 1 \\ 3 & 4 \end{pmatrix} \begin{pmatrix} 4/5 & -1/5 \\ -3/5 & 2/5 \end{pmatrix} = \begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix} \checkmark
+    \]
+\end{enumerate}
+\end{solution}
+
+%% Example 5: Physics/Applied problem
+\begin{problem}[Kinematics]
+A ball is thrown vertically upward with an initial velocity of $v_0 = 20$ m/s from a height of $h_0 = 2$ m. The height $h(t)$ at time $t$ is given by:
+\[
+h(t) = h_0 + v_0 t - \frac{1}{2}gt^2
+\]
+where $g = 9.8$ m/s$^2$ is the acceleration due to gravity.
+
+\begin{enumerate}[label=(\alph*)]
+    \item Find the maximum height reached by the ball.
+    \item At what time does the ball reach its maximum height?
+    \item When does the ball hit the ground?
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+Given: $h(t) = 2 + 20t - 4.9t^2$
+
+\begin{enumerate}[label=(\alph*)]
+    \item To find maximum height, we find when $h'(t) = 0$:
+    \begin{align*}
+        h'(t) &= 20 - 9.8t = 0 \\
+        t &= \frac{20}{9.8} \approx 2.04 \text{ seconds}
+    \end{align*}
+
+    Maximum height:
+    \begin{align*}
+        h(2.04) &= 2 + 20(2.04) - 4.9(2.04)^2 \\
+        &= 2 + 40.8 - 20.4 \\
+        &\approx 22.4 \text{ meters}
+    \end{align*}
+
+    \item From part (a), the ball reaches maximum height at $t \approx 2.04$ seconds.
+
+    \item The ball hits the ground when $h(t) = 0$:
+    \begin{align*}
+        2 + 20t - 4.9t^2 &= 0 \\
+        4.9t^2 - 20t - 2 &= 0
+    \end{align*}
+
+    Using the quadratic formula:
+    \begin{align*}
+        t &= \frac{20 \pm \sqrt{400 + 4(4.9)(2)}}{2(4.9)} \\
+        &= \frac{20 \pm \sqrt{439.2}}{9.8} \\
+        &= \frac{20 \pm 20.96}{9.8}
+    \end{align*}
+
+    Taking the positive root: $t = \frac{40.96}{9.8} \approx 4.18$ seconds.
+\end{enumerate}
+\end{solution}
+
+%% Example 6: Java code problem
+\begin{problem}[Object-Oriented Programming]
+Implement a Java class \texttt{Stack<T>} that represents a generic stack data structure with the following methods:
+\begin{itemize}
+    \item \texttt{push(T item)}: Add an item to the top
+    \item \texttt{pop()}: Remove and return the top item
+    \item \texttt{peek()}: Return the top item without removing it
+    \item \texttt{isEmpty()}: Check if the stack is empty
+\end{itemize}
+\end{problem}
+
+\begin{solution}
+\begin{lstlisting}[style=java, caption={Generic Stack implementation in Java}]
+import java.util.ArrayList;
+import java.util.EmptyStackException;
+
+public class Stack<T> {
+    private ArrayList<T> items;
+
+    public Stack() {
+        items = new ArrayList<>();
+    }
+
+    /**
+     * Pushes an item onto the top of the stack.
+     * @param item The item to push
+     */
+    public void push(T item) {
+        items.add(item);
+    }
+
+    /**
+     * Removes and returns the top item from the stack.
+     * @return The top item
+     * @throws EmptyStackException if the stack is empty
+     */
+    public T pop() {
+        if (isEmpty()) {
+            throw new EmptyStackException();
+        }
+        return items.remove(items.size() - 1);
+    }
+
+    /**
+     * Returns the top item without removing it.
+     * @return The top item
+     * @throws EmptyStackException if the stack is empty
+     */
+    public T peek() {
+        if (isEmpty()) {
+            throw new EmptyStackException();
+        }
+        return items.get(items.size() - 1);
+    }
+
+    /**
+     * Checks if the stack is empty.
+     * @return true if empty, false otherwise
+     */
+    public boolean isEmpty() {
+        return items.isEmpty();
+    }
+
+    // Example usage
+    public static void main(String[] args) {
+        Stack<Integer> stack = new Stack<>();
+        stack.push(1);
+        stack.push(2);
+        stack.push(3);
+
+        System.out.println(stack.pop());   // Output: 3
+        System.out.println(stack.peek());  // Output: 2
+        System.out.println(stack.isEmpty()); // Output: false
+    }
+}
+\end{lstlisting}
+\end{solution}
+
+%% ============================================================
+%% ADD YOUR OWN PROBLEMS BELOW THIS LINE
+%% Copy the problem/solution structure above
+%% ============================================================
+
+% \begin{problem}[Your Problem Title]
+% Problem statement goes here...
+% \end{problem}
+%
+% \begin{solution}
+% Your solution goes here...
+% \end{solution}
+
+%% ============================================================
+%% OPTIONAL: Appendix for additional work
+%% ============================================================
+% \newpage
+% \appendix
+% \section{Additional Notes}
+% Any supplementary material, calculations, or references can go here.
+
+\end{document}

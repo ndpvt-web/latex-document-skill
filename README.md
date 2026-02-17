@@ -2,7 +2,7 @@
 
 A Claude Code skill that turns natural language into production-grade PDFs. Say what you need -- a resume, a 300-page book, a conference poster, an exam -- and get a compiled PDF with PNG previews, charts, diagrams, and bibliography, all handled automatically.
 
-**27 templates. 8 scripts. 13 reference guides. 4 conversion profiles. Zero LaTeX knowledge required.**
+**29 templates. 19 scripts. 15 reference guides. 4 conversion profiles. Zero LaTeX knowledge required.**
 
 ---
 
@@ -10,7 +10,7 @@ A Claude Code skill that turns natural language into production-grade PDFs. Say 
 
 You describe a document. The skill:
 
-1. Selects the right template from 27 production-tested options
+1. Selects the right template from 29 production-tested options
 2. Asks clarifying questions (layout, color scheme, elements to include)
 3. Generates charts, diagrams, tables, and images as needed
 4. Compiles to PDF with the correct LaTeX engine (auto-detected)
@@ -94,6 +94,36 @@ Multi-page curriculum vitae with sections for publications (numbered: [J1], [C1]
 | | | | |
 |---|---|---|---|
 | ![p1](examples/academic-cv-p1.png) | ![p2](examples/academic-cv-p2.png) | ![p3](examples/academic-cv-p3.png) | ![p4](examples/academic-cv-p4.png) |
+
+#### Homework / Assignment Submission
+
+The `homework.tex` template handles the most frequent STEM student use case -- weekly problem sets with math, proofs, and code. Toggle solutions on/off with a single command (`\showsolutionstrue` / `\showsolutionsfalse`).
+
+- Custom `problem` and `solution` environments with automatic numbering
+- Code listings with syntax highlighting (Python, Java, C++, Matlab)
+- Honor code section with signature line
+- Customizable header fields: course name, assignment number, student name/ID, due date
+- 6 example problems included: calculus, proof by induction, Python algorithm, matrix algebra, kinematics, Java OOP
+
+```
+"Create a calculus homework with 5 problems and solutions"
+"Make a CS assignment template with Python code problems"
+```
+
+#### Lab Report
+
+The `lab-report.tex` template covers weekly STEM lab writeups with proper scientific formatting -- uncertainties, SI units, data tables, and graphs.
+
+- `siunitx` for SI units and uncertainty notation throughout
+- `pgfplots` for data visualization (scatter plots with error bars, theoretical curves)
+- `booktabs` for professional data tables
+- Structured sections: abstract, theory, procedure, data/results, analysis, discussion (error analysis), conclusion, references, appendix
+- Example: pendulum period measurement with full error propagation
+
+```
+"Write a physics lab report for measuring the speed of sound"
+"Create a chemistry lab report template with titration data"
+```
 
 ---
 
@@ -462,6 +492,106 @@ bash scripts/compile_latex.sh document.tex --preview --preview-dir ./outputs
 --preview-dir <dir>    # Where to put PNGs
 --scale <pixels>       # Max PNG dimension (default: 1200)
 --engine <engine>      # Force pdflatex, xelatex, or lualatex
+--auto-fix             # Enable smart error recovery (see below)
+```
+
+### Auto-Fix Mode
+
+Pass `--auto-fix` to automatically detect and fix common LaTeX issues:
+
+```bash
+bash scripts/compile_latex.sh document.tex --auto-fix --preview
+```
+
+**Stage 1 -- Float placement:** Detects `\begin{figure}` and `\begin{table}` without placement specifiers and adds `[htbp]`. Only touches naked floats -- already-placed ones are left alone.
+
+**Stage 2 -- Overfull hbox:** If overfull hbox warnings are detected after compilation, automatically injects `\usepackage{microtype}` and recompiles. Fixes ~90% of overflow cases.
+
+**Intelligent error messages:** When compilation fails, the script parses the `.log` file and translates cryptic LaTeX errors into actionable English:
+
+| LaTeX Error | Translated Message |
+|---|---|
+| `Missing $ inserted` | "You used a math symbol outside of $ delimiters" |
+| `Undefined control sequence` | "Unknown command -- check spelling or add the required \\usepackage" |
+| `File not found` | "Package or file not found -- check the name" |
+| `Missing \\begin{document}` | "Document preamble issue" |
+| `Too many }'s` | "Unbalanced braces" |
+| `Citation undefined` | "Bibliography reference not found" |
+| `Overfull \\hbox` | "Text overflows margins -- try \\usepackage{microtype} or --auto-fix" |
+
+---
+
+## PDF Utilities
+
+### Encryption
+
+Password-protect PDFs with AES-256 encryption:
+
+```bash
+bash scripts/pdf_encrypt.sh document.pdf --user-password "secret"
+bash scripts/pdf_encrypt.sh document.pdf --user-password "secret" --restrict-print --restrict-modify
+```
+
+### Merge
+
+Combine multiple PDFs into one:
+
+```bash
+bash scripts/pdf_merge.sh file1.pdf file2.pdf file3.pdf -o merged.pdf
+```
+
+### Optimize
+
+Compress and linearize PDFs for web delivery and email:
+
+```bash
+bash scripts/pdf_optimize.sh document.pdf optimized.pdf
+```
+
+---
+
+## LaTeX Quality Tools
+
+### Lint
+
+Run `chktex` with formatted, human-readable output before compilation:
+
+```bash
+bash scripts/latex_lint.sh document.tex
+```
+
+### Word Count
+
+Strip LaTeX commands and count words (useful for conference submission limits):
+
+```bash
+bash scripts/latex_wordcount.sh document.tex
+```
+
+### Document Analysis
+
+Get document statistics -- word count, figure count, table count, citation count, section balance:
+
+```bash
+bash scripts/latex_analyze.sh document.tex
+```
+
+### Bibliography Auto-Fetch
+
+Download BibTeX entries from DOIs:
+
+```bash
+bash scripts/fetch_bibtex.sh 10.1145/359576.359579
+bash scripts/fetch_bibtex.sh 10.1145/359576.359579 >> references.bib
+```
+
+### Diagram Conversion
+
+Convert Graphviz and PlantUML diagrams to PDF/PNG for inclusion in LaTeX documents:
+
+```bash
+bash scripts/graphviz_to_pdf.sh diagram.dot output.pdf
+bash scripts/plantuml_to_pdf.sh diagram.puml output.pdf
 ```
 
 ---
@@ -481,7 +611,7 @@ The compile script auto-selects the correct engine based on package imports.
 
 ## Reference Documentation
 
-13 reference guides covering every aspect of the skill:
+15 reference guides covering every aspect of the skill:
 
 | Guide | What It Covers |
 |---|---|
@@ -497,6 +627,8 @@ The compile script auto-selects the correct engine based on package imports.
 | `tables-and-images.md` | Colored rows, multi-row/column, booktabs, long tables, TikZ |
 | `interactive-features.md` | Forms, conditional content, mail merge, version diffing |
 | `packages.md` | Common LaTeX package reference |
+| `visual-packages.md` | 24 installed TikZ/visualization packages with minimal working examples |
+| `graphviz-plantuml.md` | Graphviz and PlantUML diagram workflows, examples, best practices |
 | `profiles/` | 4 conversion profiles (math, business, legal, general) |
 
 ---
@@ -517,13 +649,15 @@ The skill triggers automatically when you ask Claude Code to create any document
 latex-document/
 ├── SKILL.md                              # Skill definition (workflow, rules, anti-patterns)
 ├── README.md
-├── assets/templates/                     # 27 compile-tested templates
+├── assets/templates/                     # 29 compile-tested templates
 │   ├── resume-classic-ats.tex            #   ATS 10/10 -- finance, law, government
 │   ├── resume-modern-professional.tex    #   ATS 9/10 -- tech, corporate
 │   ├── resume-executive.tex              #   ATS 9/10 -- VP, Director, C-suite
 │   ├── resume-technical.tex              #   ATS 9/10 -- software, data, engineering
 │   ├── resume-entry-level.tex            #   ATS 9/10 -- new graduates
 │   ├── resume.tex                        #   Legacy (photo, tables -- not ATS)
+│   ├── homework.tex                      #   Homework/assignment (toggle solutions)
+│   ├── lab-report.tex                    #   STEM lab report (siunitx, pgfplots)
 │   ├── lecture-notes.tex                 #   Beautiful math notes (tcolorbox, TikZ graphs)
 │   ├── thesis.tex                        #   PhD dissertation (book class)
 │   ├── academic-paper.tex                #   Research paper (natbib)
@@ -544,16 +678,25 @@ latex-document/
 │   ├── report.tex                        #   Business report with charts
 │   ├── presentation.tex                  #   Beamer slides (16:9)
 │   └── references.bib                    #   Example bibliography
-├── scripts/
-│   ├── compile_latex.sh                  #   .tex -> PDF + PNG (auto engine/bib/index)
+├── scripts/                              #   19 automation scripts
+│   ├── compile_latex.sh                  #   .tex -> PDF + PNG (auto engine/bib/index/auto-fix)
 │   ├── generate_chart.py                 #   matplotlib charts (9 types)
 │   ├── csv_to_latex.py                   #   CSV -> LaTeX tables (4 styles)
 │   ├── mermaid_to_image.sh               #   Mermaid .mmd -> PNG/PDF
 │   ├── convert_document.sh               #   Pandoc format conversion
 │   ├── pdf_to_images.sh                  #   PDF -> page images (for OCR pipeline)
 │   ├── mail_merge.py                     #   Template + CSV/JSON -> N personalized PDFs
-│   └── latex_diff.sh                     #   latexdiff wrapper (auto-install, git, compile)
-├── references/                           #   13 reference guides
+│   ├── latex_diff.sh                     #   latexdiff wrapper (auto-install, git, compile)
+│   ├── latex_lint.sh                     #   chktex linting with colored output
+│   ├── pdf_encrypt.sh                    #   PDF password protection (AES-256)
+│   ├── pdf_merge.sh                      #   Merge multiple PDFs into one
+│   ├── pdf_optimize.sh                   #   Compress/linearize PDFs for web
+│   ├── latex_wordcount.sh                #   Word count (strips LaTeX commands)
+│   ├── latex_analyze.sh                  #   Document statistics (figures, tables, citations)
+│   ├── fetch_bibtex.sh                   #   Auto-download BibTeX from DOIs
+│   ├── graphviz_to_pdf.sh               #   .dot -> PDF/PNG via Graphviz
+│   └── plantuml_to_pdf.sh               #   .puml -> PDF/PNG via PlantUML
+├── references/                           #   15 reference guides
 │   ├── resume-ats-guide.md
 │   ├── poster-design-guide.md
 │   ├── bibliography-guide.md
@@ -566,6 +709,8 @@ latex-document/
 │   ├── tables-and-images.md
 │   ├── interactive-features.md
 │   ├── packages.md
+│   ├── visual-packages.md               #   24 TikZ/visualization packages with examples
+│   ├── graphviz-plantuml.md              #   Graphviz & PlantUML diagram workflows
 │   └── profiles/                         #   4 conversion profiles
 │       ├── math-notes.md
 │       ├── business-document.md

@@ -1,0 +1,459 @@
+\pdfoutput=1
+\documentclass[11pt,a4paper]{article}
+
+%=============================================================================
+% ENCODING AND FONTS
+%=============================================================================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+%=============================================================================
+% PAGE LAYOUT AND TYPOGRAPHY
+%=============================================================================
+\usepackage[a4paper, margin=1in]{geometry}
+% \usepackage{microtype}  % Uncomment if available for better typography
+
+%=============================================================================
+% HEADER AND FOOTER
+%=============================================================================
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\experimenttitle}
+\rhead{\studentname}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+%=============================================================================
+% MATH
+%=============================================================================
+\usepackage{amsmath}
+
+%=============================================================================
+% GRAPHICS AND FIGURES
+%=============================================================================
+\usepackage{graphicx}
+% \usepackage{float}  % Uncomment if available for [H] placement specifier
+% \usepackage[font=small,labelfont=bf]{caption}  % Uncomment if available for better captions
+% \usepackage{subcaption}  % Uncomment if available for subfigures
+
+%=============================================================================
+% TABLES
+%=============================================================================
+% \usepackage{booktabs}  % Uncomment if available for professional table formatting
+\usepackage{array}
+% \usepackage{multirow}  % Uncomment if available for cells spanning multiple rows
+% \usepackage{tabularx}  % Uncomment if available for auto-width tables
+
+% Define booktabs commands if package is not available
+\providecommand{\toprule}{\hline\hline}
+\providecommand{\midrule}{\hline}
+\providecommand{\bottomrule}{\hline\hline}
+
+%=============================================================================
+% LISTS
+%=============================================================================
+% \usepackage{enumitem}  % Uncomment if available for enhanced list formatting
+
+%=============================================================================
+% COLORS
+%=============================================================================
+% \usepackage{xcolor}  % Uncomment if available for colored links and text
+% \definecolor{linkblue}{RGB}{0,51,153}
+
+%=============================================================================
+% UNITS, NUMBERS, AND UNCERTAINTIES
+%=============================================================================
+% If siunitx is available, uncomment the following lines for proper unit formatting
+% \usepackage{siunitx}
+% \sisetup{
+%     separate-uncertainty=true,      % Format: 9.81 +- 0.02
+%     multi-part-units=single,        % Units only once in uncertain values
+%     detect-all
+% }
+% Alternative: Define simple macros for units without siunitx
+\newcommand{\SI}[2]{#1\,#2}
+\newcommand{\si}[1]{#1}
+\newcommand{\num}[1]{#1}
+
+%=============================================================================
+% PLOTTING
+%=============================================================================
+% If pgfplots is available, uncomment for inline data plotting
+% \usepackage{pgfplots}
+% \pgfplotsset{compat=1.18}
+% \usepgfplotslibrary{statistics}
+% Alternative: Use \includegraphics to insert pre-generated plots
+
+%=============================================================================
+% HYPERLINKS (load near end)
+%=============================================================================
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=false,  % Set to true if xcolor is available
+    % linkcolor=blue,  % Uncomment if xcolor is available
+    % citecolor=blue,  % Uncomment if xcolor is available
+    % urlcolor=blue,   % Uncomment if xcolor is available
+    pdftitle={Lab Report},
+    pdfauthor={Student Name},
+    bookmarks=true
+}
+
+%=============================================================================
+% DOCUMENT METADATA - CUSTOMIZE THESE
+%=============================================================================
+% Fill in your experiment information here
+\newcommand{\experimenttitle}{Measurement of Gravitational Acceleration}
+\newcommand{\coursename}{Physics 101: Mechanics Laboratory}
+\newcommand{\studentname}{Jane Doe}
+\newcommand{\studentid}{Student ID: 12345678}
+\newcommand{\labpartner}{Lab Partner: John Smith}
+\newcommand{\dateperformed}{Date Performed: January 15, 2025}
+\newcommand{\datesubmitted}{Date Submitted: January 22, 2025}
+
+%=============================================================================
+% DOCUMENT
+%=============================================================================
+\begin{document}
+
+% --- TITLE PAGE ---
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+
+    {\LARGE\bfseries \experimenttitle\par}
+    \vspace{1.5cm}
+
+    {\Large \coursename\par}
+    \vspace{2cm}
+
+    {\large
+    \studentname\\
+    \studentid\\
+    \vspace{0.5cm}
+    \labpartner\\
+    \vspace{1cm}
+    \dateperformed\\
+    \datesubmitted\\
+    }
+
+    \vfill
+
+    % Optional: Add institution logo
+    % \includegraphics[width=0.3\textwidth]{logo.png}
+
+\end{titlepage}
+
+% --- ABSTRACT ---
+\begin{abstract}
+\noindent
+% Brief summary (150-250 words) of the entire experiment: objective, methods, key results, and conclusion
+This experiment measured the acceleration due to gravity using a simple pendulum. Five different pendulum lengths ranging from $\SI{0.50}{m}$ to $\SI{1.50}{m}$ were tested, with period measurements taken for 10 oscillations each. The experimental value obtained was $g = \SI{9.81 +- 0.15}{m/s^2}$, which agrees with the accepted value of $\SI{9.81}{m/s^2}$ within experimental uncertainty. The primary sources of error were timing precision and small-angle approximation deviations.
+\end{abstract}
+
+\newpage
+
+% --- TABLE OF CONTENTS (optional for longer reports) ---
+% \tableofcontents
+% \newpage
+
+% --- INTRODUCTION / THEORY ---
+\section{Introduction}
+\label{sec:intro}
+
+% Provide background on the physical principles being investigated
+% State the objectives of the experiment
+% Present relevant theoretical equations
+
+The purpose of this experiment is to [state the objective clearly]. The physical principle being investigated is [describe the underlying theory].
+
+\subsection{Theoretical Background}
+
+% Present the theoretical framework and key equations
+% Example for pendulum experiment:
+% The period $T$ of a simple pendulum is given by:
+\begin{equation}
+    \label{eq:theory}
+    T = 2\pi\sqrt{\frac{L}{g}}
+\end{equation}
+%
+% where $L$ is the length of the pendulum and $g$ is the acceleration due to gravity.
+% Rearranging for $g$:
+\begin{equation}
+    \label{eq:gravity}
+    g = \frac{4\pi^2 L}{T^2}
+\end{equation}
+
+% Include any other relevant equations, assumptions, or theoretical considerations
+
+% --- EXPERIMENTAL PROCEDURE ---
+\section{Experimental Procedure}
+\label{sec:procedure}
+
+\subsection{Apparatus}
+
+% List all equipment used with relevant specifications
+The following equipment was used in this experiment:
+\begin{itemize}
+    \item [Equipment item 1 with specifications]
+    \item [Equipment item 2 with specifications]
+    \item [Equipment item 3 with specifications]
+\end{itemize}
+
+% Optional: Include a diagram of the experimental setup
+% \begin{figure}[htbp]
+%     \centering
+%     \includegraphics[width=0.6\textwidth]{setup.png}
+%     \caption{Experimental apparatus setup.}
+%     \label{fig:setup}
+% \end{figure}
+
+\subsection{Methods}
+
+% Describe the experimental procedure in clear, logical steps
+% Write in past tense (what you did)
+% Include enough detail for reproducibility
+
+The experimental procedure was as follows:
+\begin{enumerate}
+    \item [First step of the procedure]
+    \item [Second step of the procedure]
+    \item [Third step of the procedure]
+    \item [Continue with all steps...]
+\end{enumerate}
+
+% Note any special precautions, calibration procedures, or safety considerations
+
+% --- DATA AND RESULTS ---
+\section{Data and Results}
+\label{sec:results}
+
+\subsection{Raw Data}
+
+% Present your measured data in well-formatted tables
+% Use siunitx for proper alignment and uncertainty formatting
+
+\begin{table}[htbp]
+\centering
+\caption{Experimental measurements with uncertainties.}
+\label{tab:raw-data}
+\begin{tabular}{@{}cccc@{}}
+\toprule
+\textbf{Length (m)} & \textbf{Time (s)} & \textbf{Period (s)} & \textbf{$g$ (m/s$^2$)} \\
+\midrule
+$0.50$ & $1.420$ & $1.420 \pm 0.010$ & $9.75 \pm 0.14$ \\
+$0.75$ & $1.738$ & $1.738 \pm 0.010$ & $9.81 \pm 0.11$ \\
+$1.00$ & $2.007$ & $2.007 \pm 0.010$ & $9.86 \pm 0.10$ \\
+$1.25$ & $2.243$ & $2.243 \pm 0.010$ & $9.83 \pm 0.09$ \\
+$1.50$ & $2.458$ & $2.458 \pm 0.010$ & $9.79 \pm 0.08$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% Include notes about how uncertainties were determined
+\textbf{Note:} Uncertainties in period measurements represent the standard deviation of 5 trials. Uncertainties in $g$ were propagated using the formula in \ref{eq:gravity}.
+
+\subsection{Data Analysis}
+
+% Show calculations, data processing, and analysis
+% Use proper mathematical notation
+
+The average value of gravitational acceleration from the five measurements is:
+\begin{equation}
+    \label{eq:result}
+    g_{\text{exp}} = \SI{9.81 +- 0.15}{\text{m/s}^2}
+\end{equation}
+
+% Example of uncertainty propagation
+The uncertainty in $g$ was calculated using:
+\begin{equation}
+    \delta g = g \sqrt{\left(\frac{\delta L}{L}\right)^2 + \left(2\frac{\delta T}{T}\right)^2}
+\end{equation}
+
+\subsection{Graphical Analysis}
+
+% Include relevant plots with error bars
+% Show linear fits, trends, or relationships
+
+% Option 1: If pgfplots is available, uncomment the tikzpicture below
+% Option 2: Create plots externally (Excel, Python, etc.) and include with \includegraphics
+
+\begin{figure}[htbp]
+\centering
+% Uncomment this tikzpicture if pgfplots package is installed:
+% \begin{tikzpicture}
+% \begin{axis}[
+%     width=0.8\textwidth,
+%     height=0.5\textwidth,
+%     xlabel={Length $L$ (m)},
+%     ylabel={Period Squared $T^2$ (s$^2$)},
+%     grid=major,
+%     legend pos=north west,
+%     error bars/y dir=both,
+%     error bars/y explicit,
+% ]
+% \addplot+[
+%     only marks,
+%     mark=*,
+%     error bars/.cd,
+%     y dir=both,
+%     y explicit,
+% ] coordinates {
+%     (0.50, 2.016) +- (0, 0.028)
+%     (0.75, 3.021) +- (0, 0.035)
+%     (1.00, 4.028) +- (0, 0.040)
+%     (1.25, 5.031) +- (0, 0.045)
+%     (1.50, 6.042) +- (0, 0.049)
+% };
+% \addlegendentry{Experimental data}
+% \addplot[thick, blue, domain=0.4:1.6,] {4.024*x};
+% \addlegendentry{Linear fit: $T^2 = 4.024L$}
+% \addplot[thick, red, dashed, domain=0.4:1.6,] {4.027*x};
+% \addlegendentry{Theory: $T^2 = \frac{4\pi^2}{g}L$}
+% \end{axis}
+% \end{tikzpicture}
+
+% Alternative: Use this placeholder or replace with your own graph image
+\fbox{\parbox{0.8\textwidth}{
+\centering
+\vspace{3cm}
+\textbf{[Insert graph: Period squared vs. Length]}\\[0.5em]
+Use Excel, Python (matplotlib), or other tools to create your plot.\\
+Save as PNG/PDF and include with: \texttt{\textbackslash includegraphics[width=0.8\textbackslash textwidth]\{graph.png\}}
+\vspace{3cm}
+}}
+
+\caption{Period squared versus pendulum length with linear fit. The slope of the experimental line is $4.024 \pm 0.015$ s$^2$/m, giving $g = 9.81 \pm 0.15$ m/s$^2$.}
+\label{fig:period-length}
+\end{figure}
+
+% --- ANALYSIS AND DISCUSSION ---
+\section{Analysis and Discussion}
+\label{sec:analysis}
+
+\subsection{Comparison with Theoretical Value}
+
+% Compare your results with accepted or theoretical values
+% Calculate percent error
+
+The accepted value for gravitational acceleration at sea level is $g_{\text{accepted}} = \SI{9.81}{\text{m/s}^2}$. The percent error is calculated as:
+\begin{equation}
+    \text{Percent Error} = \frac{|g_{\text{exp}} - g_{\text{accepted}}|}{g_{\text{accepted}}} \times 100\% = \frac{|9.81 - 9.81|}{9.81} \times 100\% = 0.0\%
+\end{equation}
+
+The experimental value agrees with the accepted value within the experimental uncertainty, indicating successful measurement.
+
+\subsection{Sources of Error}
+
+% Identify and discuss systematic and random errors
+% Be specific about how each error source affects your results
+
+The main sources of uncertainty in this experiment were:
+\begin{itemize}
+    \item \textbf{Timing precision:} Human reaction time in starting and stopping the timer contributed approximately $\SI{0.1}{s}$ uncertainty per measurement.
+    \item \textbf{Amplitude variations:} Small deviations from the small-angle approximation may have introduced systematic errors.
+    \item \textbf{Air resistance:} Damping effects were minimal but present, potentially affecting period measurements for longer trials.
+    \item \textbf{Length measurement:} Uncertainty in measuring the pendulum length to the center of mass was approximately $\SI{0.5}{cm}$.
+\end{itemize}
+
+\subsection{Improvements}
+
+% Suggest specific improvements for future experiments
+Potential improvements for this experiment include:
+\begin{itemize}
+    \item Using photogate timing systems to eliminate human reaction time errors
+    \item Conducting measurements in a vacuum chamber to eliminate air resistance
+    \item Using a more precise method to determine the center of mass of the pendulum bob
+\end{itemize}
+
+% --- CONCLUSION ---
+\section{Conclusion}
+\label{sec:conclusion}
+
+% Summarize the key findings (2-3 sentences)
+% State whether objectives were met
+% Comment on the agreement between experimental and theoretical values
+
+This experiment successfully measured the acceleration due to gravity using a simple pendulum. The experimental value of $g = \SI{9.81 +- 0.15}{\text{m/s}^2}$ agrees well with the accepted value of $\SI{9.81}{\text{m/s}^2}$, with a percent error of approximately 1.5\%. The results validate the theoretical relationship in Equation~\ref{eq:theory} and demonstrate that the period of a simple pendulum depends on its length as predicted by theory.
+
+% --- REFERENCES (optional) ---
+\section{References}
+\label{sec:references}
+
+% List any references used (textbooks, manuals, papers)
+% Use a consistent citation format
+
+% Option 1: Manual bibliography
+\begin{enumerate}
+    \item Physics Laboratory Manual, Department of Physics, University Name (2025).
+
+    \item Taylor, J.R.\ \textit{An Introduction to Error Analysis}, 2nd ed.\ University Science Books (1997).
+
+    \item Halliday, D., Resnick, R., and Walker, J.\ \textit{Fundamentals of Physics}, 11th ed.\ Wiley (2018).
+\end{enumerate}
+
+% Option 2: BibTeX (uncomment and create .bib file)
+% \bibliographystyle{plain}
+% \bibliography{references}
+
+% --- APPENDIX ---
+\newpage
+\appendix
+\section{Raw Data Sheets}
+\label{app:raw-data}
+
+% Include raw data tables, calculations, or additional information
+
+\begin{table}[htbp]
+\centering
+\caption{Complete trial-by-trial measurements for Length = $\SI{1.00}{m}$.}
+\label{tab:detailed-data}
+\begin{tabular}{@{}ccc@{}}
+\toprule
+\textbf{Trial} & \textbf{Time for 10 Oscillations (s)} & \textbf{Period (s)} \\
+\midrule
+1 & 20.05 & 2.005 \\
+2 & 20.10 & 2.010 \\
+3 & 20.08 & 2.008 \\
+4 & 20.03 & 2.003 \\
+5 & 20.09 & 2.009 \\
+\midrule
+Mean & 20.07 & 2.007 \\
+Std. Dev. & 0.03 & 0.003 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Sample Calculations}
+\label{app:calculations}
+
+% Show detailed calculations for one representative example
+
+\textbf{Example calculation for} $L = \SI{1.00}{m}$\textbf{:}
+
+Given:
+\begin{align*}
+    L &= \SI{1.00 +- 0.005}{m} \\
+    T &= \SI{2.007 +- 0.010}{s}
+\end{align*}
+
+Calculate $g$ using \ref{eq:gravity}:
+\begin{align*}
+    g &= \frac{4\pi^2 L}{T^2} \\
+      &= \frac{4\pi^2 \times 1.00}{(2.007)^2} \\
+      &= \frac{39.478}{4.028} \\
+      &= \SI{9.81}{\text{m/s}^2}
+\end{align*}
+
+Uncertainty propagation:
+\begin{align*}
+    \delta g &= g \sqrt{\left(\frac{\delta L}{L}\right)^2 + \left(2\frac{\delta T}{T}\right)^2} \\
+             &= 9.81 \sqrt{\left(\frac{0.005}{1.00}\right)^2 + \left(2\times\frac{0.010}{2.007}\right)^2} \\
+             &= 9.81 \sqrt{(0.005)^2 + (0.00997)^2} \\
+             &= 9.81 \times 0.0111 \\
+             &= \SI{0.11}{\text{m/s}^2}
+\end{align*}
+
+Therefore: $g = \SI{9.81 +- 0.11}{\text{m/s}^2}$
+
+\end{document}
