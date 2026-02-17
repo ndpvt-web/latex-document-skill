@@ -1,0 +1,69 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+
+\title{Test Document}
+\author{Test Author}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+\label{sec:intro}
+
+This is a test document with known issues. It contains multiple citations including \cite{knuth1984,lamport1994,dijkstra1968} and also single citations like \citep{turing1950} and \citet{shannon1948}.
+
+% TODO: Add more content here
+% FIXME: This section needs review
+
+\section{Methods}
+
+We present the following equation:
+\begin{equation}
+E = mc^2
+\label{eq:einstein}
+\end{equation}
+
+Another equation set:
+\begin{align}
+a + b &= c \\
+x - y &= z
+\end{align}
+
+\section{Results}
+
+\begin{figure}[h]
+\centering
+\includegraphics{figure1.pdf}
+\caption{A figure with a label}
+\label{fig:result1}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics{figure2.pdf}
+\caption{A figure without label - this is an issue}
+\end{figure}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{cc}
+A & B \\
+1 & 2
+\end{tabular}
+\caption{A table without label}
+\end{table}
+
+We reference Figure~\ref{fig:result1} but never reference equation~\ref{eq:unreferenced}.
+
+\section{Discussion}
+\label{sec:discussion}
+
+The work by \citeauthor{knuth1984} is foundational. See also \cite{missing_citation}.
+
+\bibliography{references}
+\bibliographystyle{plain}
+
+\end{document}

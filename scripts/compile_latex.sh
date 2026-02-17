@@ -161,9 +161,12 @@ detect_engine() {
     return
   fi
   # Check for packages that require XeLaTeX/LuaLaTeX
-  if grep -qE '\\usepackage\{fontspec\}|\\usepackage\{xeCJK\}|\\usepackage\{polyglossia\}' "$INPUT_TEX" 2>/dev/null; then
+  # Filter out commented lines (starting with %) before checking
+  local uncommented
+  uncommented=$(sed '/^[[:space:]]*%/d' "$INPUT_TEX" 2>/dev/null)
+  if echo "$uncommented" | grep -qE '\\usepackage\{fontspec\}|\\usepackage\{xeCJK\}|\\usepackage\{polyglossia\}'; then
     echo "xelatex"
-  elif grep -qE '\\usepackage\{luacode\}|\\usepackage\{luatextra\}|\\directlua' "$INPUT_TEX" 2>/dev/null; then
+  elif echo "$uncommented" | grep -qE '\\usepackage\{luacode\}|\\usepackage\{luatextra\}|\\directlua'; then
     echo "lualatex"
   else
     echo "pdflatex"
@@ -292,7 +295,11 @@ auto_fix_floats() {
   cp "$input_file" "$output_file"
 
   # Fix naked floats - add [htbp] to figure and table environments without placement specifiers
-  # Match: \begin{figure} or \begin{table} NOT followed by [
+  # Two passes: (1) end-of-line case, (2) mid-line case where next char is not [
+  # Pass 1: \begin{figure} at end of line (nothing or whitespace follows)
+  sed -i.bak -E 's/\\begin\{(figure|table)\}[[:space:]]*$/\\begin{\1}[htbp]/g' "$output_file"
+  rm -f "${output_file}.bak"
+  # Pass 2: \begin{figure} followed by non-[ character (mid-line)
   sed -i.bak -E 's/\\begin\{(figure|table)\}([^[[])/\\begin{\1}[htbp]\2/g' "$output_file"
   rm -f "${output_file}.bak"
 
