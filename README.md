@@ -1,8 +1,8 @@
 # LaTeX Document Skill
 
-> **Describe any document in plain English -- get a polished, production-grade PDF.**
+> **Say what you need in plain English -- resumes, theses, lecture notes, cheatsheets, posters, books, exams, reports, invoices -- and get a pixel-perfect PDF with zero LaTeX knowledge.**
 >
-> No LaTeX knowledge required. The skill handles engine selection, bibliography tooling, multi-pass compilation, error recovery, and PNG preview generation automatically.
+> Converts handwritten notes to beautiful typeset documents. Turns 162-page textbooks into 2-page cheat sheets. Generates charts from CSV, renders Mermaid diagrams, merges and encrypts PDFs, mail-merges 500 personalized letters, diffs document versions, and auto-fetches BibTeX from DOIs. The compilation engine reads your `.tex`, picks the right engine (pdfLaTeX / XeLaTeX / LuaLaTeX), runs the exact number of passes needed, and recovers from errors -- you never touch a command line.
 
 **27 templates · 22 automation scripts · 22 reference guides · 4 OCR conversion profiles**
 
