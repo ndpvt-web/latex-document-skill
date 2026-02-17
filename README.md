@@ -1,8 +1,8 @@
 # LaTeX Document Skill
 
-> **Say what you need in plain English -- resumes, theses, lecture notes, cheatsheets, posters, books, exams, reports, invoices -- and get a pixel-perfect PDF with zero LaTeX knowledge.**
+> **Turn handwritten notes, scanned textbooks, and raw data into publication-ready LaTeX -- without knowing a single LaTeX command.**
 >
-> Converts handwritten notes to beautiful typeset documents. Turns 162-page textbooks into 2-page cheat sheets. Generates charts from CSV, renders Mermaid diagrams, merges and encrypts PDFs, mail-merges 500 personalized letters, diffs document versions, and auto-fetches BibTeX from DOIs. The compilation engine reads your `.tex`, picks the right engine (pdfLaTeX / XeLaTeX / LuaLaTeX), runs the exact number of passes needed, and recovers from errors -- you never touch a command line.
+> An 80-page handwritten math PDF becomes color-coded lecture notes with proper equations and TikZ diagrams. A 162-page textbook becomes a 2-page cheat sheet. A CSV becomes nine chart types. A one-line prompt becomes a thesis, a resume, a conference poster, or a 37-page book with drop caps. 27 templates. 22 scripts. You just describe what you want.
 
 **27 templates · 22 automation scripts · 22 reference guides · 4 OCR conversion profiles**
 
