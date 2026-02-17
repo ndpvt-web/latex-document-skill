@@ -1969,6 +1969,21 @@ Most scripts also support verbose mode:
 
 ---
 
+## 9. Document-Specific Pitfalls
+
+### Exam Class Pitfalls
+
+- Do NOT use `\usepackage{fancyhdr}` with exam class -- it conflicts with exam's own `headandfoot` pagestyle, causing `\f@nch@orf` errors. The exam class provides `\firstpageheader`, `\runningheader`, `\footer` instead.
+- Do NOT use bare `\section*{}` inside `\begin{questions}` -- it causes "Something's wrong--perhaps a missing \item" errors. Use `\fullwidth{\section*{Part A: ...}}` instead.
+- Use `\fullwidth{...}` for ANY non-question content inside the `questions` environment (headings, instructions, notes).
+
+### Book/Thesis Pitfalls
+
+- When using `fancyhdr` with custom headers, set `headheight=14pt` (or larger) in geometry options: `\usepackage[margin=1in, headheight=14pt]{geometry}`. Without this, you get "headheight is too small" warnings that can cause layout issues.
+- First-pass compilation of books/theses will always show "undefined references" and "Label(s) may have changed" warnings -- this is normal. The compile script runs multiple passes to resolve these.
+
+---
+
 **Document Version**: 1.0
 **Last Updated**: 2026-02-17
 **Word Count**: ~14,500 words (~14.5KB)

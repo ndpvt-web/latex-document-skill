@@ -4,6 +4,129 @@ This is the definitive reference for creating state-of-the-art cheat sheets and 
 
 ---
 
+## Workflow: User Interaction and Template Selection
+
+When a user requests a cheat sheet or reference card, follow these steps before proceeding to template customization:
+
+**Step A: Ask for cheat sheet type** (use AskUserQuestion):
+- "What type of cheat sheet do you need?"
+  - **General Reference Card (Recommended)** -- Multi-topic, landscape 3-column, colored sections. For command references, concept summaries, quick-reference guides.
+  - **Exam Formula Sheet** -- Maximum density, portrait 2-column, B&W-safe. For university exam "allowed cheat sheets" with formulas, theorems, definitions.
+  - **Programming Reference Card** -- Landscape 4-column, syntax highlighting. For language syntax, API reference, CLI commands, keyboard shortcuts.
+
+Based on the answer, select the template and configure layout:
+
+| Answer | Template | Layout |
+|---|---|---|
+| General Reference Card | `cheatsheet.tex` | Landscape, 3 columns, 7pt, colored boxes |
+| Exam Formula Sheet | `cheatsheet-exam.tex` | Portrait, 2 columns, 6pt, B&W grayscale |
+| Programming Reference Card | `cheatsheet-code.tex` | Landscape, 4 columns, 7pt, syntax highlighting |
+
+**Step B: Ask about source material** (use AskUserQuestion):
+- "Do you have source PDFs to condense into the cheat sheet?"
+  - **Yes, I'll upload PDFs** -- I'll extract and condense key content from your lecture notes, textbooks, or past papers
+  - **No, I'll describe what I need** -- I'll create content based on your topic description
+  - **Both** -- I'll use your PDFs as primary source and fill gaps based on your description
+
+**Step C: If PDFs provided, ask about content priority** (only if user selected Yes/Both):
+- "How should I prioritize content?"
+  - **Exam-focused (Recommended)** -- Prioritize formulas, theorems, and definitions likely to appear on exams
+  - **Comprehensive coverage** -- Cover all major topics equally
+  - **Past paper analysis** -- Cross-reference with past exam papers to identify high-yield topics (requires past papers)
+
+**Step D: Ask for customization** (use AskUserQuestion with multiSelect):
+- "Customize your cheat sheet (select all that apply):"
+  - **Custom color scheme** -- Choose your own colors instead of the default
+  - **Different column count** -- 2, 3, 4, or 5 columns
+  - **Different paper size** -- A3 (wall poster), A5 (pocket), or custom
+  - **Front-only (1 page)** -- Single page instead of front+back
+  - **Keep defaults** -- Use the template defaults
+
+Then proceed to customize the template and fill in content.
+
+---
+
+## Content Budget Guidelines (CRITICAL)
+
+**CRITICAL: LLMs consistently generate 150-250% too much content for cheatsheets.**
+Always use these character budgets (LaTeX source, not rendered text):
+
+| Template | Layout | Budget per page | Total (2 pages) |
+|---|---|---|---|
+| Exam | Portrait 2-col 6pt | ~4,500 chars | ~9,000 chars |
+| General | Landscape 3-col 7pt | ~8,000 chars | ~16,000 chars |
+| Code | Landscape 4-col 7pt | ~9,000 chars | ~18,000 chars |
+
+**Mandatory compile-and-verify workflow:**
+1. Write page 1 content only (within budget)
+2. Compile with `pdflatex -interaction=nonstopmode`
+3. Verify page count with `pdfinfo <file>.pdf | grep Pages`
+4. If page 1 fits, write page 2 content
+5. Recompile and verify exactly 2 pages
+6. If >2 pages: cut lowest-priority content, recompile
+
+**Content distribution rules:**
+- **Use ONE single `\begin{multicols*}{N}` ... `\end{multicols*}` for the ENTIRE document** (no `\newpage`, no separate multicols blocks per page). Content flows naturally: p1c1 → p1c2 → p1c3 → p2c1 → p2c2 → p2c3. This prevents empty columns on any page.
+- **NEVER use** `\end{multicols*}` then `\newpage` then `\begin{multicols*}` -- this creates two independent blocks that can leave columns empty if content isn't perfectly pre-balanced.
+- Title bar goes BEFORE the single `multicols*` block (only appears on page 1, which is fine)
+- For 4-column layouts, add `\sloppy` after `\begin{multicols*}{4}` to reduce underfull warnings
+- Write ALL content sequentially -- LaTeX handles page breaks automatically within `multicols*`
+
+**Compression ratio guidelines:**
+- 5-20 page source → 2 pages: include most key content (2.5-10:1)
+- 20-50 page source → 2 pages: definitions + key theorems + formulas only (10-25:1)
+- 50-100+ page source → 2 pages: ruthless prioritization needed (25-50:1)
+  - Only core definitions, critical formulas, essential algorithms
+  - Use telegram-style text, symbol abbreviations, horizontal stacking
+  - Test with `pdfinfo` after every 3-4 sections added
+
+---
+
+## Template Architecture (CRITICAL)
+
+**CRITICAL: Do NOT wrap every section in tcolorbox.**
+
+The #1 mistake that wastes 40-50% of page space is using tcolorbox for every section.
+Each tcolorbox adds ~10mm vertical overhead (title + padding + borders + spacing).
+With 20 sections, that's 200mm wasted -- nearly half a page.
+
+**Correct approach (used by RStudio, Stanford CS229, and top GitHub cheatsheets):**
+
+1. **Use plain `\section*{}` with `\titlerule`** for 90% of sections
+   - Overhead: only ~3mm per section (vs 10mm for tcolorbox)
+   - Use `titlesec` package: `\titleformat{\section}{\bfseries\scshape}{}{0pt}{}[\titlerule]`
+   - `\titlespacing{\section}{0pt}{1.5pt}{0.5pt}`
+
+2. **Use ONE single `multicols*` (STARRED) for the ENTIRE document**
+   - Starred version fills columns left-to-right sequentially without balancing
+   - Content flows: page1-col1 → page1-col2 → page1-col3 → page2-col1 → page2-col2 → page2-col3
+   - `multicols*` automatically handles page breaks -- no `\newpage` needed
+   - **NEVER** close multicols*, insert `\newpage`, and open a new multicols* -- this creates independent blocks that can leave columns empty
+   - Title bar goes BEFORE the `multicols*` block (only appears on page 1)
+
+3. **Inline formulas with `\quad` separation**, NOT one formula per box:
+   - GOOD: `$(x^n)'=nx^{n-1}$ \quad $(e^x)'=e^x$ \quad $(\ln x)'=\tfrac{1}{x}$`
+   - BAD: Separate tcolorbox for each formula
+
+4. **Use tabular for structured data**, NOT itemize lists:
+   - GOOD: `\begin{tabular}{@{}l@{\ }l@{}} $\int x^n$ & $\tfrac{x^{n+1}}{n+1}+C$ \\ \end{tabular}`
+   - BAD: `\begin{itemize} \item $\int x^n dx = ...$ \end{itemize}`
+
+5. **Reserve tcolorbox for 2-3 CRITICAL callouts only** (key theorems, important warnings)
+   - Use minimal box: `colback=gray!8, colframe=gray!40, boxrule=0.2pt, arc=0mm`
+   - Minimal padding: `top=0.2mm, bottom=0.2mm`
+
+6. **Ultra-aggressive spacing throughout:**
+   ```latex
+   \setlength{\parskip}{0pt plus 0.1pt}
+   \setlength{\topsep}{0pt}
+   \linespread{0.92}  % 0.92 is safe for math-heavy content; 0.85 causes overlap with fractions/superscripts
+   \setlist{nosep, itemsep=0pt}
+   \setlength{\abovedisplayskip}{0.5pt}
+   ```
+
+---
+
 ## 1. Quick Start: Which Template to Use
 
 | Use Case | Recommended Configuration | Rationale |
@@ -574,6 +697,73 @@ filter & \texttt{filter(p, list)} & Filters by predicate \\
 
 ### Overview
 Convert lecture notes, papers, or textbooks into condensed cheat sheets.
+
+**PDF-to-Cheatsheet Pipeline** (when source PDFs provided):
+
+**Phase 1: PDF Ingestion & Structure Analysis**
+1. Convert PDF to processable format:
+   - For text-based PDFs: Use `python3 -c "import fitz; doc=fitz.open('input.pdf'); [open(f'tmp/page_{i}.txt','w').write(page.get_text()) for i,page in enumerate(doc)]"` for fast text extraction
+   - For scanned/handwritten PDFs: `bash <skill_path>/scripts/pdf_to_images.sh input.pdf ./tmp/pages` then use LLM vision
+   - Auto-detect: if extracted text is <50 chars/page, treat as scanned and fall back to vision
+2. Build document structure map (Pass 1 - send first 10-20 pages to LLM):
+   ```
+   Analyze this document and create a structured outline:
+   - Chapter/section titles with page numbers
+   - Content type per section (theoretical, applied, examples, exercises)
+   - Importance rating (high/medium/low) based on: theorem density, boxed content, "Important" markers
+   Output as structured list.
+   ```
+3. For 100+ page documents, use hierarchical chunking:
+   - Chunk at section/subsection boundaries (not arbitrary page counts)
+   - Keep chunks to 3000-6000 tokens each (leaves room for prompt + output)
+   - Maintain chapter/section metadata with each chunk
+   - Process high-importance sections first (from structure map)
+
+**Phase 2: Targeted Content Extraction (Pass 2)**
+4. Extract key content from each high-importance section using subject-specific prompts:
+   - **Mathematics**: "Extract ALL formulas, theorems (with conditions), definitions, and proof techniques. Preserve LaTeX notation exactly."
+   - **Computer Science**: "Extract algorithms with complexity, data structure operations, key theorems. Format algorithms as step-lists."
+   - **Physics**: "Extract equations with units, laws with applicability conditions, constants. Note coordinate system dependencies."
+   - **Chemistry**: "Extract reactions, mechanisms, equilibrium expressions, nomenclature rules, periodic trends."
+   - **Biology**: "Extract processes/cycles as stage-lists, pathways, classification hierarchies, comparative tables."
+   - **General**: "Extract formulas > theorems > definitions > procedures > reference tables. Skip motivational text and history."
+5. For each extracted item, capture:
+   - Type: FORMULA | THEOREM | DEFINITION | PROCEDURE | TABLE
+   - Content (preserving all math notation)
+   - Context (when to use it)
+   - Prerequisites (what must be known first)
+
+**Phase 3: Content Prioritization & Compression (Pass 3)**
+6. Score and rank all extracted items:
+   - Priority 1 (60-70% of lookups): Formulas with variable meanings
+   - Priority 2 (15-20%): Procedure steps and algorithms
+   - Priority 3 (10-15%): Constants, units, conversion factors
+   - Priority 4 (5-10%): Technical definitions
+   - Boost score for: items appearing in multiple sections, boxed/highlighted content, named theorems
+7. Compress content using density techniques:
+   - Convert verbose definitions to terse one-liners
+   - Use symbols: → instead of "implies", ∀ instead of "for all", ⇔ instead of "if and only if"
+   - Telegram-style writing: "The gradient is defined as..." → "Gradient:"
+   - Merge overlapping content from different chapters
+   - Use \tfrac instead of \frac, \textstyle in align environments
+   - Stack short equations horizontally: `$E=mc^2$ \hfill $F=ma$`
+8. If past papers provided: cross-reference to weight high-frequency topics (boost items that appear in 2+ exams)
+
+**Phase 4: Layout & Assembly**
+9. Space budget management:
+   - Estimate: ~45-50 lines per page at 6pt, ~40-45 at 7pt (landscape with 3 columns = 3× that)
+   - 2-page cheat sheet ≈ 60-80 distinct items (formulas, theorems, definitions)
+   - If extracted items > budget: cut lowest-priority items, merge related items, reduce font for less-critical sections
+10. Organize into logical sections matching template structure
+11. Apply LaTeX density optimizations:
+    - No blank lines between consecutive tcolorbox environments (causes `//` artifacts)
+    - Use `@{}` in tabular to suppress inter-column padding
+    - Use \smallmatrix instead of pmatrix for 2×2 matrices (saves 40% height)
+    - Use \hfill to stack two formulas per line
+    - Negative \vspace between sections if nearly fitting
+12. Compile, verify fits within page constraints, iterate if needed
+    - If overflow: use \scalebox{0.95}, \enlargethispage{1cm}, or cut lowest-priority items
+    - If underflow: add worked examples or expand compressed definitions
 
 ### Step 1: Content Extraction
 1. **Identify key concepts** (not everything needs to be included)

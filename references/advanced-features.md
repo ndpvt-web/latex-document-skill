@@ -1,5 +1,17 @@
 # Advanced LaTeX Features
 
+## Visual Elements Quick Reference
+
+| Element | Tool | Best For |
+|---|---|---|
+| Bar/line/pie charts | pgfplots (inline) or matplotlib (script) | Metrics, trends, breakdowns |
+| Flowcharts/diagrams | TikZ (inline) or Mermaid (script) | Processes, architecture, decisions |
+| AI-generated images | generate-image skill | Custom illustrations, diagrams, photos |
+| Data tables | booktabs/tabularx | Comparisons, financials, statistics |
+| Timelines | TikZ | Project phases, milestones, roadmaps |
+
+Use `\begin{figure}[H]` (from `float` package) to prevent figures from floating away from their context. Size TikZ diagrams with `width=0.8\textwidth` or smaller.
+
 ## Landscape Pages
 
 Mix portrait and landscape pages in a single document. Useful for wide tables, charts, or diagrams.
