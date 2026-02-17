@@ -14,6 +14,24 @@
 
 set -euo pipefail
 
+# --- Usage function ---
+usage() {
+  cat <<'EOF'
+pdf_to_images.sh - Split a PDF into page images for OCR/vision processing
+
+Usage:
+  pdf_to_images.sh <input.pdf> <output_dir> [--dpi <dpi>] [--max-dim <pixels>]
+
+Options:
+  --dpi       Resolution for rendering (default: 200)
+  --max-dim   Max dimension in pixels; images are resized if larger (default: 2000)
+
+Output:
+  Creates page-001.png, page-002.png, etc. in output_dir
+  Prints total page count on success
+EOF
+}
+
 # --- Source cross-platform dependency installer ---
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/install_deps.sh"
@@ -25,6 +43,7 @@ MAX_DIM=2000
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --help|-h) usage; exit 0 ;;
     --dpi) DPI="$2"; shift 2 ;;
     --max-dim) MAX_DIM="$2"; shift 2 ;;
     -*) echo "Error: Unknown option $1" >&2; exit 1 ;;

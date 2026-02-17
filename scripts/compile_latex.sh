@@ -35,6 +35,45 @@
 
 set -euo pipefail
 
+# --- Usage function ---
+usage() {
+  cat <<'EOF'
+compile_latex.sh - Compile .tex to .pdf and optionally generate PNG previews
+
+Usage:
+  compile_latex.sh <input.tex> [--preview] [--preview-dir <dir>] [--scale <pixels>] [--engine <engine>] [--auto-fix]
+
+Options:
+  --preview         Generate PNG previews of each page
+  --preview-dir     Directory for PNG output (default: same as input)
+  --scale           Max dimension for PNG preview in pixels (default: 1200)
+  --engine          LaTeX engine: pdflatex (default), xelatex, or lualatex
+  --auto-fix        Apply automatic fixes (naked floats, microtype) to temp copy before compiling
+
+Features:
+  - Auto-installs texlive if missing
+  - Auto-detects engine from document content (fontspec/xeCJK → xelatex)
+  - Detects .bib files and runs bibtex/biber automatically
+  - Detects \makeindex and runs makeindex automatically
+  - Detects \makeglossaries and runs makeglossaries automatically
+  - Runs multiple passes for cross-references
+  - Generates PNG previews with pdftoppm
+  - Cleans auxiliary files after compilation
+  - Smart error recovery with --auto-fix:
+    * Automatically adds [htbp] to naked floats
+    * Auto-injects microtype for overfull hbox warnings
+  - Intelligent error parsing and helpful suggestions
+
+Examples:
+  compile_latex.sh resume.tex
+  compile_latex.sh report.tex --preview
+  compile_latex.sh report.tex --preview --preview-dir ./outputs --scale 1600
+  compile_latex.sh cjk-doc.tex --engine xelatex
+  compile_latex.sh document.tex --engine lualatex --preview
+  compile_latex.sh paper.tex --auto-fix
+EOF
+}
+
 # --- Source cross-platform dependency installer ---
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/install_deps.sh"
@@ -49,6 +88,7 @@ AUTO_FIX=false
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --help|-h) usage; exit 0 ;;
     --preview) PREVIEW=true; shift ;;
     --preview-dir) PREVIEW_DIR="$2"; shift 2 ;;
     --scale) SCALE="$2"; shift 2 ;;

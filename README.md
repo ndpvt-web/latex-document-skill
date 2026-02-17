@@ -2,7 +2,7 @@
 
 A Claude Code skill that turns natural language into production-grade PDFs. Say what you need -- a resume, a 300-page book, a conference poster, an exam -- and get a compiled PDF with PNG previews, charts, diagrams, and bibliography, all handled automatically.
 
-**29 templates. 19 scripts. 15 reference guides. 4 conversion profiles. Zero LaTeX knowledge required.**
+**27 templates. 22 scripts. 22 reference guides. 4 conversion profiles. Zero LaTeX knowledge required.**
 
 ---
 
@@ -649,7 +649,7 @@ The skill triggers automatically when you ask Claude Code to create any document
 latex-document/
 ├── SKILL.md                              # Skill definition (workflow, rules, anti-patterns)
 ├── README.md
-├── assets/templates/                     # 29 compile-tested templates
+├── assets/templates/                     # 27 compile-tested templates
 │   ├── resume-classic-ats.tex            #   ATS 10/10 -- finance, law, government
 │   ├── resume-modern-professional.tex    #   ATS 9/10 -- tech, corporate
 │   ├── resume-executive.tex              #   ATS 9/10 -- VP, Director, C-suite
@@ -666,7 +666,7 @@ latex-document/
 │   ├── poster.tex                        #   Portrait A0 poster (tikzposter)
 │   ├── poster-landscape.tex              #   Landscape A0 poster (tikzposter)
 │   ├── exam.tex                          #   Exam/quiz (exam class)
-│   ├── cheatsheet-general.tex            #   Landscape 3-col reference card (colored)
+│   ├── cheatsheet.tex                    #   Landscape 3-col reference card (colored)
 │   ├── cheatsheet-exam.tex               #   Portrait 2-col exam formula sheet (B&W)
 │   ├── cheatsheet-code.tex               #   Landscape 4-col programming reference
 │   ├── fillable-form.tex                 #   Fillable PDF form (hyperref fields)
@@ -678,9 +678,9 @@ latex-document/
 │   ├── report.tex                        #   Business report with charts
 │   ├── presentation.tex                  #   Beamer slides (16:9)
 │   └── references.bib                    #   Example bibliography
-├── scripts/                              #   19 automation scripts
+├── scripts/                              #   22 automation scripts
 │   ├── compile_latex.sh                  #   .tex -> PDF + PNG (auto engine/bib/index/auto-fix)
-│   ├── generate_chart.py                 #   matplotlib charts (9 types)
+│   ├── generate_chart.py                 #   matplotlib charts (9 types, legends, multi-series)
 │   ├── csv_to_latex.py                   #   CSV -> LaTeX tables (4 styles)
 │   ├── mermaid_to_image.sh               #   Mermaid .mmd -> PNG/PDF
 │   ├── convert_document.sh               #   Pandoc format conversion
@@ -691,12 +691,16 @@ latex-document/
 │   ├── pdf_encrypt.sh                    #   PDF password protection (AES-256)
 │   ├── pdf_merge.sh                      #   Merge multiple PDFs into one
 │   ├── pdf_optimize.sh                   #   Compress/linearize PDFs for web
+│   ├── pdf_extract_pages.sh             #   Extract page ranges from PDF (odd/even/ranges)
 │   ├── latex_wordcount.sh                #   Word count (strips LaTeX commands)
 │   ├── latex_analyze.sh                  #   Document statistics (figures, tables, citations)
+│   ├── latex_package_check.sh           #   Pre-flight package availability check
+│   ├── latex_citation_extract.sh        #   Citation analysis and .bib cross-reference
 │   ├── fetch_bibtex.sh                   #   Auto-download BibTeX from DOIs
+│   ├── validate_latex.py                #   Python LaTeX syntax validator
 │   ├── graphviz_to_pdf.sh               #   .dot -> PDF/PNG via Graphviz
 │   └── plantuml_to_pdf.sh               #   .puml -> PDF/PNG via PlantUML
-├── references/                           #   15 reference guides
+├── references/                           #   22 reference guides
 │   ├── resume-ats-guide.md
 │   ├── poster-design-guide.md
 │   ├── bibliography-guide.md
@@ -711,6 +715,13 @@ latex-document/
 │   ├── packages.md
 │   ├── visual-packages.md               #   24 TikZ/visualization packages with examples
 │   ├── graphviz-plantuml.md              #   Graphviz & PlantUML diagram workflows
+│   ├── cheatsheet-guide.md              #   Cheat sheet design and layout
+│   ├── debugging-guide.md              #   20 common errors, .log reading, debugging
+│   ├── accessibility-guide.md          #   PDF/A, PDF/UA, tagged PDFs, WCAG
+│   ├── beamer-guide.md                 #   Beamer presentations, themes, overlays
+│   ├── font-guide.md                   #   Font selection, iftex, fontspec, icons
+│   ├── collaboration-guide.md          #   Git, GitHub Actions, Docker, CI/CD
+│   ├── pdf-extraction-prompts.md       #   LLM prompts for PDF-to-cheatsheet
 │   └── profiles/                         #   4 conversion profiles
 │       ├── math-notes.md
 │       ├── business-document.md

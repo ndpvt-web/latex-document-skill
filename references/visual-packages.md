@@ -98,6 +98,43 @@ C \arrow{r}{g} & D
 
 ---
 
+### nicematrix (Enhanced Matrices & Tables)
+
+**Use for:** Colored matrices, bordered matrices, matrices with named cells, block matrices, augmented matrices, linear algebra, quantum computing state vectors, system of equations in matrix form
+
+**Package:** `\usepackage{nicematrix}`
+
+**Minimal Example:**
+```latex
+\documentclass{article}
+\usepackage{nicematrix}
+\usepackage{xcolor}
+\begin{document}
+
+% Colored augmented matrix
+$\begin{pNiceArray}{ccc|c}[first-row,last-col]
+x & y & z & \\
+1 & 2 & 3 & 6 & L_1 \\
+0 & 1 & -1 & -2 & L_2 \\
+0 & 0 & 1 & 3 & L_3
+\CodeAfter
+\rowcolor{blue!10}{2}
+\end{pNiceArray}$
+
+% Matrix with colored blocks
+$\begin{bNiceMatrix}[margin]
+\Block[fill=red!15]{2-2}{A} & & 0 \\
+& & 0 \\
+0 & 0 & \Block[fill=blue!15]{1-1}{d}
+\end{bNiceMatrix}$
+
+\end{document}
+```
+
+**Notes:** Modern replacement for `array` and `amsmath` matrix environments. Key features: `\Block` for merged cells with fill colors, `\CodeAfter` for post-rendering decorations (lines, colors), automatic named cell nodes for TikZ overlay, dotted lines (`\Cdots`, `\Vdots`, `\Ddots`). Works with pdflatex, xelatex, and lualatex. Particularly useful for linear algebra textbooks and lecture notes.
+
+---
+
 ## Physics & Engineering
 
 ### tikz-feynman (Feynman Diagrams)
@@ -721,6 +758,7 @@ def factorial(n):
 | tikz-cd | Commutative diagrams (category theory) | None | `\usepackage{tikz-cd}` |
 | forest | Tree structures (syntax trees, parse trees) | None | `\usepackage{forest}` |
 | tikz-3dplot | 3D coordinate systems and vectors | Requires `\usepackage{tikz}` | `\usepackage{tikz-3dplot}` |
+| nicematrix | Enhanced matrices with colors and blocks | None | `\usepackage{nicematrix}` |
 | circuitikz | Electronic circuit diagrams | None | `\usepackage{circuitikz}` |
 | pgf-pie | Pie charts | None | `\usepackage{pgf-pie}` |
 | tikz-feynman | Feynman diagrams (particle physics) | **Requires LuaLaTeX** | `\usepackage[compat=1.1.0]{tikz-feynman}` |

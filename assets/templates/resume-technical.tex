@@ -8,6 +8,7 @@
 \usepackage{enumitem}
 \usepackage{parskip}
 \usepackage{hyperref}
+\usepackage{fontawesome5}
 
 % Define colors
 \definecolor{accentcolor}{RGB}{0,100,100}
@@ -46,7 +47,7 @@
 
 \newcommand{\contact}[5]{
   \begin{center}
-    #1 $|$ #2 $|$ \href{mailto:#3}{#3} $|$ \href{#4}{LinkedIn} $|$ \href{#5}{GitHub}
+    \faMapMarker*\ #1 $|$ \faPhone*\ #2 $|$ \faEnvelope\ \href{mailto:#3}{#3} $|$ \faLinkedin\ \href{#4}{LinkedIn} $|$ \faGithub\ \href{#5}{GitHub}
   \end{center}
   \vspace{-5pt}
 }

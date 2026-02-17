@@ -41,7 +41,15 @@ description: >
   (33) analyze document statistics (figures, tables, citations),
   (34) fetch BibTeX from a DOI,
   (35) convert a Graphviz .dot file to PDF/PNG,
-  (36) convert a PlantUML .puml file to PDF/PNG.
+  (36) convert a PlantUML .puml file to PDF/PNG,
+  (37) create a one-pager/fact sheet/executive summary,
+  (38) create a datasheet or product specification sheet,
+  (39) extract pages from a PDF (page ranges, odd/even),
+  (40) check LaTeX package availability before compiling,
+  (41) analyze citations and cross-reference with .bib files,
+  (42) debug LaTeX compilation errors,
+  (43) make a document accessible (PDF/A, tagged PDF),
+  (44) create lecture notes or course handouts.
 ---
 
 # LaTeX Document Skill
@@ -241,10 +249,11 @@ Always use these character budgets (LaTeX source, not rendered text):
 6. If >2 pages: cut lowest-priority content, recompile
 
 **Content distribution rules:**
-- End `\begin{multicols}` before `\newpage`, start new `\begin{multicols}` after
-- Use `\columnbreak` to force balanced column distribution
-- For 4-column layouts, add `\sloppy` after `\begin{multicols}{4}` to reduce underfull warnings
-- Target ~equal content per column (visually inspect previews)
+- **Use ONE single `\begin{multicols*}{N}` ... `\end{multicols*}` for the ENTIRE document** (no `\newpage`, no separate multicols blocks per page). Content flows naturally: p1c1 → p1c2 → p1c3 → p2c1 → p2c2 → p2c3. This prevents empty columns on any page.
+- **NEVER use** `\end{multicols*}` then `\newpage` then `\begin{multicols*}` -- this creates two independent blocks that can leave columns empty if content isn't perfectly pre-balanced.
+- Title bar goes BEFORE the single `multicols*` block (only appears on page 1, which is fine)
+- For 4-column layouts, add `\sloppy` after `\begin{multicols*}{4}` to reduce underfull warnings
+- Write ALL content sequentially -- LaTeX handles page breaks automatically within `multicols*`
 
 **Compression ratio guidelines:**
 - 5-20 page source → 2 pages: include most key content (2.5-10:1)
@@ -253,6 +262,49 @@ Always use these character budgets (LaTeX source, not rendered text):
   - Only core definitions, critical formulas, essential algorithms
   - Use telegram-style text, symbol abbreviations, horizontal stacking
   - Test with `pdfinfo` after every 3-4 sections added
+
+### Template Architecture (from Research of 100+ World-Class Cheatsheets)
+
+**CRITICAL: Do NOT wrap every section in tcolorbox.**
+
+The #1 mistake that wastes 40-50% of page space is using tcolorbox for every section.
+Each tcolorbox adds ~10mm vertical overhead (title + padding + borders + spacing).
+With 20 sections, that's 200mm wasted -- nearly half a page.
+
+**Correct approach (used by RStudio, Stanford CS229, and top GitHub cheatsheets):**
+
+1. **Use plain `\section*{}` with `\titlerule`** for 90% of sections
+   - Overhead: only ~3mm per section (vs 10mm for tcolorbox)
+   - Use `titlesec` package: `\titleformat{\section}{\bfseries\scshape}{}{0pt}{}[\titlerule]`
+   - `\titlespacing{\section}{0pt}{1.5pt}{0.5pt}`
+
+2. **Use ONE single `multicols*` (STARRED) for the ENTIRE document**
+   - Starred version fills columns left-to-right sequentially without balancing
+   - Content flows: page1-col1 → page1-col2 → page1-col3 → page2-col1 → page2-col2 → page2-col3
+   - `multicols*` automatically handles page breaks -- no `\newpage` needed
+   - **NEVER** close multicols*, insert `\newpage`, and open a new multicols* -- this creates independent blocks that can leave columns empty
+   - Title bar goes BEFORE the `multicols*` block (only appears on page 1)
+
+3. **Inline formulas with `\quad` separation**, NOT one formula per box:
+   - GOOD: `$(x^n)'=nx^{n-1}$ \quad $(e^x)'=e^x$ \quad $(\ln x)'=\tfrac{1}{x}$`
+   - BAD: Separate tcolorbox for each formula
+
+4. **Use tabular for structured data**, NOT itemize lists:
+   - GOOD: `\begin{tabular}{@{}l@{\ }l@{}} $\int x^n$ & $\tfrac{x^{n+1}}{n+1}+C$ \\ \end{tabular}`
+   - BAD: `\begin{itemize} \item $\int x^n dx = ...$ \end{itemize}`
+
+5. **Reserve tcolorbox for 2-3 CRITICAL callouts only** (key theorems, important warnings)
+   - Use minimal box: `colback=gray!8, colframe=gray!40, boxrule=0.2pt, arc=0mm`
+   - Minimal padding: `top=0.2mm, bottom=0.2mm`
+
+6. **Ultra-aggressive spacing throughout:**
+   ```latex
+   \setlength{\parskip}{0pt plus 0.1pt}
+   \setlength{\topsep}{0pt}
+   \linespread{0.92}  % 0.92 is safe for math-heavy content; 0.85 causes overlap with fractions/superscripts
+   \setlist{nosep, itemsep=0pt}
+   \setlength{\abovedisplayskip}{0.5pt}
+   ```
 
 ## Workflow: Mail Merge (Batch Personalized Documents)
 
@@ -477,6 +529,48 @@ bash <skill_path>/scripts/latex_wordcount.sh document.tex
 ```bash
 # Get statistics: word count, figures, tables, equations, citations, sections
 bash <skill_path>/scripts/latex_analyze.sh document.tex
+```
+
+### Package Availability Check
+
+```bash
+# Pre-flight check: verify all \usepackage packages are installed
+bash <skill_path>/scripts/latex_package_check.sh document.tex
+
+# With auto-install of missing packages
+bash <skill_path>/scripts/latex_package_check.sh document.tex --install
+
+# Verbose output showing each package check
+bash <skill_path>/scripts/latex_package_check.sh document.tex --verbose
+```
+
+### Citation Analysis
+
+```bash
+# Extract all \cite{} keys from a .tex file
+bash <skill_path>/scripts/latex_citation_extract.sh document.tex
+
+# Cross-reference citations against a .bib file (auto-detects from \bibliography{})
+bash <skill_path>/scripts/latex_citation_extract.sh document.tex --check
+
+# Specify .bib file explicitly, output as JSON
+bash <skill_path>/scripts/latex_citation_extract.sh document.tex --bib refs.bib --format json
+```
+
+### PDF Page Extraction
+
+```bash
+# Extract pages 1-10 from a PDF
+bash <skill_path>/scripts/pdf_extract_pages.sh input.pdf --pages 1-10
+
+# Extract specific pages with custom output
+bash <skill_path>/scripts/pdf_extract_pages.sh input.pdf --pages 1,3,5-8 --output selected.pdf
+
+# Extract odd or even pages only
+bash <skill_path>/scripts/pdf_extract_pages.sh input.pdf --pages odd --output odd_pages.pdf
+
+# Extract the last 3 pages
+bash <skill_path>/scripts/pdf_extract_pages.sh input.pdf --pages last:3
 ```
 
 ## Bibliography Script
@@ -896,6 +990,11 @@ The `report.tex` template includes pgfplots, TikZ, and all required packages out
 | PDF-to-Cheatsheet Prompt Templates | [pdf-extraction-prompts.md](references/pdf-extraction-prompts.md) | Ready-to-use LLM prompts for each extraction stage: structure analysis, subject-specific extraction (math/CS/physics/chem/bio/stats/engineering), compression, LaTeX formatting, quality verification |
 | Visual Packages (TikZ/Diagrams) | [visual-packages.md](references/visual-packages.md) | 24 installed TikZ/visualization packages (tikz-cd, forest, circuitikz, chemfig, mhchem, pgf-pie, tikz-feynman, etc.) with minimal working examples |
 | Graphviz & PlantUML Workflows | [graphviz-plantuml.md](references/graphviz-plantuml.md) | External diagram tool workflows: .dot to PDF/PNG, .puml to PDF/PNG, integration with LaTeX documents, examples, best practices |
+| Debugging & Error Resolution | [debugging-guide.md](references/debugging-guide.md) | Reading LaTeX errors, 20 most common errors with fixes, .log file analysis, debugging strategies, silent failures |
+| Accessibility & PDF Compliance | [accessibility-guide.md](references/accessibility-guide.md) | PDF/A for thesis submission, PDF/UA for screen readers, tagged PDFs, alt text, font embedding, WCAG compliance |
+| Beamer Presentations | [beamer-guide.md](references/beamer-guide.md) | Themes, layouts, overlays/animations, code slides, handouts, presenter notes, bibliography in slides |
+| Font Selection & Typography | [font-guide.md](references/font-guide.md) | Font families, engine-agnostic setup (iftex), fontspec, mathematical fonts, fontawesome5 icons, microtype, CJK |
+| Collaboration & CI/CD | [collaboration-guide.md](references/collaboration-guide.md) | Git best practices for LaTeX, GitHub Actions, Docker, Makefile, multi-author workflows, Overleaf sync |
 
 ## Critical Notes and Common Mistakes
 
@@ -939,6 +1038,9 @@ These cause `Undefined control sequence` -- always include the required package:
 ### Cheat Sheet / Reference Card Pitfalls
 
 **Critical Layout Issues:**
+- **Never wrap every section in tcolorbox** — each box adds ~10mm overhead. Use plain \section* with \titlerule for 90% of sections. tcolorbox only for 2-3 critical callouts
+- **Use ONE single multicols* (starred) for the ENTIRE document** — unstarred version balances columns, creating empty space. Starred fills left-to-right sequentially AND spans page breaks automatically. Content flows: p1c1→p1c2→p1c3→p2c1→p2c2→p2c3. NEVER close multicols*, newpage, open new multicols* — this creates independent blocks that leave columns empty
+- **Inline formulas, not vertical lists** — `$f'=..$ \quad $g'=..$` saves 50-70% space vs separate lines or boxes for each formula
 - **No blank lines between consecutive tcolorbox environments inside `multicols`** — blank lines create `\par` tokens that render as visible `//` artifacts at small font sizes. Always place `\end{thmbox}` immediately followed by `\begin{formulabox}` with NO blank line between them.
 - **Never name a `\newtcolorbox` using existing LaTeX commands** — e.g., `\newtcolorbox{fbox}` conflicts with LaTeX's built-in `\fbox`. Use distinctive names like `formulabox`, `thmbox`, `defbox`.
 - **No trailing commas in tcolorbox option lists** — `after skip=0.5mm,` before `}` causes errors. The last option before `}` must NOT have a trailing comma.
@@ -1137,6 +1239,62 @@ Adjacent sections should NOT use the same format. If Section 3.1 uses a table, S
 | `{` or `}` in text | (grouping chars) | `\{` or `\}` |
 
 **The Rule:** After generating LaTeX content, scan for these characters in text mode (outside math `$...$` and commands). The most commonly missed are `<` and `>`.
+
+### Anti-Pattern 7: Hardcoded Dimensions
+
+**The Problem:** Using absolute units (`12cm`, `5in`, `300pt`) for widths, margins, and spacing creates documents that break when paper size, font size, or column layout changes. A figure set to `width=15cm` overflows the margin on letter paper with 1-inch margins.
+
+**The Rule:** Always use relative units that adapt to the current layout:
+
+| Instead of | Use | Why |
+|---|---|---|
+| `width=15cm` | `width=0.8\textwidth` | Adapts to margins and columns |
+| `\hspace{2cm}` | `\hspace{2em}` or `\quad` | Scales with font size |
+| `\vspace{1in}` | `\vspace{\baselineskip}` | Consistent with line spacing |
+| `\parindent=20pt` | `\parindent=1.5em` | Scales with font |
+| `\setlength{\tabcolsep}{12pt}` | `\setlength{\tabcolsep}{1em}` | Font-relative |
+
+**Exception:** Page margins in `geometry` package use absolute units by design (`margin=1in`).
+
+### Anti-Pattern 8: Missing \noindent After Display Math
+
+**The Problem:** LaTeX treats text after a display math environment (`\[ ... \]`, `equation`, `align`) as a new paragraph, adding indentation. This creates a visual discontinuity when the text after the equation is a continuation of the same paragraph.
+
+**Wrong:**
+```latex
+The quadratic formula is:
+\[ x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a} \]
+where $a$, $b$, and $c$ are coefficients.    % ← Indented! Looks like new paragraph
+```
+
+**Correct:**
+```latex
+The quadratic formula is:
+\[ x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a} \]
+\noindent where $a$, $b$, and $c$ are coefficients.    % ← Flush left, continuation
+```
+
+**The Rule:** If text after a display equation continues the same thought (starts with "where", "for", "with", "so", "thus"), add `\noindent` to prevent false paragraph indentation.
+
+### Anti-Pattern 9: Widow and Orphan Lines
+
+**The Problem:** A single line of a paragraph appears alone at the bottom of a page (orphan) or top of the next page (widow). This looks unprofessional and wastes space. LaTeX's default penalties are too low to prevent this reliably.
+
+**The Rule:** Add these penalties to the preamble for any document over 5 pages:
+
+```latex
+\widowpenalty=10000
+\clubpenalty=10000
+```
+
+This tells LaTeX to strongly avoid breaking paragraphs such that only one line ends up isolated. For additional control in critical documents:
+
+```latex
+\widowpenalty=10000
+\clubpenalty=10000
+\brokenpenalty=10000     % Avoid page breaks after hyphenated lines
+\predisplaypenalty=10000 % Avoid page breaks just before display math
+```
 
 ### Quick Reference: Report Preamble Best Practices
 

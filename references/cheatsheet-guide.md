@@ -1058,6 +1058,299 @@ This guide provides the foundational knowledge to build such a system.
 
 ---
 
+## 11. Maximum Density Techniques — Advanced Space Optimization
+
+This section catalogs every proven technique for maximizing information density while maintaining readability.
+
+### 11.1 Geometry & Margins (Measured Impact)
+
+| Setting | Usable Area (Letter) | vs 10mm margins |
+|---------|---------------------|-----------------|
+| `margin=3mm` | 573.7 cm² | +12.9% ⚠️ May clip on printers |
+| `margin=5mm` | 554.7 cm² | +9.1% (recommended minimum for print) |
+| `margin=8mm` | 526.6 cm² | +3.6% |
+| `margin=10mm` | 508.2 cm² | baseline |
+
+### 11.2 Font Size Content Capacity
+
+| Font Size | Lines/Page (approx) | Capacity vs 6pt | Best Use |
+|-----------|--------------------|-----------------|----|
+| 6pt | 45-50 | 100% (baseline) | Maximum density exam sheets |
+| 6.5pt | 42-47 | ~93% | Sweet spot compromise |
+| 7pt | 40-45 | ~87% | Standard cheat sheets |
+| 8pt | 35-40 | ~77% | Readable reference cards |
+| 10pt | 30-35 | ~67% | Standard documents |
+
+**Custom font sizes**: `\fontsize{6.5}{7.5}\selectfont` — first number is font size, second is baseline skip (use 1.15× font size).
+
+### 11.3 Spacing Commands — Cumulative Savings
+
+**Combined preamble for maximum density (saves 40-50% vs defaults):**
+```latex
+\documentclass[6pt]{extarticle}
+\usepackage[margin=5mm]{geometry}
+\usepackage{enumitem}
+\setlist{nosep, leftmargin=*, labelindent=0pt}
+\setlength{\parskip}{0pt}
+\setlength{\parindent}{0pt}
+\setlength{\abovedisplayskip}{0pt}
+\setlength{\belowdisplayskip}{0pt}
+\setlength{\abovedisplayshortskip}{0pt}
+\setlength{\belowdisplayshortskip}{0pt}
+\renewcommand{\arraystretch}{0.85}
+\linespread{0.90}
+```
+
+**Individual savings:**
+- `\abovedisplayskip=0pt` + `\belowdisplayskip=0pt`: saves ~7-8mm per display equation (default is 10-12pt each)
+- For 20 equations: saves **14-16cm** vertical space
+- `\renewcommand{\arraystretch}{0.85}`: 15% reduction in table row height. 30-row table saves ~12mm
+- `\linespread{0.90}`: saves ~5% vertical space. At 50 lines/page = ~10mm per page
+- `\setlist{nosep}`: A 10-item list saves ~10-17mm total (itemsep + topsep)
+
+### 11.4 Math Compaction Techniques
+
+| Technique | Space Saved | When to Use |
+|-----------|------------|-------------|
+| `\tfrac` vs `\frac` | ~30-40% height | Always in inline math, often in display |
+| `\textstyle` in align | ~20-25% per equation | When equations don't have nested fractions |
+| `\smallmatrix` vs `pmatrix` | ~40-45% height | For 2×2 and 3×3 matrices |
+| Inline `$...$` vs display `\[...\]` | ~80% for simple eqs | When equation fits on one line |
+| Horizontal stacking with `\hfill` | ~50% (two per line) | When both formulas are short |
+| `\bigl(\bigr)` vs `\left(\right)` | ~10% width | When auto-sizing adds too much space |
+
+**Horizontal stacking pattern:**
+```latex
+$E = mc^2$ \hfill $F = ma$ \hfill $p = mv$
+% Fits 3 equations on one line instead of 3 lines
+```
+
+**Compact matrix:**
+```latex
+$\left(\begin{smallmatrix} a & b \\ c & d \end{smallmatrix}\right)$
+% vs \begin{pmatrix} which is 40% taller
+```
+
+### 11.5 Box & Table Optimization
+
+**Minimum-overhead tcolorbox:**
+```latex
+\newtcolorbox{minbox}[1]{%
+    colback=white, colframe=gray,
+    boxrule=0.25pt, arc=0mm,        % Sharp corners save ~0.5mm/corner
+    top=0.2mm, bottom=0.2mm,
+    left=0.5mm, right=0.5mm,
+    toptitle=0.1mm, bottomtitle=0.1mm,
+    before skip=0.3mm, after skip=0.3mm,
+    fonttitle=\bfseries\fontsize{6pt}{7pt}\selectfont,
+    title=#1
+}
+```
+
+**Table density: `@{}` column suppression:**
+```latex
+\begin{tabular}{@{}ll@{}}  % removes ~2mm padding per side
+% For 5-column table: saves ~8mm width
+```
+
+**Alternative to tcolorbox (less overhead):**
+```latex
+\noindent\colorbox{gray!10}{\parbox{\dimexpr\linewidth-2\fboxsep}{%
+  \textbf{Title:} Content here
+}}
+% Saves ~1-2mm vs full tcolorbox with title bar
+```
+
+### 11.6 Content Formatting for Maximum Density
+
+**Best-to-worst density by format:**
+1. Inline equations with `\hfill` separation (highest density)
+2. Two-column tables inside boxes for definition pairs
+3. Compact `align*` with `\textstyle`
+4. Bulleted lists with `nosep`
+5. Separate display equations (lowest density)
+
+**Telegram-style writing (eliminate filler words):**
+- "The gradient is defined as..." → "Gradient:"
+- "It can be shown that..." → (just state the result)
+- "If and only if" → "iff" or "⟺"
+- "such that" → "s.t." or ":"
+- "for all" → "∀"
+- "there exists" → "∃"
+- "implies" → "⇒"
+
+**Abbreviation macros:**
+```latex
+\newcommand{\ie}{i.e.\@}
+\newcommand{\eg}{e.g.\@}
+\newcommand{\wrt}{w.r.t.\ }
+\newcommand{\st}{s.t.\ }
+```
+
+### 11.7 Emergency Space-Saving Measures
+
+When content overflows by a small margin:
+1. `\scalebox{0.95}{\begin{minipage}{\textwidth}...\end{minipage}}` — scale down 5%
+2. `\enlargethispage{1cm}` — steal 1cm from bottom margin
+3. `\vspace{-1mm}` between specific sections
+4. Convert display equations to inline
+5. Reduce `\arraystretch` from 0.85 to 0.80
+6. Remove box titles, use bold inline text: `\textbf{Thm:}` instead of titled tcolorbox
+7. Switch from 3 to 4 columns (use `\begin{multicols}{4}`)
+8. Use `\fontsize{5.5pt}{6.5pt}\selectfont` for less-critical content
+
+### 11.8 Critical Anti-Patterns (Avoid These)
+
+- **No blank lines between tcolorbox environments inside multicols** — causes `//` artifacts
+- **Don't use `\fbox` as a tcolorbox name** — conflicts with LaTeX built-in
+- **Don't use `\linespread{<0.85}`** — descenders touch ascenders (g/y touching h/t on next line)
+- **Don't use `margin=<3mm` for printed documents** — printers clip content
+- **Don't put `parbox=false` in tcolorbox** — causes compilation errors in some versions
+- **Don't forget `\selectfont` after `\fontsize`** — font size change won't apply
+
+---
+
+## 12. PDF-to-Cheatsheet Pipeline — Complete Guide
+
+### 12.1 Tool Selection for PDF Extraction
+
+| Tool | Best For | Math Accuracy | Speed (200pg) | Cost |
+|------|----------|---------------|---------------|------|
+| **Marker** (surya) | Mixed academic content | High (with LLM mode) | ~15s (GPU) | Free (+ optional LLM cost) |
+| **Docling** (IBM) | Production pipelines | Good | Fast | Free (MIT) |
+| **PyMuPDF/fitz** | Machine-generated PDFs | Text only | Very fast (<5s) | Free |
+| **pdfplumber** | Table-heavy documents | Text only | Fast | Free |
+| **Nougat** (Meta) | Math-heavy papers | Excellent | Moderate | Free |
+| **LLM Vision** | Scanned/handwritten | Excellent | Slow ($) | API cost |
+| **pdf2image + Tesseract** | Fallback OCR | Poor on math | Slow | Free |
+
+**Recommended approach:**
+1. Try PyMuPDF first (fastest) — if text quality is good (>50 chars/page avg), use it
+2. If text extraction is poor → use Marker with LLM mode for best quality
+3. For scanned/handwritten → use LLM Vision (send pages as images)
+
+### 12.2 Handling 100-200+ Page Documents
+
+**The Problem:** A 200-page textbook has ~100,000 words. A 2-page cheat sheet fits ~1,000 words. That's a **100:1 compression ratio**.
+
+**Hierarchical Summarization (Map-Reduce Pattern):**
+
+```
+Level 1: Full document → Structure map (TOC, section importance)
+Level 2: Each chapter → Key formulas, theorems, definitions
+Level 3: All extractions → Merged, deduplicated, ranked
+Level 4: Ranked content → Compressed to fit page budget
+```
+
+**Context Window Strategy:**
+- Claude 200K context ≈ 150-200 pages of extracted text
+- For documents ≤150 pages: can often fit entire extracted text in one pass
+- For 150-300 pages: two-pass (first half → extract, second half → extract, then merge)
+- For 300+ pages: hierarchical chunking by chapter
+
+**Chunking Rules:**
+- Chunk at section/subsection boundaries (never mid-paragraph)
+- Keep chunks to 3000-6000 tokens (leaves room for prompt + response)
+- Include chapter/section title as metadata with each chunk
+- For math-heavy content: ensure complete equations stay within one chunk
+
+### 12.3 Content Prioritization Algorithm
+
+**Importance scoring formula:**
+```
+score = base_type_weight × frequency_boost × structural_boost × cross_ref_boost
+
+Where:
+- base_type_weight: Formula=10, Theorem=8, Definition=6, Procedure=5, Table=4, Example=2
+- frequency_boost: 1.5× if term appears in 3+ sections, 2.0× if appears in 5+ sections
+- structural_boost: 2.0× if boxed/highlighted, 1.5× if named theorem, 1.3× if in summary
+- cross_ref_boost: 1.5× if referenced by other theorems, 2.0× if appears in past exams
+```
+
+**What to cut (lowest priority):**
+1. Historical context and motivation
+2. Lengthy proofs (keep only key insight/trick)
+3. Examples that demonstrate standard application
+4. Derivations (unless exam tests derivation ability)
+5. Content from "enrichment" or "optional" sections
+
+### 12.4 Subject-Specific Extraction Templates
+
+**Mathematics extraction prompt:**
+```
+Extract from this [calculus/linear algebra/analysis/etc.] content:
+
+1. ALL formulas and equations — preserve LaTeX notation exactly
+2. ALL theorems — name, formal statement, conditions for use
+3. ALL definitions — term + precise definition
+4. Key proof techniques (name + core idea only, not full proof)
+5. Common mistakes to avoid
+
+For each item, rate exam-likelihood: HIGH / MEDIUM / LOW
+Format: Use LaTeX math notation. Be exhaustive but terse.
+```
+
+**CS extraction prompt:**
+```
+Extract from this [algorithms/data structures/OS/networks/etc.] content:
+
+1. ALL algorithms — name, pseudocode (compact), time complexity, space complexity
+2. ALL data structure operations — operation, complexity, when to use
+3. Key theorems — especially NP-completeness, undecidability results
+4. Design patterns and technique names
+5. Comparison tables (X vs Y)
+
+Format as structured reference. Use Big-O notation. Be concise.
+```
+
+**Physics extraction prompt:**
+```
+Extract from this [mechanics/E&M/quantum/thermo/etc.] content:
+
+1. ALL equations — with SI units for every variable
+2. ALL laws and principles — name, equation form, applicability conditions
+3. Physical constants with precise values and units
+4. Approximation conditions: "valid for small angles", "non-relativistic", etc.
+5. Key sign conventions and coordinate system choices
+
+Note which form of each equation to use in which scenario.
+```
+
+### 12.5 Content Compression Techniques
+
+**Mathematical compression:**
+```
+Before: "The derivative of f(x) with respect to x is defined as the limit of the difference quotient"
+After:  "$f'(x) = \lim_{h\to 0} \frac{f(x+h)-f(x)}{h}$"
+Savings: ~90% (the formula IS the definition)
+```
+
+**Definition compression:**
+```
+Before: "A function f is said to be continuous at a point c if the limit of f(x) as x approaches c exists and is equal to f(c)"
+After:  "Continuous at $c$: $\lim_{x\to c} f(x) = f(c)$"
+Savings: ~70%
+```
+
+**Procedure compression:**
+```
+Before: "To find eigenvalues: First, form the matrix A minus lambda times the identity matrix. Then compute the determinant of this matrix. Set the determinant equal to zero. Solve the resulting polynomial equation for lambda."
+After:  "Eigenvalues: Solve $\det(\mathbf{A}-\lambda\mathbf{I})=0$"
+Savings: ~85%
+```
+
+### 12.6 Quality Checks
+
+Before finalizing the cheat sheet:
+1. **Formula verification**: Do the LaTeX math expressions compile without errors?
+2. **Completeness**: Are all major topics from the source represented?
+3. **5-second lookup test**: Can any formula be found within 5 seconds of scanning?
+4. **Print test**: Does it render clearly at 300dpi? (Check with PNG preview)
+5. **Page budget**: Does content fit within the specified page count?
+6. **No duplicates**: Has cross-chapter deduplication been performed?
+
+---
+
 **Document Version:** 1.0
 **Last Updated:** 2026-02-16
 **Based On:** Research from typography experts, design analysts, layout engineers, package researchers, UX researchers, competitive analysis

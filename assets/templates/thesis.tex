@@ -10,6 +10,26 @@
 \usepackage[scaled=0.95]{inconsolata} % Monospace font for code
 
 %=============================================================================
+% PDF/A COMPLIANCE (uncomment for thesis submission)
+%=============================================================================
+% Many universities require PDF/A format for thesis submission.
+% Uncomment the following lines to enable PDF/A-2b compliance.
+% Note: Requires a .xmpdata file in the same directory (see below).
+%
+% \usepackage[a-2b,mathxmp]{pdfx}
+%
+% Create a file called "thesis.xmpdata" with this content:
+% \Title{Your Thesis Title}
+% \Author{Your Name}
+% \Subject{PhD Thesis, University of X, Department of Y}
+% \Keywords{keyword1\sep keyword2\sep keyword3}
+% \Publisher{University Name}
+%
+% After compilation, verify with: pdfinfo thesis.pdf | grep "PDF version"
+% PDF/A-2b requires PDF version 1.7 and all fonts embedded.
+% Check font embedding with: pdffonts thesis.pdf
+
+%=============================================================================
 % PAGE LAYOUT AND TYPOGRAPHY
 %=============================================================================
 \usepackage[a4paper, margin=1in, bindingoffset=0.5cm]{geometry}

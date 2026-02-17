@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # mermaid_to_image.sh
 # Converts Mermaid diagram files (.mmd) to PNG or PDF images for LaTeX inclusion

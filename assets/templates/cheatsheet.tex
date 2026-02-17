@@ -1,199 +1,124 @@
 % ============================================================================
-% GENERAL PURPOSE CHEAT SHEET / REFERENCE CARD TEMPLATE
+% WORLD-CLASS CHEAT SHEET TEMPLATE - MAXIMUM DENSITY
 % ============================================================================
-% Landscape, 3-column layout optimized for maximum information density
+% Ultra-efficient landscape 3-column layout with 90% content space usage
+% Eliminates tcolorbox overhead, uses plain sections with rules
 % Paper: Letter/A4 landscape | Columns: 3 | Base font: 7pt
-% Features: colored boxed sections, multiple content types, front+back
-% Compile: pdflatex (auto-detected by compile script)
 % ============================================================================
 
 \documentclass[7pt,landscape]{extarticle}
 
-% --- GEOMETRY: Ultra-tight margins for maximum content area ----------------
-\usepackage[
-    landscape,
-    margin=5mm,
-    top=5mm,
-    bottom=4mm,
-    left=5mm,
-    right=5mm
-]{geometry}
+% --- GEOMETRY: Ultra-tight margins ---
+\usepackage[landscape,margin=3mm,top=4mm,bottom=3mm]{geometry}
 
-% --- ENCODING & FONTS -----------------------------------------------------
+% --- ENCODING & FONTS ---
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{lmodern}            % Clean font, good at small sizes
-\usepackage{microtype}          % Microtypographic improvements: protrusion + expansion
+\usepackage{lmodern}
+\usepackage{microtype}
 
-% --- LAYOUT ----------------------------------------------------------------
-\usepackage{multicol}           % Multi-column layout
-\usepackage{enumitem}           % Compact list control
-\usepackage{titlesec}           % Section heading spacing
+% --- LAYOUT ---
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage{titlesec}
 
-% --- VISUAL ELEMENTS -------------------------------------------------------
-\usepackage[table]{xcolor}      % Color support with table option
-\usepackage{tcolorbox}          % Colored boxes for sections
-\tcbuselibrary{breakable,skins} % Breakable boxes + skins
-\usepackage{tabularx}           % Flexible-width tables
-\usepackage{booktabs}           % Professional table rules
-\usepackage{array}              % Enhanced column types
+% --- VISUAL ---
+\usepackage[table]{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins}
+\usepackage{booktabs}
+\usepackage{array}
 
-% --- MATH & CODE -----------------------------------------------------------
-\usepackage{amsmath,amssymb,mathtools}  % Math support
-\usepackage{listings}           % Code listings
-
-% --- GRAPHICS (optional) ---------------------------------------------------
-\usepackage{graphicx}           % Image support
-\usepackage{tikz}               % Diagrams (load only if needed)
+% --- MATH & CODE ---
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{listings}
 
 % ============================================================================
-% COLOR SCHEME — Change these 6 values to restyle the entire sheet
+% MINIMAL COLOR SCHEME - One accent + gray only
 % ============================================================================
-% --- Preset: Professional Blue ---
-\definecolor{csPrimary}{RGB}{41,128,185}        % Section headers
-\definecolor{csSecondary}{RGB}{44,62,80}         % Title bar, dark accents
-\definecolor{csAccent1}{RGB}{230,126,34}         % Warnings, important callouts
-\definecolor{csAccent2}{RGB}{46,204,113}         % Tips, success notes
-\definecolor{csAccent3}{RGB}{155,89,182}         % Special/highlight
-\definecolor{csLightBg}{RGB}{236,240,241}        % Light box backgrounds
-
-% --- Alternative Preset: Warm Earth (uncomment to use) ---
-% \definecolor{csPrimary}{RGB}{120,66,18}
-% \definecolor{csSecondary}{RGB}{51,51,51}
-% \definecolor{csAccent1}{RGB}{192,57,43}
-% \definecolor{csAccent2}{RGB}{39,174,96}
-% \definecolor{csAccent3}{RGB}{142,68,173}
-% \definecolor{csLightBg}{RGB}{245,235,220}
-
-% --- Alternative Preset: Dark Mode (uncomment to use) ---
-% \definecolor{csPrimary}{RGB}{86,156,214}
-% \definecolor{csSecondary}{RGB}{30,30,30}
-% \definecolor{csAccent1}{RGB}{244,135,113}
-% \definecolor{csAccent2}{RGB}{78,201,176}
-% \definecolor{csAccent3}{RGB}{197,134,192}
-% \definecolor{csLightBg}{RGB}{45,45,45}
+\definecolor{csPrimary}{RGB}{25,84,123}      % Section headers only
+\definecolor{csGray}{RGB}{100,100,100}       % Subsection text
+\definecolor{csBg}{RGB}{245,245,245}         % Minimal background
 
 % ============================================================================
-% GLOBAL SPACING — Every millimeter counts
+% GLOBAL SPACING - Every millimeter counts
 % ============================================================================
-\pagestyle{empty}                           % No headers/footers/page numbers
-\setlength{\parindent}{0pt}                % No paragraph indent
-\setlength{\parskip}{0pt}                  % No paragraph spacing
-\setlength{\columnsep}{3mm}                % Column gap
-\setlength{\columnseprule}{0.15pt}         % Hairline column separator
-\def\columnseprulecolor{\color{csLightBg}} % Subtle separator color
-\setlength{\premulticols}{0pt}             % No space before multicols
-\setlength{\postmulticols}{0pt}            % No space after multicols
-\setlength{\multicolsep}{0pt}             % No space around multicols
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\setlength{\columnsep}{3mm}
+\setlength{\columnseprule}{0.15pt}
+\def\columnseprulecolor{\color{csBg}}
+\setlength{\premulticols}{0pt}
+\setlength{\postmulticols}{0pt}
+\setlength{\multicolsep}{0pt}
 
 % --- Ultra-compact lists ---
-\setlist{nosep, leftmargin=*, topsep=0pt, partopsep=0pt, parsep=0pt, itemsep=0.3pt}
-\setlist[itemize]{leftmargin=3mm, label={\textcolor{csPrimary}{\scriptsize\textbullet}}}
-\setlist[enumerate]{leftmargin=3.5mm}
-\setlist[description]{leftmargin=0mm, labelwidth=0mm, itemindent=0mm, font=\bfseries\color{csPrimary}\scriptsize}
+\setlist{nosep, leftmargin=*, topsep=0pt, partopsep=0pt, parsep=0pt, itemsep=0pt}
+\setlist[itemize]{leftmargin=2.5mm, label={\textcolor{csPrimary}{\tiny\textbullet}}}
+\setlist[enumerate]{leftmargin=3mm}
 
-% --- Compact math spacing ---
+% --- Compact math ---
 \AtBeginDocument{%
-    \setlength{\abovedisplayskip}{1.5pt}
-    \setlength{\belowdisplayskip}{1.5pt}
+    \setlength{\abovedisplayskip}{1pt}
+    \setlength{\belowdisplayskip}{1pt}
     \setlength{\abovedisplayshortskip}{0pt}
     \setlength{\belowdisplayshortskip}{0pt}
-    \setlength{\jot}{1.5pt}    % Space between align rows
+    \setlength{\jot}{1pt}
 }
 
-% --- Compact line spacing ---
-\linespread{0.92}
+% --- Tight line spacing ---
+\linespread{0.88}
 
 % ============================================================================
-% CUSTOM ENVIRONMENTS — Boxed sections with minimal overhead
+% SECTION FORMATTING - Thin colored bar, NOT tcolorbox
+% ============================================================================
+\titleformat{\section}
+    {\bfseries\fontsize{7.5pt}{8.5pt}\selectfont\color{csPrimary}}
+    {}{0pt}{}
+    [\vspace{-2pt}{\color{csPrimary}\titlerule[0.4pt]}\vspace{0.5pt}]
+
+\titleformat{\subsection}
+    {\bfseries\fontsize{6.5pt}{7.5pt}\selectfont\color{csGray}}
+    {}{0pt}{}
+
+\titlespacing{\section}{0pt}{1.5pt plus 1pt}{0.5pt plus 0.5pt}
+\titlespacing{\subsection}{0pt}{1pt plus 0.5pt}{0pt}
+
+% ============================================================================
+% MINIMAL SPECIAL BOXES (only 2 types - left border only)
 % ============================================================================
 
-% --- Section header box (full-width colored banner) ---
-\newtcolorbox{sheetsection}[1]{%
-    colback=csPrimary,
-    colframe=csPrimary,
-    coltext=white,
-    fontupper=\bfseries\fontsize{7.5pt}{8.5pt}\selectfont\centering,
-    boxrule=0pt,
-    arc=0.8mm,
-    top=0.4mm, bottom=0.4mm,
-    left=1mm, right=1mm,
-    before skip=1mm, after skip=0.5mm,
-    halign=center,
-    phantom={\phantomsection},
-    after upper={\par\noindent #1\par\vspace{-2pt}}
+% Tip box - green left border
+\newtcolorbox{tipbox}{
+    enhanced, frame hidden,
+    borderline west={1.5pt}{0pt}{green!60!black},
+    colback=green!3,
+    top=0.3mm, bottom=0.3mm, left=1.5mm, right=0.5mm,
+    before skip=0.8mm, after skip=0.3mm
 }
 
-% --- Content box (light background, titled) ---
-\newtcolorbox{csbox}[2][]{%
-    colback=csLightBg,
-    colframe=csSecondary,
-    fonttitle=\bfseries\fontsize{6.5pt}{7.5pt}\selectfont,
-    title=#2,
-    boxrule=0.3pt,
-    arc=0.5mm,
-    top=0.4mm, bottom=0.4mm,
-    left=0.8mm, right=0.8mm,
-    toptitle=0.2mm, bottomtitle=0.2mm,
-    before skip=0.5mm, after skip=0.5mm,
-    #1
-}
-
-% --- Tip box (green accent) ---
-\newtcolorbox{cstip}[1][]{%
-    colback=csAccent2!8,
-    colframe=csAccent2!80!black,
-    boxrule=0.3pt,
-    arc=0.5mm,
-    top=0.4mm, bottom=0.4mm,
-    left=0.8mm, right=0.8mm,
-    before skip=0.5mm, after skip=0.5mm,
-    #1
-}
-
-% --- Warning box (orange accent) ---
-\newtcolorbox{cswarn}[1][]{%
-    colback=csAccent1!8,
-    colframe=csAccent1!80!black,
-    boxrule=0.3pt,
-    arc=0.5mm,
-    top=0.4mm, bottom=0.4mm,
-    left=0.8mm, right=0.8mm,
-    before skip=0.5mm, after skip=0.5mm,
-    #1
-}
-
-% --- Important/highlight box (purple accent) ---
-\newtcolorbox{cshighlight}[1][]{%
-    colback=csAccent3!8,
-    colframe=csAccent3!80!black,
-    boxrule=0.3pt,
-    arc=0.5mm,
-    top=0.4mm, bottom=0.4mm,
-    left=0.8mm, right=0.8mm,
-    before skip=0.5mm, after skip=0.5mm,
-    #1
+% Warning box - red left border
+\newtcolorbox{warnbox}{
+    enhanced, frame hidden,
+    borderline west={1.5pt}{0pt}{red!60!black},
+    colback=red!3,
+    top=0.3mm, bottom=0.3mm, left=1.5mm, right=0.5mm,
+    before skip=0.8mm, after skip=0.3mm
 }
 
 % ============================================================================
-% CUSTOM COMMANDS — Compact formatting helpers
+% COMPACT HELPERS
 % ============================================================================
-
-% Inline code
 \newcommand{\code}[1]{\texttt{\fontsize{6pt}{7pt}\selectfont#1}}
-% Key-value definition pair
-\newcommand{\kv}[2]{\textcolor{csPrimary}{\textbf{#1:}} #2}
-% Command syntax (purple monospace)
-\newcommand{\cmd}[1]{\textcolor{csAccent3}{\texttt{\textbf{#1}}}}
-% Compact section divider (just a colored rule)
-\newcommand{\csrule}{\vspace{0.3mm}\noindent\textcolor{csLightBg}{\rule{\linewidth}{0.3pt}}\vspace{0.3mm}}
+\newcommand{\cmd}[1]{\textcolor{csPrimary}{\texttt{\textbf{\fontsize{6pt}{7pt}\selectfont#1}}}}
 
 % ============================================================================
 % CODE LISTING STYLE
 % ============================================================================
 \lstdefinestyle{cheatcode}{%
     basicstyle=\ttfamily\fontsize{5.5pt}{6.5pt}\selectfont,
-    backgroundcolor=\color{csLightBg},
+    backgroundcolor=\color{csBg},
     frame=none,
     numbers=none,
     breaklines=true,
@@ -206,8 +131,8 @@
     aboveskip=0.5mm,
     belowskip=0.5mm,
     keywordstyle=\color{csPrimary}\bfseries,
-    commentstyle=\color{csAccent2!70!black}\itshape,
-    stringstyle=\color{csAccent1}
+    commentstyle=\color{csGray}\itshape,
+    stringstyle=\color{csGray}
 }
 \lstset{style=cheatcode}
 
@@ -216,287 +141,504 @@
 % ============================================================================
 \begin{document}
 
-% --- TITLE BAR (spans all columns) ---
-\noindent\colorbox{csSecondary}{%
+% --- TITLE BAR (minimal) ---
+\noindent\colorbox{csPrimary}{%
     \parbox{\dimexpr\textwidth-2\fboxsep\relax}{%
         \centering\color{white}%
-        \fontsize{10pt}{12pt}\selectfont\textbf{COMPREHENSIVE REFERENCE CARD}%
+        \fontsize{9pt}{11pt}\selectfont\textbf{COMPREHENSIVE REFERENCE CARD}%
         \hfill%
-        \fontsize{6.5pt}{7.5pt}\selectfont Subject / Topic Name \textbar{} v1.0 \textbar{} 2026%
+        \fontsize{6pt}{7pt}\selectfont v1.0 \textbar{} 2026%
     }%
 }
 
-\vspace{0.8mm}
+\vspace{0.5mm}
 
 % ============================================================================
-% PAGE 1 — FRONT SIDE
+% SINGLE multicols* for ENTIRE document - content flows sequentially:
+% p1c1 -> p1c2 -> p1c3 -> p2c1 -> p2c2 -> p2c3
 % ============================================================================
-\begin{multicols}{3}
+\begin{multicols*}{3}
 
-% --- SECTION 1: Formulas / Math ---
-\begin{sheetsection}{Mathematical Formulas}\end{sheetsection}
+% --- Mathematical Formulas ---
+\section*{Mathematical Formulas}
 
-\begin{csbox}{Core Identities}
-\vspace{-1mm}
-\begin{align*}
-e^{i\pi} + 1 &= 0 &
-\sin^2\theta + \cos^2\theta &= 1 \\
-\frac{d}{dx}(x^n) &= nx^{n-1} &
-\int x^n\,dx &= \frac{x^{n+1}}{n+1}+C
-\end{align*}
-\vspace{-2mm}
-\end{csbox}
+\subsection*{Core Identities}
+$e^{i\pi} + 1 = 0$ \hfill $\sin^2\theta + \cos^2\theta = 1$ \\
+$\frac{d}{dx}(x^n) = nx^{n-1}$ \hfill $\int x^n\,dx = \frac{x^{n+1}}{n+1}+C$ \\
+$(a+b)^2 = a^2 + 2ab + b^2$ \hfill $a^2 - b^2 = (a+b)(a-b)$
 
-\begin{csbox}{Probability}
-\vspace{-1mm}
-\begin{align*}
-P(A|B) &= \frac{P(B|A)\,P(A)}{P(B)} \\
-\mathbb{E}[X] &= \sum_i x_i\,p(x_i) \\
-\text{Var}(X) &= \mathbb{E}[X^2] - (\mathbb{E}[X])^2
-\end{align*}
-\vspace{-2mm}
-\end{csbox}
+\subsection*{Trigonometry}
+$\sin(a \pm b) = \sin a \cos b \pm \cos a \sin b$ \\
+$\cos(a \pm b) = \cos a \cos b \mp \sin a \sin b$ \\
+$\tan(a \pm b) = \frac{\tan a \pm \tan b}{1 \mp \tan a \tan b}$ \hfill $\tan\theta = \frac{\sin\theta}{\cos\theta}$
 
-\begin{cstip}
-\textbf{Tip:} $\text{Var}(aX+b) = a^2\text{Var}(X)$. The constant $b$ shifts but does not affect variance.
-\end{cstip}
+\subsection*{Probability \& Statistics}
+$P(A|B) = \frac{P(B|A)P(A)}{P(B)}$ \hfill Bayes' Theorem \\
+$\mathbb{E}[X] = \sum_i x_i p(x_i)$ \hfill $\text{Var}(X) = \mathbb{E}[X^2] - (\mathbb{E}[X])^2$ \\
+$\text{Cov}(X,Y) = \mathbb{E}[XY] - \mathbb{E}[X]\mathbb{E}[Y]$ \\
+$\rho_{X,Y} = \frac{\text{Cov}(X,Y)}{\sigma_X \sigma_Y}$ \hfill Correlation
 
-% --- SECTION 2: Command Reference ---
-\begin{sheetsection}{Command Reference}\end{sheetsection}
+\begin{tipbox}
+\textbf{Tip:} $\text{Var}(aX+b) = a^2\text{Var}(X)$ -- constant shift doesn't affect variance
+\end{tipbox}
 
-\begin{csbox}{Git Commands}
-{\fontsize{6pt}{7pt}\selectfont
-\renewcommand{\arraystretch}{0.95}
-\begin{tabularx}{\linewidth}{@{}lX@{}}
-\cmd{git init} & Initialize repository \\
-\cmd{git clone <url>} & Clone remote repo \\
-\cmd{git add .} & Stage all changes \\
-\cmd{git commit -m ""} & Commit with message \\
-\cmd{git push} & Push to remote \\
-\cmd{git pull} & Fetch and merge \\
-\cmd{git branch <n>} & Create branch \\
-\cmd{git checkout <b>} & Switch branch \\
-\cmd{git merge <b>} & Merge branches \\
-\cmd{git stash} & Stash changes \\
-\end{tabularx}
-}
-\end{csbox}
+\subsection*{Calculus}
+$\frac{d}{dx}\sin x = \cos x$ \hfill $\frac{d}{dx}\cos x = -\sin x$ \\
+$\frac{d}{dx}e^x = e^x$ \hfill $\frac{d}{dx}\ln x = \frac{1}{x}$ \\
+$\int e^x dx = e^x + C$ \hfill $\int \frac{1}{x} dx = \ln|x| + C$ \\
+Chain rule: $\frac{d}{dx}f(g(x)) = f'(g(x))g'(x)$ \\
+Product: $(uv)' = u'v + uv'$ \hfill Quotient: $(\tfrac{u}{v})' = \tfrac{u'v-uv'}{v^2}$
 
-\begin{cswarn}
-\textbf{Warning:} Never \cmd{push --force} to shared branches!
-\end{cswarn}
+\subsection*{Linear Algebra}
+$\mathbf{A}^{-1}\mathbf{A} = \mathbf{I}$ \hfill $(\mathbf{AB})^T = \mathbf{B}^T\mathbf{A}^T$ \\
+$\det(\mathbf{AB}) = \det(\mathbf{A})\det(\mathbf{B})$ \\
+Eigenvalue: $\mathbf{A}\mathbf{v} = \lambda\mathbf{v}$ \hfill $\det(\mathbf{A}-\lambda\mathbf{I}) = 0$ \\
+SVD: $\mathbf{A} = \mathbf{U}\mathbf{\Sigma}\mathbf{V}^T$ \hfill Rank $\leq \min(m,n)$
 
-% --- SECTION 3: Code Quick Reference ---
-\begin{sheetsection}{Python Quick Reference}\end{sheetsection}
+% --- Algorithms & Complexity ---
+\section*{Algorithms \& Complexity}
 
-\begin{csbox}{Data Structures}
-\begin{itemize}
-\item \textbf{List:} \code{[1, 2, 3]} -- mutable, ordered
-\item \textbf{Tuple:} \code{(1, 2, 3)} -- immutable, hashable
-\item \textbf{Dict:} \code{\{'k': 'v'\}} -- key-value pairs
-\item \textbf{Set:} \code{\{1, 2, 3\}} -- unique, unordered
-\end{itemize}
-\end{csbox}
+\subsection*{Big-O Notation}
+{\fontsize{5.5pt}{6.5pt}\selectfont
+\begin{tabular}{@{}l@{\,}l@{\,}l@{}}
+\toprule
+\textbf{Class} & \textbf{Example} & \textbf{Note} \\
+\midrule
+$O(1)$ & hash lookup & constant \\
+$O(\log n)$ & binary search & logarithmic \\
+$O(n)$ & linear scan & linear \\
+$O(n \log n)$ & merge sort & linearithmic \\
+$O(n^2)$ & bubble sort & quadratic \\
+$O(2^n)$ & subset generation & exponential \\
+$O(n!)$ & permutations & factorial \\
+\bottomrule
+\end{tabular}}
 
-\begin{csbox}{List Comprehensions}
+\subsection*{Sorting Algorithms}
+{\fontsize{5.5pt}{6.5pt}\selectfont
+\begin{tabular}{@{}l@{\,}l@{\,}l@{\,}l@{\,}l@{}}
+\toprule
+\textbf{Algorithm} & \textbf{Best} & \textbf{Avg} & \textbf{Worst} & \textbf{Space} \\
+\midrule
+Bubble & $O(n)$ & $O(n^2)$ & $O(n^2)$ & $O(1)$ \\
+Insertion & $O(n)$ & $O(n^2)$ & $O(n^2)$ & $O(1)$ \\
+Selection & $O(n^2)$ & $O(n^2)$ & $O(n^2)$ & $O(1)$ \\
+Quick & $O(n\log n)$ & $O(n\log n)$ & $O(n^2)$ & $O(\log n)$ \\
+Merge & $O(n\log n)$ & $O(n\log n)$ & $O(n\log n)$ & $O(n)$ \\
+Heap & $O(n\log n)$ & $O(n\log n)$ & $O(n\log n)$ & $O(1)$ \\
+\bottomrule
+\end{tabular}}
+
+\subsection*{Data Structure Operations}
+{\fontsize{5.5pt}{6.5pt}\selectfont
+\begin{tabular}{@{}l@{\,}l@{\,}l@{\,}l@{\,}l@{}}
+\toprule
+\textbf{Structure} & \textbf{Access} & \textbf{Search} & \textbf{Insert} & \textbf{Delete} \\
+\midrule
+Array & $O(1)$ & $O(n)$ & $O(n)$ & $O(n)$ \\
+Stack & $O(n)$ & $O(n)$ & $O(1)$ & $O(1)$ \\
+Queue & $O(n)$ & $O(n)$ & $O(1)$ & $O(1)$ \\
+Linked List & $O(n)$ & $O(n)$ & $O(1)$ & $O(1)$ \\
+Hash Table & -- & $O(1)$ avg & $O(1)$ avg & $O(1)$ avg \\
+BST & $O(\log n)$ & $O(\log n)$ & $O(\log n)$ & $O(\log n)$ \\
+Heap & $O(1)$ top & $O(n)$ & $O(\log n)$ & $O(\log n)$ \\
+\bottomrule
+\end{tabular}}
+
+\subsection*{Graph Algorithms}
+\textbf{DFS:} $O(V+E)$ time, uses stack (explicit/implicit) \\
+\textbf{BFS:} $O(V+E)$ time, uses queue, shortest path unweighted \\
+\textbf{Dijkstra:} $O((V+E)\log V)$ with heap, non-negative weights \\
+\textbf{Bellman-Ford:} $O(VE)$ time, handles negative weights \\
+\textbf{Floyd-Warshall:} $O(V^3)$ time, all-pairs shortest paths \\
+\textbf{Kruskal:} $O(E \log E)$ time, MST via edge sorting \\
+\textbf{Prim:} $O(E \log V)$ time, MST via vertex expansion
+
+% --- Python Quick Reference ---
+\section*{Python Quick Reference}
+
+\subsection*{Data Structures}
+\textbf{List:} \code{[1, 2, 3]} mutable, ordered, $O(1)$ append \\
+\textbf{Tuple:} \code{(1, 2, 3)} immutable, hashable \\
+\textbf{Dict:} \code{\{'k': 'v'\}} hash table, $O(1)$ avg lookup \\
+\textbf{Set:} \code{\{1, 2, 3\}} unique items, $O(1)$ membership \\
+\textbf{Deque:} \code{collections.deque()} $O(1)$ both ends
+
+\subsection*{List Comprehensions \& Generators}
 \begin{lstlisting}[language=Python]
 [x**2 for x in range(10)]
 [x for x in lst if x > 0]
 {k: v**2 for k, v in d.items()}
+(x**2 for x in range(1000000))  # generator
 \end{lstlisting}
-\end{csbox}
 
-% --- SECTION 4: Algorithms ---
-\begin{sheetsection}{Algorithms \& Complexity}\end{sheetsection}
+\subsection*{Common Patterns}
+\begin{lstlisting}[language=Python]
+# Enumerate with index
+for i, val in enumerate(lst):
+    print(i, val)
 
-\begin{csbox}{Big-O Reference}
-{\fontsize{6pt}{7pt}\selectfont
-\renewcommand{\arraystretch}{0.95}
-\begin{tabular}{@{}ll@{}}
-$O(1)$ & Constant \\
-$O(\log n)$ & Logarithmic \\
-$O(n)$ & Linear \\
-$O(n \log n)$ & Linearithmic \\
-$O(n^2)$ & Quadratic \\
-$O(2^n)$ & Exponential \\
-\end{tabular}
-}
-\end{csbox}
+# Zip multiple iterables
+for x, y in zip(list1, list2):
+    print(x, y)
 
-\begin{csbox}{Sorting Algorithms}
-{\fontsize{5.5pt}{6.5pt}\selectfont
-\renewcommand{\arraystretch}{0.95}
-\begin{tabular}{@{}llll@{}}
-\textbf{Algo} & \textbf{Best} & \textbf{Avg} & \textbf{Worst} \\
-\midrule
-Bubble & $O(n)$ & $O(n^2)$ & $O(n^2)$ \\
-Quick & $O(n\!\log\!n)$ & $O(n\!\log\!n)$ & $O(n^2)$ \\
-Merge & $O(n\!\log\!n)$ & $O(n\!\log\!n)$ & $O(n\!\log\!n)$ \\
-Heap & $O(n\!\log\!n)$ & $O(n\!\log\!n)$ & $O(n\!\log\!n)$ \\
-\end{tabular}
-}
-\end{csbox}
+# Default dict
+from collections import defaultdict
+d = defaultdict(int)  # or list, set
 
-% --- SECTION 5: Data Structures ---
-\begin{csbox}{Data Structure Operations}
-{\fontsize{5.5pt}{6.5pt}\selectfont
-\renewcommand{\arraystretch}{0.95}
-\begin{tabular}{@{}lll@{}}
-\textbf{Structure} & \textbf{Access} & \textbf{Insert} \\
-\midrule
-Array & $O(1)$ & $O(n)$ \\
-Linked List & $O(n)$ & $O(1)$ \\
-Hash Table & $O(1)$ avg & $O(1)$ avg \\
-BST & $O(\log n)$ & $O(\log n)$ \\
-Heap & $O(1)$ top & $O(\log n)$ \\
-\end{tabular}
-}
-\end{csbox}
+# Counter
+from collections import Counter
+c = Counter([1,1,2,3,3,3])  # {3:3, 1:2, 2:1}
+\end{lstlisting}
 
-% --- SECTION 6: Networking ---
-\begin{sheetsection}{Networking}\end{sheetsection}
+\subsection*{String Operations}
+\code{s.split()} \hfill \code{s.join(lst)} \hfill \code{s.strip()} \\
+\code{s.replace(old, new)} \hfill \code{s.startswith()} \hfill \code{s.endswith()} \\
+\code{s.upper()} \hfill \code{s.lower()} \hfill \code{s.find(sub)} \\
+\code{s[start:end:step]} \hfill slicing \hfill \code{s[::-1]} reverse
 
-\begin{csbox}{HTTP Status Codes}
-{\fontsize{6pt}{7pt}\selectfont
-\renewcommand{\arraystretch}{0.95}
-\begin{tabular}{@{}rl@{}}
-\textbf{200} & OK \\
-\textbf{201} & Created \\
-\textbf{301} & Moved Permanently \\
-\textbf{400} & Bad Request \\
-\textbf{401} & Unauthorized \\
-\textbf{403} & Forbidden \\
-\textbf{404} & Not Found \\
-\textbf{500} & Internal Server Error \\
-\end{tabular}
-}
-\end{csbox}
+% --- Git Commands ---
+\section*{Git Commands}
 
-\begin{csbox}{Common Ports}
-{\fontsize{6pt}{7pt}\selectfont
-\renewcommand{\arraystretch}{0.95}
-\begin{tabular}{@{}rl@{}}
-22 & SSH \hfill 80 \hspace{1mm} HTTP \\
-443 & HTTPS \hfill 53 \hspace{1mm} DNS \\
-3306 & MySQL \hfill 5432 \hspace{1mm} PostgreSQL \\
-6379 & Redis \hfill 27017 \hspace{1mm} MongoDB \\
-\end{tabular}
-}
-\end{csbox}
+\subsection*{Basic Workflow}
+\cmd{git init} \hfill Initialize new repo \\
+\cmd{git clone <url>} \hfill Clone remote repository \\
+\cmd{git status} \hfill Show working tree status \\
+\cmd{git add <file>} \hfill Stage changes \\
+\cmd{git add .} \hfill Stage all changes \\
+\cmd{git commit -m "msg"} \hfill Commit staged changes \\
+\cmd{git push} \hfill Push to remote \\
+\cmd{git pull} \hfill Fetch and merge remote changes
 
-\end{multicols}
+\subsection*{Branching}
+\cmd{git branch} \hfill List branches \\
+\cmd{git branch <name>} \hfill Create new branch \\
+\cmd{git checkout <branch>} \hfill Switch branch \\
+\cmd{git checkout -b <name>} \hfill Create and switch \\
+\cmd{git merge <branch>} \hfill Merge into current \\
+\cmd{git branch -d <name>} \hfill Delete branch
 
-% ============================================================================
-% PAGE 2 — BACK SIDE
-% ============================================================================
-\newpage
+\subsection*{Advanced}
+\cmd{git stash} \hfill Stash changes temporarily \\
+\cmd{git stash pop} \hfill Apply and remove stash \\
+\cmd{git reset --soft HEAD\~{}1} \hfill Undo commit, keep changes \\
+\cmd{git reset --hard HEAD} \hfill Discard all changes \\
+\cmd{git rebase <branch>} \hfill Rebase current branch \\
+\cmd{git cherry-pick <hash>} \hfill Apply specific commit \\
+\cmd{git log --oneline --graph} \hfill Visual commit history
 
-\noindent\colorbox{csSecondary}{%
-    \parbox{\dimexpr\textwidth-2\fboxsep\relax}{%
-        \centering\color{white}%
-        \fontsize{10pt}{12pt}\selectfont\textbf{REFERENCE CARD -- PAGE 2}%
-        \hfill%
-        \fontsize{6.5pt}{7.5pt}\selectfont Additional Reference Material%
-    }%
-}
+\begin{warnbox}
+\textbf{Warning:} Never \cmd{push --force} to shared branches without team coordination
+\end{warnbox}
 
-\vspace{0.8mm}
+% --- SQL Reference ---
+\section*{SQL Quick Reference}
 
-\begin{multicols}{3}
-
-% --- More sections here ---
-\begin{sheetsection}{SQL Quick Reference}\end{sheetsection}
-
-\begin{csbox}{Basic Queries}
+\subsection*{Basic Queries}
 \begin{lstlisting}[language=SQL]
-SELECT col1, col2 FROM table
-WHERE condition
+SELECT col1, col2, COUNT(*)
+FROM table WHERE condition
+GROUP BY col1 HAVING COUNT(*) > 5
 ORDER BY col1 DESC LIMIT 10;
-
-SELECT * FROM t1
-INNER JOIN t2 ON t1.id = t2.id;
-
-SELECT COUNT(*), AVG(price)
-FROM products GROUP BY category
-HAVING COUNT(*) > 5;
 \end{lstlisting}
-\end{csbox}
 
-\begin{sheetsection}{Regular Expressions}\end{sheetsection}
+\subsection*{Joins}
+\begin{lstlisting}[language=SQL]
+-- Inner join (matching rows)
+SELECT * FROM t1 INNER JOIN t2
+  ON t1.id = t2.id;
 
-\begin{csbox}{Pattern Reference}
-{\fontsize{6pt}{7pt}\selectfont
-\renewcommand{\arraystretch}{0.95}
-\begin{tabular}{@{}ll@{}}
-\code{.} & Any character \\
-\code{\^{}} / \code{\$} & Start / end of line \\
-\code{*} / \code{+} / \code{?} & 0+, 1+, 0 or 1 \\
-\code{[abc]} & Character class \\
-\code{[a-z]} & Range \\
-\code{\textbackslash d} / \code{\textbackslash w} / \code{\textbackslash s} & Digit / word / space \\
+-- Left join (all t1 + matches)
+SELECT * FROM t1 LEFT JOIN t2
+  ON t1.id = t2.id;
+
+-- Self join
+SELECT a.name, b.name FROM emp a
+  JOIN emp b ON a.mgr_id = b.id;
+\end{lstlisting}
+
+\subsection*{Aggregate Functions}
+\code{COUNT(*)} \hfill \code{SUM(col)} \hfill \code{AVG(col)} \\
+\code{MIN(col)} \hfill \code{MAX(col)} \hfill \code{GROUP\_CONCAT(col)}
+
+\subsection*{Window Functions}
+\begin{lstlisting}[language=SQL]
+ROW_NUMBER() OVER (PARTITION BY dept
+  ORDER BY salary DESC)
+RANK() OVER (ORDER BY score DESC)
+LAG(col, 1) OVER (ORDER BY date)
+\end{lstlisting}
+
+% --- Networking ---
+\section*{Networking}
+
+\subsection*{HTTP Status Codes}
+{\fontsize{5.5pt}{6.5pt}\selectfont
+\begin{tabular}{@{}r@{\,}l@{\,}r@{\,}l@{}}
+\textbf{200} & OK & \textbf{201} & Created \\
+\textbf{204} & No Content & \textbf{301} & Moved Permanently \\
+\textbf{302} & Found (redirect) & \textbf{304} & Not Modified \\
+\textbf{400} & Bad Request & \textbf{401} & Unauthorized \\
+\textbf{403} & Forbidden & \textbf{404} & Not Found \\
+\textbf{500} & Server Error & \textbf{502} & Bad Gateway \\
+\textbf{503} & Unavailable & \textbf{504} & Gateway Timeout \\
+\end{tabular}}
+
+\subsection*{Common Ports}
+{\fontsize{5.5pt}{6.5pt}\selectfont
+\begin{tabular}{@{}r@{\,}l@{\,}r@{\,}l@{}}
+20/21 & FTP & 22 & SSH \\
+25 & SMTP & 53 & DNS \\
+80 & HTTP & 443 & HTTPS \\
+3306 & MySQL & 5432 & PostgreSQL \\
+6379 & Redis & 27017 & MongoDB \\
+\end{tabular}}
+
+\subsection*{OSI Model}
+{\fontsize{5.5pt}{6.5pt}\selectfont
+\begin{tabular}{@{}r@{\,}l@{\,}l@{}}
+\toprule
+\textbf{Layer} & \textbf{Name} & \textbf{Example} \\
+\midrule
+7 & Application & HTTP, FTP, DNS \\
+6 & Presentation & SSL, JPEG \\
+5 & Session & NetBIOS, RPC \\
+4 & Transport & TCP, UDP \\
+3 & Network & IP, ICMP, routing \\
+2 & Data Link & Ethernet, MAC \\
+1 & Physical & cables, hubs \\
+\bottomrule
+\end{tabular}}
+
+\subsection*{TCP vs UDP}
+\textbf{TCP:} Connection-oriented, reliable, ordered, flow control \\
+\textbf{UDP:} Connectionless, best-effort, fast, no guarantees \\
+Use TCP for: HTTP, FTP, email \\
+Use UDP for: DNS, video streaming, gaming
+
+% --- Docker ---
+\section*{Docker Commands}
+
+\subsection*{Container Lifecycle}
+\cmd{docker run -it <img>} \hfill Run interactive container \\
+\cmd{docker run -d <img>} \hfill Run in background (detached) \\
+\cmd{docker ps} \hfill List running containers \\
+\cmd{docker ps -a} \hfill List all containers \\
+\cmd{docker stop <id>} \hfill Gracefully stop container \\
+\cmd{docker kill <id>} \hfill Force stop container \\
+\cmd{docker rm <id>} \hfill Remove stopped container \\
+\cmd{docker exec -it <id> bash} \hfill Open shell in container \\
+\cmd{docker logs -f <id>} \hfill Follow container logs
+
+\subsection*{Image Management}
+\cmd{docker build -t <tag> .} \hfill Build from Dockerfile \\
+\cmd{docker images} \hfill List local images \\
+\cmd{docker pull <img>} \hfill Pull from registry \\
+\cmd{docker push <img>} \hfill Push to registry \\
+\cmd{docker rmi <img>} \hfill Remove image \\
+\cmd{docker tag <src> <dst>} \hfill Tag image
+
+\subsection*{Dockerfile Basics}
+\begin{lstlisting}[language=bash]
+FROM ubuntu:22.04
+WORKDIR /app
+COPY . .
+RUN apt-get update && apt-get install -y python3
+ENV PORT=8000
+EXPOSE 8000
+CMD ["python3", "app.py"]
+\end{lstlisting}
+
+\subsection*{Docker Compose}
+\begin{lstlisting}
+version: '3'
+services:
+  web:
+    build: .
+    ports: ["8000:8000"]
+  db:
+    image: postgres:14
+    environment:
+      POSTGRES_PASSWORD: secret
+\end{lstlisting}
+
+\cmd{docker-compose up} \hfill Start services \\
+\cmd{docker-compose down} \hfill Stop and remove \\
+\cmd{docker-compose logs -f} \hfill Follow logs
+
+% --- Regular Expressions ---
+\section*{Regular Expressions}
+
+\subsection*{Basic Patterns}
+{\fontsize{5.5pt}{6.5pt}\selectfont
+\begin{tabular}{@{}l@{\,}l@{}}
+\toprule
+\textbf{Pattern} & \textbf{Meaning} \\
+\midrule
+\code{.} & Any single character \\
+\code{\^{}} & Start of line \\
+\code{\$} & End of line \\
+\code{*} & 0 or more (greedy) \\
+\code{+} & 1 or more (greedy) \\
+\code{?} & 0 or 1 (optional) \\
+\code{*?}, \code{+?} & Non-greedy versions \\
+\code{[abc]} & Character class (a, b, or c) \\
+\code{[a-z]} & Range (lowercase letters) \\
+\code{[\^{}abc]} & Negated class (not a, b, c) \\
+\code{\textbackslash d} & Digit [0-9] \\
+\code{\textbackslash w} & Word char [a-zA-Z0-9\_] \\
+\code{\textbackslash s} & Whitespace \\
+\code{\textbackslash D}, \code{\textbackslash W}, \code{\textbackslash S} & Negated versions \\
 \code{()} & Capture group \\
+\code{(?:)} & Non-capturing group \\
 \code{|} & Alternation (OR) \\
-\code{\{n,m\}} & Repeat n to m times \\
-\end{tabular}
-}
-\end{csbox}
+\code{\{n\}} & Exactly n times \\
+\code{\{n,m\}} & Between n and m times \\
+\bottomrule
+\end{tabular}}
 
-\begin{sheetsection}{Docker Commands}\end{sheetsection}
+\subsection*{Examples}
+Email: \code{[\^{}@]+@[\^{}@]+\textbackslash.[a-z]\{2,\}} \\
+Phone: \code{\textbackslash d\{3\}-\textbackslash d\{3\}-\textbackslash d\{4\}} \\
+URL: \code{https?://[\^{}\textbackslash s]+} \\
+IPv4: \code{\textbackslash d\{1,3\}(\textbackslash.\textbackslash d\{1,3\})\{3\}}
 
-\begin{csbox}{Container Management}
-\begin{itemize}
-\item \cmd{docker run -it <img>} -- Run interactive
-\item \cmd{docker ps} -- List running containers
-\item \cmd{docker stop <id>} -- Stop container
-\item \cmd{docker rm <id>} -- Remove container
-\item \cmd{docker exec -it <id> bash} -- Enter shell
-\item \cmd{docker logs -f <id>} -- Follow logs
-\end{itemize}
-\end{csbox}
+% --- Design Patterns ---
+\section*{Design Patterns}
 
-\begin{csbox}{Image Management}
-\begin{itemize}
-\item \cmd{docker build -t <n> .} -- Build image
-\item \cmd{docker images} -- List images
-\item \cmd{docker pull <img>} -- Pull from registry
-\item \cmd{docker push <img>} -- Push to registry
-\end{itemize}
-\end{csbox}
+\subsection*{Creational}
+\textbf{Singleton:} Ensure single instance per application \\
+\textbf{Factory:} Encapsulate object creation logic \\
+\textbf{Builder:} Construct complex objects step-by-step \\
+\textbf{Prototype:} Clone existing objects instead of creating new \\
+\textbf{Abstract Factory:} Create families of related objects
 
-\begin{sheetsection}{Design Patterns}\end{sheetsection}
+\subsection*{Structural}
+\textbf{Adapter:} Convert one interface to another \\
+\textbf{Decorator:} Add behavior to objects dynamically \\
+\textbf{Facade:} Simplified interface to complex subsystem \\
+\textbf{Proxy:} Placeholder for another object (lazy loading, etc) \\
+\textbf{Composite:} Tree structures of objects \\
+\textbf{Bridge:} Decouple abstraction from implementation
 
-\begin{csbox}{Creational}
-\begin{itemize}
-\item \textbf{Singleton:} Single instance per app
-\item \textbf{Factory:} Object creation abstraction
-\item \textbf{Builder:} Step-by-step construction
-\end{itemize}
-\end{csbox}
+\subsection*{Behavioral}
+\textbf{Observer:} Publish-subscribe pattern for event handling \\
+\textbf{Strategy:} Encapsulate interchangeable algorithms \\
+\textbf{Command:} Encapsulate requests as objects \\
+\textbf{State:} Change behavior based on internal state \\
+\textbf{Template Method:} Define algorithm skeleton, defer steps \\
+\textbf{Iterator:} Sequential access without exposing structure \\
+\textbf{Chain of Responsibility:} Pass request along handler chain
 
-\begin{csbox}{Structural}
-\begin{itemize}
-\item \textbf{Adapter:} Interface wrapper
-\item \textbf{Decorator:} Dynamic behavior addition
-\item \textbf{Facade:} Simplified interface
-\end{itemize}
-\end{csbox}
+% --- Linux/Bash Commands ---
+\section*{Linux/Bash Commands}
 
-\begin{csbox}{Behavioral}
-\begin{itemize}
-\item \textbf{Observer:} Event notification
-\item \textbf{Strategy:} Interchangeable algorithms
-\item \textbf{Command:} Request encapsulation
-\end{itemize}
-\end{csbox}
+\subsection*{File Operations}
+\cmd{ls -lah} \hfill List files with details \\
+\cmd{cd <dir>} \hfill Change directory \\
+\cmd{pwd} \hfill Print working directory \\
+\cmd{cp <src> <dst>} \hfill Copy file \\
+\cmd{mv <src> <dst>} \hfill Move/rename \\
+\cmd{rm <file>} \hfill Remove file \\
+\cmd{rm -rf <dir>} \hfill Remove directory recursively \\
+\cmd{mkdir -p <dir>} \hfill Create directory (with parents) \\
+\cmd{chmod +x <file>} \hfill Make executable \\
+\cmd{chown user:group <file>} \hfill Change ownership
 
-% --- Footer ---
+\subsection*{Text Processing}
+\cmd{cat <file>} \hfill Display file contents \\
+\cmd{head -n 10 <file>} \hfill First 10 lines \\
+\cmd{tail -n 10 <file>} \hfill Last 10 lines \\
+\cmd{tail -f <file>} \hfill Follow file updates \\
+\cmd{grep "pattern" <file>} \hfill Search in file \\
+\cmd{grep -r "pat" .} \hfill Recursive search \\
+\cmd{sed 's/old/new/g' <file>} \hfill Replace text \\
+\cmd{awk '\{print \$1\}' <file>} \hfill Print first column \\
+\cmd{sort <file>} \hfill Sort lines \\
+\cmd{uniq <file>} \hfill Remove duplicate lines \\
+\cmd{wc -l <file>} \hfill Count lines
+
+\subsection*{Process Management}
+\cmd{ps aux} \hfill List all processes \\
+\cmd{top} \hfill Interactive process viewer \\
+\cmd{htop} \hfill Better process viewer \\
+\cmd{kill <pid>} \hfill Terminate process \\
+\cmd{kill -9 <pid>} \hfill Force kill \\
+\cmd{pkill <name>} \hfill Kill by process name \\
+\cmd{bg} \hfill Resume job in background \\
+\cmd{fg} \hfill Bring job to foreground \\
+\cmd{jobs} \hfill List background jobs
+
+\subsection*{System Info}
+\cmd{df -h} \hfill Disk usage \\
+\cmd{du -sh <dir>} \hfill Directory size \\
+\cmd{free -h} \hfill Memory usage \\
+\cmd{uname -a} \hfill System info \\
+\cmd{uptime} \hfill System uptime \\
+\cmd{whoami} \hfill Current user \\
+\cmd{which <cmd>} \hfill Locate command
+
+\subsection*{Network}
+\cmd{curl <url>} \hfill Make HTTP request \\
+\cmd{wget <url>} \hfill Download file \\
+\cmd{ping <host>} \hfill Test connectivity \\
+\cmd{netstat -tuln} \hfill List listening ports \\
+\cmd{ssh user@host} \hfill SSH connection \\
+\cmd{scp file user@host:/path} \hfill Secure copy
+
+% --- Machine Learning ---
+\section*{Machine Learning Essentials}
+
+\subsection*{Loss Functions}
+\textbf{MSE:} $\frac{1}{n}\sum(y_i - \hat{y}_i)^2$ \hfill Regression \\
+\textbf{MAE:} $\frac{1}{n}\sum|y_i - \hat{y}_i|$ \hfill Robust to outliers \\
+\textbf{Cross-Entropy:} $-\sum y_i \log(\hat{y}_i)$ \hfill Classification \\
+\textbf{Hinge:} $\max(0, 1-y_i\hat{y}_i)$ \hfill SVM
+
+\subsection*{Activation Functions}
+$\sigma(x) = \frac{1}{1+e^{-x}}$ \hfill Sigmoid (0 to 1) \\
+$\tanh(x) = \frac{e^x-e^{-x}}{e^x+e^{-x}}$ \hfill Tanh (-1 to 1) \\
+$\text{ReLU}(x) = \max(0, x)$ \hfill Most common \\
+$\text{LeakyReLU}(x) = \max(0.01x, x)$ \hfill Prevents dead neurons \\
+$\text{Softmax}(x_i) = \frac{e^{x_i}}{\sum_j e^{x_j}}$ \hfill Multi-class output
+
+\subsection*{Optimization}
+\textbf{SGD:} $\theta \leftarrow \theta - \eta \nabla L$ \\
+\textbf{Momentum:} $v \leftarrow \beta v + \nabla L$, $\theta \leftarrow \theta - \eta v$ \\
+\textbf{Adam:} Adaptive learning rates per parameter \\
+\textbf{Learning rate decay:} Reduce $\eta$ over time
+
+\subsection*{Regularization}
+\textbf{L1:} $\lambda \sum |\theta_i|$ \hfill Sparse weights \\
+\textbf{L2:} $\lambda \sum \theta_i^2$ \hfill Weight decay \\
+\textbf{Dropout:} Randomly zero neurons during training \\
+\textbf{Batch Norm:} Normalize layer inputs \\
+\textbf{Data Aug:} Augment training data artificially
+
+\subsection*{Evaluation Metrics}
+\textbf{Accuracy:} $\frac{TP+TN}{TP+TN+FP+FN}$ \\
+\textbf{Precision:} $\frac{TP}{TP+FP}$ \hfill Of predicted pos, how many correct \\
+\textbf{Recall:} $\frac{TP}{TP+FN}$ \hfill Of actual pos, how many found \\
+\textbf{F1:} $\frac{2 \cdot \text{Prec} \cdot \text{Rec}}{\text{Prec} + \text{Rec}}$ \hfill Harmonic mean \\
+\textbf{AUC-ROC:} Area under ROC curve
+
+\subsection*{Model Types}
+\textbf{Linear Reg:} $\hat{y} = \mathbf{w}^T\mathbf{x} + b$ \\
+\textbf{Logistic Reg:} $P(y=1) = \sigma(\mathbf{w}^T\mathbf{x})$ \\
+\textbf{Decision Tree:} Recursive splits on features \\
+\textbf{Random Forest:} Ensemble of trees, vote/average \\
+\textbf{SVM:} Max-margin hyperplane separator \\
+\textbf{k-NN:} Classify by k nearest neighbors \\
+\textbf{Neural Net:} Layers of learned transformations
+
+
 \vfill
 \begin{center}
-{\fontsize{5pt}{6pt}\selectfont\textcolor{csSecondary!60}{%
-Generated with LaTeX Cheat Sheet Template \textbar{} Customize colors in preamble \textbar{} Compile with pdflatex%
+{\fontsize{5pt}{6pt}\selectfont\textcolor{csGray}{%
+World-Class Cheat Sheet Template \textbar{} Maximum density \textbar{} Compile with pdflatex%
 }}
 \end{center}
 
-\end{multicols}
+\end{multicols*}
 
 \end{document}

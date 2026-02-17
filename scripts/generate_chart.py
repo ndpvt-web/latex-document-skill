@@ -67,7 +67,36 @@ def plot_bar(data, ax, **kwargs):
     if 'x' in data and 'y' in data:
         x = data['x']
         y = data['y']
-        ax.bar(x, y, color=kwargs.get('colors', None))
+        legend_labels = kwargs.get('legend_labels', None)
+        colors = kwargs.get('colors', None)
+
+        # Check if y is multi-series (list of lists)
+        is_multi_series = isinstance(y[0], (list, tuple)) if len(y) > 0 else False
+
+        if is_multi_series:
+            # Multi-series grouped bar chart
+            n_series = len(y)
+            n_groups = len(x)
+
+            # Get colors for each series
+            if colors is None:
+                colors = get_colorblind_palette(n_series)
+
+            # Calculate bar positions and width
+            bar_width = 0.8 / n_series
+            x_positions = np.arange(n_groups)
+
+            for i, series in enumerate(y):
+                offset = (i - n_series/2 + 0.5) * bar_width
+                label = legend_labels[i] if legend_labels and i < len(legend_labels) else f"Series {i+1}"
+                ax.bar(x_positions + offset, series, bar_width,
+                      label=label, color=colors[i % len(colors)])
+
+            ax.set_xticks(x_positions)
+            ax.set_xticklabels(x)
+        else:
+            # Single-series bar chart (backward compatible)
+            ax.bar(x, y, color=colors[0] if colors else None)
     else:
         raise ValueError("Bar chart requires 'x' and 'y' keys in data")
 
@@ -76,8 +105,33 @@ def plot_line(data, ax, **kwargs):
     if 'x' in data and 'y' in data:
         x = data['x']
         y = data['y']
-        ax.plot(x, y, marker='o', linewidth=2, color=kwargs.get('colors', [None])[0] if kwargs.get('colors') else None)
-        ax.grid(True, alpha=0.3)
+        legend_labels = kwargs.get('legend_labels', None)
+        colors = kwargs.get('colors', None)
+        show_grid = kwargs.get('show_grid', False)
+
+        # Check if y is multi-series (list of lists)
+        is_multi_series = isinstance(y[0], (list, tuple)) if len(y) > 0 else False
+
+        if is_multi_series:
+            # Multi-series line chart
+            n_series = len(y)
+            markers = ['o', 's', '^', 'D', 'v', '<', '>', 'p', '*', 'h']
+
+            # Get colors for each series
+            if colors is None:
+                colors = get_colorblind_palette(n_series)
+
+            for i, series in enumerate(y):
+                label = legend_labels[i] if legend_labels and i < len(legend_labels) else f"Series {i+1}"
+                marker = markers[i % len(markers)]
+                ax.plot(x, series, marker=marker, linewidth=2,
+                       label=label, color=colors[i % len(colors)])
+        else:
+            # Single-series line chart (backward compatible)
+            ax.plot(x, y, marker='o', linewidth=2, color=colors[0] if colors else None)
+
+        if show_grid:
+            ax.grid(True, alpha=0.3)
     else:
         raise ValueError("Line chart requires 'x' and 'y' keys in data")
 
@@ -87,8 +141,38 @@ def plot_scatter(data, ax, **kwargs):
         x = data['x']
         y = data['y']
         sizes = data.get('sizes', 50)
-        ax.scatter(x, y, s=sizes, alpha=0.6, color=kwargs.get('colors', [None])[0] if kwargs.get('colors') else None)
-        ax.grid(True, alpha=0.3)
+        legend_labels = kwargs.get('legend_labels', None)
+        colors = kwargs.get('colors', None)
+        show_grid = kwargs.get('show_grid', False)
+
+        # Check if y is multi-series (list of lists)
+        is_multi_series = isinstance(y[0], (list, tuple)) if len(y) > 0 else False
+
+        if is_multi_series:
+            # Multi-series scatter plot
+            n_series = len(y)
+            markers = ['o', 's', '^', 'D', 'v', '<', '>', 'p', '*', 'h']
+
+            # Get colors for each series
+            if colors is None:
+                colors = get_colorblind_palette(n_series)
+
+            # Handle sizes for multi-series
+            if isinstance(sizes, (int, float)):
+                sizes = [sizes] * n_series
+
+            for i, series in enumerate(y):
+                label = legend_labels[i] if legend_labels and i < len(legend_labels) else f"Series {i+1}"
+                marker = markers[i % len(markers)]
+                size = sizes[i] if isinstance(sizes, list) and i < len(sizes) else 50
+                ax.scatter(x, series, s=size, alpha=0.6,
+                          label=label, color=colors[i % len(colors)], marker=marker)
+        else:
+            # Single-series scatter plot (backward compatible)
+            ax.scatter(x, y, s=sizes, alpha=0.6, color=colors[0] if colors else None)
+
+        if show_grid:
+            ax.grid(True, alpha=0.3)
     else:
         raise ValueError("Scatter plot requires 'x' and 'y' keys in data")
 
@@ -125,8 +209,10 @@ def plot_box(data, ax, **kwargs):
     if 'data' in data:
         box_data = data['data']
         labels = data.get('labels', None)
+        show_grid = kwargs.get('show_grid', False)
         ax.boxplot(box_data, labels=labels)
-        ax.grid(True, alpha=0.3, axis='y')
+        if show_grid:
+            ax.grid(True, alpha=0.3, axis='y')
     else:
         raise ValueError("Box plot requires 'data' key (list of lists)")
 
@@ -135,8 +221,11 @@ def plot_histogram(data, ax, **kwargs):
     if 'values' in data:
         values = data['values']
         bins = data.get('bins', 10)
-        ax.hist(values, bins=bins, edgecolor='black', alpha=0.7, color=kwargs.get('colors', [None])[0] if kwargs.get('colors') else None)
-        ax.grid(True, alpha=0.3, axis='y')
+        colors = kwargs.get('colors', None)
+        show_grid = kwargs.get('show_grid', False)
+        ax.hist(values, bins=bins, edgecolor='black', alpha=0.7, color=colors[0] if colors else None)
+        if show_grid:
+            ax.grid(True, alpha=0.3, axis='y')
     else:
         raise ValueError("Histogram requires 'values' key in data")
 
@@ -145,9 +234,38 @@ def plot_area(data, ax, **kwargs):
     if 'x' in data and 'y' in data:
         x = data['x']
         y = data['y']
-        ax.fill_between(x, y, alpha=0.7, color=kwargs.get('colors', [None])[0] if kwargs.get('colors') else None)
-        ax.plot(x, y, linewidth=2)
-        ax.grid(True, alpha=0.3)
+        legend_labels = kwargs.get('legend_labels', None)
+        colors = kwargs.get('colors', None)
+        show_grid = kwargs.get('show_grid', False)
+
+        # Check if y is multi-series (list of lists)
+        is_multi_series = isinstance(y[0], (list, tuple)) if len(y) > 0 else False
+
+        if is_multi_series:
+            # Multi-series area chart (stacked)
+            n_series = len(y)
+
+            # Get colors for each series
+            if colors is None:
+                colors = get_colorblind_palette(n_series)
+
+            # Convert to numpy array for stacking
+            y_array = np.array(y)
+            y_stack = np.zeros(len(x))
+
+            for i in range(n_series):
+                label = legend_labels[i] if legend_labels and i < len(legend_labels) else f"Series {i+1}"
+                ax.fill_between(x, y_stack, y_stack + y_array[i],
+                               alpha=0.7, label=label, color=colors[i % len(colors)])
+                ax.plot(x, y_stack + y_array[i], linewidth=2, color=colors[i % len(colors)])
+                y_stack += y_array[i]
+        else:
+            # Single-series area chart (backward compatible)
+            ax.fill_between(x, y, alpha=0.7, color=colors[0] if colors else None)
+            ax.plot(x, y, linewidth=2)
+
+        if show_grid:
+            ax.grid(True, alpha=0.3)
     else:
         raise ValueError("Area chart requires 'x' and 'y' keys in data")
 
@@ -217,6 +335,12 @@ def parse_args():
                        help='DPI for output image (default: 300)')
     parser.add_argument('--colors', type=str, default=None,
                        help='Comma-separated hex color codes (e.g., #FF6B6B,#4ECDC4)')
+    parser.add_argument('--legend', type=str, default=None,
+                       help='Comma-separated series names for legend (e.g., "Series A,Series B,Series C")')
+    parser.add_argument('--legend-loc', type=str, default='best',
+                       help='Legend location: best, upper right, upper left, lower right, lower left, center, outside (default: best)')
+    parser.add_argument('--grid', action='store_true',
+                       help='Enable grid lines (default: off)')
 
     return parser.parse_args()
 
@@ -252,15 +376,31 @@ def parse_colors(colors_str):
         return None
     return [c.strip() for c in colors_str.split(',')]
 
+def parse_legend(legend_str):
+    """Parse comma-separated legend string into list."""
+    if not legend_str:
+        return None
+    return [label.strip() for label in legend_str.split(',')]
+
+def get_colorblind_palette(n_colors):
+    """Return a colorblind-friendly palette with n colors using Tol color scheme."""
+    # Paul Tol's colorblind-friendly palette
+    tol_bright = ['#4477AA', '#EE6677', '#228833', '#CCBB44', '#66CCEE', '#AA3377', '#BBBBBB']
+    if n_colors <= len(tol_bright):
+        return tol_bright[:n_colors]
+    # If more colors needed, cycle through the palette
+    return [tol_bright[i % len(tol_bright)] for i in range(n_colors)]
+
 def main():
     args = parse_args()
 
     # Load data
     data = load_data(args)
 
-    # Parse figsize and colors
+    # Parse figsize, colors, and legend
     figsize = parse_figsize(args.figsize)
     colors = parse_colors(args.colors)
+    legend_labels = parse_legend(args.legend)
 
     # Set style
     try:
@@ -278,7 +418,7 @@ def main():
     # Generate chart
     try:
         plot_func = CHART_TYPES[args.chart_type]
-        result_ax = plot_func(data, ax, colors=colors)
+        result_ax = plot_func(data, ax, colors=colors, legend_labels=legend_labels, show_grid=args.grid)
         if result_ax is not None:
             ax = result_ax
     except Exception as e:
@@ -292,6 +432,15 @@ def main():
         ax.set_xlabel(args.xlabel, fontsize=11)
     if args.ylabel and ax is not None:
         ax.set_ylabel(args.ylabel, fontsize=11)
+
+    # Add legend if legend_labels were provided or if multi-series data exists
+    if ax is not None and legend_labels is not None:
+        # Handle legend location
+        legend_loc = args.legend_loc
+        if legend_loc == 'outside':
+            ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
+        else:
+            ax.legend(loc=legend_loc)
 
     # Tight layout for better spacing
     plt.tight_layout()
