@@ -13,14 +13,24 @@
 | You say… | What happens under the hood |
 |---|---|
 | "Create my resume" | Selects from 5 ATS-optimized templates, compiles with `pdflatex`, generates PDF + PNG preview |
-| "Turn this 162-page scan into a 2-page cheat sheet" | `pdf_to_images.sh` splits PDF → vision OCR per page → extracts key content → compresses into dense reference card using `cheatsheet.tex` |
-| "Convert my old PDF to LaTeX" | Pages split at 200 DPI → parallel OCR agents → clean `.tex` with profile-tuned formatting (math/business/legal/general) |
+| "Convert my 80-page handwritten math notes into beautiful LaTeX" | `pdf_to_images.sh` renders at 200 DPI → batch-7 parallel OCR agents → `math-notes.md` profile generates colored `tcolorbox` theorems (blue), definitions (green), examples (orange) → `compile_latex.sh` runs multi-pass pdflatex → polished PDF with proper equations, proofs, and TikZ diagrams |
+| "Turn this 162-page scan into a 2-page cheat sheet" | `pdf_to_images.sh` splits PDF → vision OCR per page → extracts key content → symbol substitution (∀, ∃, ⇒) → telegram-style compression → fits into `cheatsheet.tex` with 3-column landscape 7pt layout |
+| "Build a quarterly report with charts, diagrams, and data tables" | `generate_chart.py` creates bar/line/pie charts from JSON/CSV → `csv_to_latex.py` converts data into `booktabs` tables with alternating rows → Mermaid/TikZ flowcharts compiled inline → all embedded in `report.tex` with TOC, executive summary → `compile_latex.sh` handles multi-pass compilation |
+| "Add a Mermaid flowchart and Graphviz architecture diagram to my paper" | `mermaid_to_image.sh` renders `.mmd` → PNG/PDF via Puppeteer + `graphviz_to_pdf.sh` renders `.dot` → PDF via `dot` engine → images included with `\includegraphics` in your LaTeX document → compiled with proper float placement |
+| "Generate 9 different charts from my sales data CSV" | `generate_chart.py` reads CSV with `--csv sales.csv` → outputs bar, line, scatter, pie, heatmap, box, histogram, area, radar charts → multi-series grouped bars, legends, colorblind-safe Tol palette, custom DPI/figsize |
+| "Convert my old PDF to LaTeX" | Pages split at 200 DPI → parallel OCR agents → clean `.tex` with profile-tuned formatting (math/business/legal/general) → 0 errors per 7-page batch (empirically validated on 115-page PDF) |
 | "Send personalized offer letters to 500 candidates" | `mail_merge.py` loads `template.tex` + `candidates.csv` → Jinja2 rendering with `<< >>` delimiters → 4 parallel `pdflatex` workers → `qpdf --pages` merge into single PDF |
-| "What changed between v1 and v2 of my thesis?" | `latex_diff.sh` runs `latexdiff --type=UNDERLINE --allow-spaces old.tex new.tex` → `compile_latex.sh` runs 2-pass pdflatex → highlighted change-tracked PDF |
-| "Make a NeurIPS poster" | Interactive: asks orientation → layout archetype → color scheme → generates A0 `tikzposter` with correct dimensions |
+| "Merge my 5 chapter PDFs into one book and compress it" | `pdf_merge.sh` combines ch1.pdf through ch5.pdf via `qpdf --pages` → `pdf_optimize.sh` compresses with `--linearize --recompress-flate --object-streams=generate` → shows % size reduction |
+| "Extract odd pages from my thesis and encrypt the result" | `pdf_extract_pages.sh --pages odd` extracts via qpdf → `pdf_encrypt.sh` applies AES-256 with `--restrict-print --restrict-modify` → password-protected PDF with selected pages |
+| "What changed between v1 and v2 of my thesis?" | `latex_diff.sh` runs `latexdiff --type=UNDERLINE --allow-spaces old.tex new.tex` → `compile_latex.sh` runs 2-pass pdflatex → highlighted change-tracked PDF with additions in blue, deletions in red |
+| "Make a NeurIPS poster" | Interactive: asks orientation → layout archetype → color scheme → generates A0 `tikzposter` with correct dimensions, QR codes, `tikzfigure` environments |
 | "Create a calculus final exam with answer key" | `exam` class with `\printanswers` toggle, grading table via `\gradetable`, 6 question types (MCQ, T/F, fill-blank, matching, short, essay) |
+| "Convert my Markdown thesis to LaTeX with bibliography" | `convert_document.sh` calls Pandoc with `--bibliography refs.bib --csl ieee.csl --standalone --toc` → auto-detects input/output format from extensions → full LaTeX with citations |
+| "Turn this CSV into a professional LaTeX table" | `csv_to_latex.py` auto-detects numeric columns (right-aligns them), escapes LaTeX specials (`&`, `%`, `$`), applies `booktabs` style with `--alternating-rows --caption --label` |
+| "Fetch BibTeX for these 3 DOIs and check my citations" | `fetch_bibtex.sh` hits `doi.org` with `Accept: application/x-bibtex` header → appends to `.bib` → `latex_citation_extract.sh --check` cross-refs every `\cite{}` key against the `.bib` file → reports missing/unused entries |
+| "Check if my paper is ready to submit" | `latex_package_check.sh` verifies all `\usepackage` via `kpsewhich` → `latex_citation_extract.sh --check` cross-refs `\cite{}` keys against `.bib` → `latex_analyze.sh` counts figures/tables/equations/unreferenced labels → `latex_lint.sh` runs chktex for style issues |
+| "Create a fillable PDF application form" | `fillable-form.tex` with `hyperref` form fields → text inputs, checkboxes, radio buttons, dropdowns, push buttons → compiled to interactive PDF (works in Adobe Reader/Acrobat) |
 | "Password-protect this report" | `pdf_encrypt.sh` calls `qpdf --encrypt <pw> <pw> 256 --print=none --modify=none -- input.pdf output.pdf` |
-| "Check if my paper is ready to submit" | `latex_package_check.sh` verifies all `\usepackage` via `kpsewhich`, `latex_citation_extract.sh --check` cross-refs `\cite{}` keys against `.bib`, `latex_analyze.sh` counts figures/tables/equations/unreferenced labels |
 
 ---
 
@@ -268,9 +278,6 @@ All 5 modern templates designed to pass Applicant Tracking Systems (no columns, 
 | `resume-entry-level.tex` | New graduates | Education-first, coursework, activities |
 | `resume.tex` (legacy) | Regions requiring photos | Photo area -- **not** ATS-compatible |
 
-<details>
-<summary>Resume preview screenshots</summary>
-
 | | | | |
 |---|---|---|---|
 | ![Classic ATS](examples/resume-classic-ats.png) | ![Modern Professional](examples/resume-modern-professional.png) | ![Executive p1](examples/resume-executive-p1.png) | ![Executive p2](examples/resume-executive-p2.png) |
@@ -278,14 +285,11 @@ All 5 modern templates designed to pass Applicant Tracking Systems (no columns, 
 | ![Technical](examples/resume-technical.png) | ![Entry-Level](examples/resume-entry-level.png) | | |
 | Technical | Entry-Level | | |
 
-</details>
-
 ---
 
 ### Academic Documents
 
-<details>
-<summary><strong>Thesis / Dissertation</strong> -- Full book-class, 38+ pages</summary>
+#### Thesis / Dissertation -- Full book-class, 38+ pages
 
 Palatino fonts, `microtype`, `mathtools`, `cleveref`. Front matter (title, declaration, abstract, acknowledgments, TOC), multiple chapters, appendices, bibliography with `biblatex`/biber. `\geometry{bindingoffset=1.5cm}` for professional printing.
 
@@ -296,10 +300,7 @@ Palatino fonts, `microtype`, `mathtools`, `cleveref`. Front matter (title, decla
 | ![p5](examples/thesis-p5.png) | ![p6](examples/thesis-p6.png) | ![p7](examples/thesis-p7.png) | ![p8](examples/thesis-p8.png) |
 | Results | Charts | Chapter Content | Bibliography |
 
-</details>
-
-<details>
-<summary><strong>Academic Paper</strong> -- 11 pages, arXiv-compatible</summary>
+#### Academic Paper -- 11 pages, arXiv-compatible
 
 Times fonts, colorblind-safe Tol palette, multi-author affiliations via `authblk`, `siunitx` for consistent units, algorithm environments, theorem/proof. `\pdfoutput=1` for arXiv submission.
 
@@ -308,10 +309,7 @@ Times fonts, colorblind-safe Tol palette, multi-author affiliations via `authblk
 | ![p1](examples/academic-paper-p1.png) | ![p2](examples/academic-paper-p2.png) | ![p3](examples/academic-paper-p3.png) | ![p4](examples/academic-paper-p4.png) |
 | Title & Abstract | Tables + Charts | Ablation Study | References |
 
-</details>
-
-<details>
-<summary><strong>Lecture Notes (Beautiful Mode)</strong> -- Color-coded theorem environments</summary>
+#### Lecture Notes (Beautiful Mode) -- Color-coded theorem environments
 
 `lecture-notes.tex`: Palatino fonts, `tcolorbox` with semantic colors -- blue theorems, green definitions, orange examples, purple remarks. TikZ graph theory macros, custom math operators (`\E`, `\Var`, `\Cov`).
 
@@ -320,10 +318,7 @@ Times fonts, colorblind-safe Tol palette, multi-author affiliations via `authblk
 | ![p1](examples/lecture-notes-p1.png) | ![p2](examples/lecture-notes-p2.png) | ![p3](examples/lecture-notes-p3.png) | ![p4](examples/lecture-notes-p4.png) |
 | ![p5](examples/lecture-notes-p5.png) | ![p6](examples/lecture-notes-p6.png) | ![p7](examples/lecture-notes-p7.png) | ![p8](examples/lecture-notes-p8.png) |
 
-</details>
-
-<details>
-<summary><strong>Academic CV</strong> -- Multi-page with publications, grants, teaching</summary>
+#### Academic CV -- Multi-page with publications, grants, teaching
 
 Numbered publications ([J1], [C1], [W1]), grants with dollar amounts, student advising (current + graduated), professional service, invited talks. ORCID and Google Scholar links.
 
@@ -331,21 +326,13 @@ Numbered publications ([J1], [C1], [W1]), grants with dollar amounts, student ad
 |---|---|---|---|
 | ![p1](examples/academic-cv-p1.png) | ![p2](examples/academic-cv-p2.png) | ![p3](examples/academic-cv-p3.png) | ![p4](examples/academic-cv-p4.png) |
 
-</details>
-
-<details>
-<summary><strong>Homework / Assignment</strong> -- Solution toggle</summary>
+#### Homework / Assignment -- Solution toggle
 
 Custom `problem`/`solution` environments, code listings (Python, Java, C++, Matlab), honor code section. Toggle solutions globally with `\showsolutionstrue`/`\showsolutionsfalse`.
 
-</details>
-
-<details>
-<summary><strong>Lab Report</strong> -- STEM lab writeups</summary>
+#### Lab Report -- STEM lab writeups
 
 `siunitx` for uncertainties and SI units, `pgfplots` for data with error bars, structured sections: abstract → theory → procedure → data → analysis → discussion → conclusion.
-
-</details>
 
 ---
 
@@ -371,15 +358,12 @@ Conference presets: NeurIPS, ICML, CVPR, ICLR (main + workshop sizes).
 
 `book` class, 37+ pages. Palatino fonts, `lettrine` drop caps, `imakeidx` for indexing. Structure: half-title → full title → copyright page (ISBN slot) → dedication → preface → acknowledgments → TOC → parts → chapters with epigraphs → appendices → bibliography → index → colophon.
 
-<details>
-<summary>Book preview screenshots</summary>
-
 | | | | | |
 |---|---|---|---|---|
 | ![p1](examples/book-p1.png) | ![p2](examples/book-p2.png) | ![p3](examples/book-p3.png) | ![p4](examples/book-p4.png) | ![p5](examples/book-p5.png) |
 | Half Title | Full Title | Copyright | TOC | Preface |
-
-</details>
+| ![p6](examples/book-p6.png) | ![p7](examples/book-p7.png) | ![p8](examples/book-p8.png) | ![p9](examples/book-p9.png) | ![p10](examples/book-p10.png) |
+| Acknowledgments | Part I | Ch 1: Drop Caps | Definitions & Theorems | Notation & Summary |
 
 ---
 
@@ -387,14 +371,9 @@ Conference presets: NeurIPS, ICML, CVPR, ICLR (main + workshop sizes).
 
 6 question types (multiple choice, true/false, fill-in-blank, matching, short answer, essay). Point values per question, `\gradetable[h][questions]` for grading grid. `\printanswers` / `\noprintanswers` toggles solution visibility.
 
-<details>
-<summary>Exam preview screenshots</summary>
-
 | | | | | | |
 |---|---|---|---|---|---|
 | ![p1](examples/exam-p1.png) | ![p2](examples/exam-p2.png) | ![p3](examples/exam-p3.png) | ![p4](examples/exam-p4.png) | ![p5](examples/exam-p5.png) | ![p6](examples/exam-p6.png) |
-
-</details>
 
 ---
 
@@ -406,15 +385,12 @@ Conference presets: NeurIPS, ICML, CVPR, ICLR (main + workshop sizes).
 | `cheatsheet-exam.tex` | 2 | 6pt | Portrait |
 | `cheatsheet-code.tex` | 4 | 7pt | Landscape |
 
-<details>
-<summary>Cheatsheet example: Algebraic Geometry (162 pages → 2 pages)</summary>
+**Example: Algebraic Geometry (162 pages → 2 pages)**
 
 | | |
 |---|---|
 | ![Cheatsheet p1](examples/cheatsheet-p1.png) | ![Cheatsheet p2](examples/cheatsheet-p2.png) |
 | Page 1 -- Affine/Projective Space, Varieties, Morphisms | Page 2 -- Sheaves, Schemes, Cohomology, Key Examples |
-
-</details>
 
 ---
 
@@ -441,15 +417,10 @@ Conference presets: NeurIPS, ICML, CVPR, ICLR (main + workshop sizes).
 
 Custom theme, widescreen aspect ratio, title/section/content/two-column/code/image/thank-you frame types.
 
-<details>
-<summary>Slide previews</summary>
-
 | | | | | |
 |---|---|---|---|---|
 | ![p1](examples/presentation-p1.png) | ![p2](examples/presentation-p2.png) | ![p3](examples/presentation-p3.png) | ![p4](examples/presentation-p4.png) | ![p5](examples/presentation-p5.png) |
 | ![p6](examples/presentation-p6.png) | ![p7](examples/presentation-p7.png) | ![p8](examples/presentation-p8.png) | ![p9](examples/presentation-p9.png) | ![p10](examples/presentation-p10.png) |
-
-</details>
 
 ---
 
@@ -457,14 +428,9 @@ Custom theme, widescreen aspect ratio, title/section/content/two-column/code/ima
 
 Executive summary, findings, recommendations with TOC, pgfplots bar charts, TikZ flowcharts, colored data tables.
 
-<details>
-<summary>Report preview screenshots</summary>
-
 | | | | |
 |---|---|---|---|
 | ![p1](examples/report-p1.png) | ![p2](examples/report-p2.png) | ![p3](examples/report-p3.png) | ![p4](examples/report-p4.png) |
-
-</details>
 
 ---
 
