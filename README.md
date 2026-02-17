@@ -1,38 +1,275 @@
-# latex-document
+# LaTeX Document Skill
 
-A Claude Code skill that turns natural language into production-grade PDFs. Say what you need -- a resume, a 300-page book, a conference poster, an exam -- and get a compiled PDF with PNG previews, charts, diagrams, and bibliography, all handled automatically.
+> **Describe any document in plain English -- get a polished, production-grade PDF.**
+>
+> No LaTeX knowledge required. The skill handles engine selection, bibliography tooling, multi-pass compilation, error recovery, and PNG preview generation automatically.
 
-**27 templates. 22 scripts. 22 reference guides. 4 conversion profiles. Zero LaTeX knowledge required.**
-
----
-
-## What This Skill Does
-
-You describe a document. The skill:
-
-1. Selects the right template from 29 production-tested options
-2. Asks clarifying questions (layout, color scheme, elements to include)
-3. Generates charts, diagrams, tables, and images as needed
-4. Compiles to PDF with the correct LaTeX engine (auto-detected)
-5. Delivers the PDF + page-by-page PNG previews
-
-It also converts between formats (Markdown/DOCX/HTML/LaTeX) and can reconstruct handwritten or printed PDFs into clean LaTeX using an empirically optimized batching strategy.
+**27 templates · 22 automation scripts · 22 reference guides · 4 OCR conversion profiles**
 
 ---
 
-## Template Gallery
+## What Can It Actually Do?
 
-### Resumes -- 5 ATS-Optimized Variants
+| You say… | What happens under the hood |
+|---|---|
+| "Create my resume" | Selects from 5 ATS-optimized templates, compiles with `pdflatex`, generates PDF + PNG preview |
+| "Turn this 162-page scan into a 2-page cheat sheet" | `pdf_to_images.sh` splits PDF → vision OCR per page → extracts key content → compresses into dense reference card using `cheatsheet.tex` |
+| "Convert my old PDF to LaTeX" | Pages split at 200 DPI → parallel OCR agents → clean `.tex` with profile-tuned formatting (math/business/legal/general) |
+| "Send personalized offer letters to 500 candidates" | `mail_merge.py` loads `template.tex` + `candidates.csv` → Jinja2 rendering with `<< >>` delimiters → 4 parallel `pdflatex` workers → `qpdf --pages` merge into single PDF |
+| "What changed between v1 and v2 of my thesis?" | `latex_diff.sh` runs `latexdiff --type=UNDERLINE --allow-spaces old.tex new.tex` → `compile_latex.sh` runs 2-pass pdflatex → highlighted change-tracked PDF |
+| "Make a NeurIPS poster" | Interactive: asks orientation → layout archetype → color scheme → generates A0 `tikzposter` with correct dimensions |
+| "Create a calculus final exam with answer key" | `exam` class with `\printanswers` toggle, grading table via `\gradetable`, 6 question types (MCQ, T/F, fill-blank, matching, short, essay) |
+| "Password-protect this report" | `pdf_encrypt.sh` calls `qpdf --encrypt <pw> <pw> 256 --print=none --modify=none -- input.pdf output.pdf` |
+| "Check if my paper is ready to submit" | `latex_package_check.sh` verifies all `\usepackage` via `kpsewhich`, `latex_citation_extract.sh --check` cross-refs `\cite{}` keys against `.bib`, `latex_analyze.sh` counts figures/tables/equations/unreferenced labels |
 
-98% of Fortune 500 companies use Applicant Tracking Systems to filter resumes before a human sees them. These templates are designed to pass.
+---
 
-| Template | Best For | ATS Score | Key Feature |
-|---|---|---|---|
-| **Classic ATS** | Finance, law, government | 10/10 | Zero graphics, maximum parse safety |
-| **Modern Professional** | Tech, corporate | 9/10 | Subtle color accents, clean design |
-| **Executive** | VP / Director / C-suite | 9/10 | Two-page, P&L focus, Board roles |
-| **Technical** | Software, data, engineering | 9/10 | Skills-first, projects section, GitHub |
-| **Entry-Level** | New graduates | 9/10 | Education-first, one page |
+## Killer Features
+
+### 1. Smart Compilation Engine (`compile_latex.sh` -- 525 lines)
+
+Not a wrapper around `pdflatex`. It's an intelligent build system that reads your document and makes decisions:
+
+**Auto-detection logic:**
+```
+Document contains \usepackage{fontspec} or \usepackage{xeCJK}  →  xelatex
+Document contains \usepackage{luacode} or \directlua            →  lualatex
+Otherwise                                                        →  pdflatex
+
+Document contains \bibliography{}                                →  bibtex
+Document contains \addbibresource{}                              →  biber
+
+Document contains \makeindex                                     →  runs makeindex
+Document contains \makeglossaries                                →  runs makeglossaries
+```
+
+**Multi-pass compilation:** Runs the engine up to 3 times, checking for "Rerun to get cross-references right" each pass. Bibtex/biber runs between passes 1 and 2.
+
+**Auto-fix mode** (`--auto-fix`):
+| What it fixes | How |
+|---|---|
+| Naked `\begin{figure}` without placement | Injects `[htbp]` -- the #1 LaTeX beginner complaint |
+| Naked `\begin{table}` without placement | Same `[htbp]` injection |
+| Overfull hbox warnings | Adds `\usepackage{microtype}` to preamble |
+
+**Error translation** -- parses `.log` and translates into actionable English:
+| Raw LaTeX Error | What the script tells you |
+|---|---|
+| `Missing $ inserted` | "Math symbol used outside `$...$` -- wrap it in dollar signs" |
+| `Undefined control sequence \xyz` | "Unknown command `\xyz` -- check spelling or add the right `\usepackage`" |
+| `Too many }'s` | "Extra closing brace -- count your `{` and `}` pairs" |
+| `File 'foo.sty' not found` | "Missing package `foo` -- install with `tlmgr install foo`" |
+
+**Preview generation:** After compilation, runs `pdftoppm -png -r 200` on the output PDF and resizes to ≤2000px using `mogrify` for embedding.
+
+```bash
+bash scripts/compile_latex.sh document.tex --preview --auto-fix
+```
+
+---
+
+### 2. PDF-to-LaTeX Reconstruction (Vision OCR Pipeline)
+
+Convert **any PDF** -- scanned textbook, handwritten notes, printed report -- into compilable LaTeX.
+
+**Pipeline:**
+1. `pdf_to_images.sh` renders pages at 200 DPI using `pdftoppm`, zero-pads filenames (`page-001.png`, `page-002.png`), resizes to ≤2000px for API limits
+2. Vision model reads each page image
+3. Generates `.tex` with profile-appropriate formatting
+
+**Scaling strategy** (empirically validated -- tested on 115-page handwritten math notes):
+| PDF Size | Strategy | Expected Errors |
+|---|---|---|
+| 1-10 pages | Single agent processes all pages | 0-2 minor errors |
+| 11-20 pages | Split into 2 batches of ~10 | Near-zero per batch |
+| 21+ pages | Batch-7 pipeline with parallel agents | 0 errors per 7-page batch |
+
+**4 conversion profiles** (in `references/profiles/`):
+| Profile | Tuned For |
+|---|---|
+| `math-notes.md` | Equations, theorems, proofs. "Beautiful mode" uses colored `tcolorbox` environments (blue theorems, green definitions, orange examples) |
+| `business-document.md` | Reports, financials, tables, bullet lists |
+| `legal-document.md` | Numbered paragraphs, statutory references, legal citation formatting |
+| `general-notes.md` | Handwritten notes, mixed media, letters |
+
+---
+
+### 3. PDF-to-Cheat Sheet Pipeline
+
+Condense entire textbooks into 2-page reference cards. Three templates with different density strategies:
+
+| Template | Layout | Font Size | Columns | Best For |
+|---|---|---|---|---|
+| `cheatsheet.tex` | Landscape A4 | 7pt | 3 | Course reference, concept summaries |
+| `cheatsheet-exam.tex` | Portrait A4 | 6pt | 2 | Exam formula sheets (B&W-safe) |
+| `cheatsheet-code.tex` | Landscape A4 | 7pt | 4 | Programming references, CLI commands |
+
+**Density techniques used:**
+- Symbol substitution (∀ instead of "for all", ∃ instead of "there exists")
+- Horizontal formula stacking (multiple formulas on one line with `\quad` separators)
+- Telegram-style text (articles and filler words stripped)
+- Content prioritization: formulas 60-70% → procedures 15-20% → constants 10-15% → definitions 5-10%
+- Compile-and-verify loop to fit exact page budget
+
+---
+
+### 4. Mail Merge (`mail_merge.py` -- 574 lines)
+
+Generate N personalized documents from one template + one data source:
+
+```bash
+python3 scripts/mail_merge.py template.tex contacts.csv \
+    --output-dir ./letters --workers 4 --merge --merge-name all_letters.pdf
+```
+
+**Two templating modes:**
+
+| Mode | Syntax | Features |
+|---|---|---|
+| **Simple** (default) | `{{first_name}}`, `{{company}}` | Auto-escapes `&`, `%`, `$`, `#`, `_`, `{`, `}`, `~`, `^`, `\` for LaTeX safety |
+| **Jinja2** (`--jinja2`) | `<< first_name >>`, `<% if ... %>` | Conditionals, loops, filters. Delimiters chosen to avoid LaTeX `{}` conflicts. `|escape_latex` filter available |
+
+**Technical details:**
+- Data sources: CSV, JSON, JSONL
+- Uses `concurrent.futures.ProcessPoolExecutor` for parallel compilation
+- Each document compiled independently (crash isolation)
+- Final merge via `qpdf --pages` or `pdfunite`
+- Custom naming: `--name-field last_name --prefix "offer_letter"` → `offer_letter_Smith.pdf`
+
+---
+
+### 5. Version Diffing (`latex_diff.sh` -- 409 lines)
+
+A full-featured `latexdiff` wrapper with git integration:
+
+```bash
+# Compare two files directly
+bash scripts/latex_diff.sh paper_v1.tex paper_v2.tex --compile --preview
+
+# Compare against a git commit
+bash scripts/latex_diff.sh paper.tex --git-rev HEAD~3 --compile
+
+# Compare between two git tags
+bash scripts/latex_diff.sh paper.tex --git-rev v1.0 --compile --type CULINECHBAR
+
+# Multi-file document with \input/\include
+bash scripts/latex_diff.sh old/main.tex new/main.tex --flatten --compile
+```
+
+**8 markup types:**
+| Type | Visual Effect |
+|---|---|
+| `UNDERLINE` (default) | Additions underlined in blue, deletions struck through in red |
+| `CTRADITIONAL` | Additions in blue text, deletions in red with strikethrough |
+| `CFONT` | Additions in sans-serif blue, deletions in tiny red |
+| `CHANGEBAR` | Change bars in margin only, no inline markup |
+| `CCHANGEBAR` | Change bars + color changes |
+| `CULINECHBAR` | Underline + change bars (most comprehensive) |
+| `FONTSTRIKE` | Font change + strikethrough |
+| `INVISIBLE` | No visible markup (for testing) |
+
+**Git integration:** Extracts old version via `git show <rev>:<path>`, writes to temp file, diffs against current working copy. Supports rev specs like `HEAD~1`, `v1.0`, branch names.
+
+**Custom colors:** `--color-add "green!70!black" --color-del "red!80!black"` injects `\DIFaddcolor`/`\DIFdelcolor` overrides.
+
+---
+
+### 6. BibTeX Auto-Fetch (`fetch_bibtex.sh` -- 251 lines)
+
+Download BibTeX entries from DOIs or arXiv IDs with zero manual work:
+
+```bash
+# From DOI -- hits doi.org with Accept: application/x-bibtex header
+bash scripts/fetch_bibtex.sh 10.1038/nature12373
+
+# From arXiv -- parses Atom XML from export.arxiv.org/api
+bash scripts/fetch_bibtex.sh 2301.07041
+
+# Multiple at once, append to existing .bib
+bash scripts/fetch_bibtex.sh 10.1145/3290605.3300608 1906.08237 \
+    --append --output references.bib
+```
+
+Auto-detects identifier type: `10.xxxx/...` → DOI, `YYMM.NNNNN` → arXiv. Strips `arXiv:` prefix if present.
+
+---
+
+## Visual Elements
+
+### Charts & Graphs (`generate_chart.py` -- 459 lines)
+
+9 chart types from JSON or CSV data, output as PNG or PDF:
+
+```bash
+python3 scripts/generate_chart.py bar \
+    --data '{"x":["Q1","Q2","Q3","Q4"],"y":[120,150,180,210]}' \
+    --output chart.png --title "Revenue" --style ggplot --figsize 10 6
+```
+
+| Chart Type | Multi-Series | Notes |
+|---|---|---|
+| `bar` | Yes (grouped) | Horizontal with `--horizontal` |
+| `line` | Yes | Markers, grid |
+| `scatter` | Yes | |
+| `pie` | No | Autopct, explode slices |
+| `heatmap` | No | Annotated cells, custom colormap |
+| `box` | Yes | Statistical distribution |
+| `histogram` | Yes | Custom bins |
+| `area` | Yes | Stacked with alpha |
+| `radar` | Yes | Spider/star chart |
+
+**Inline charts** can also be created directly in LaTeX using `pgfplots` -- templates include examples.
+
+### Tables (`csv_to_latex.py` -- 364 lines)
+
+```bash
+python3 scripts/csv_to_latex.py data.csv --style booktabs --alternating-rows \
+    --caption "Experimental Results" --label tab:results --max-rows 50
+```
+
+| Style | Look |
+|---|---|
+| `booktabs` | Professional -- `\toprule`, `\midrule`, `\bottomrule` |
+| `grid` | Full borders on all cells |
+| `simple` | Horizontal rules only |
+| `plain` | No rules at all |
+
+Auto-detects column alignment (right-aligns numeric columns). Handles LaTeX special character escaping.
+
+### Diagrams -- 4 Rendering Pipelines
+
+| Tool | Script | Input | Output | Batch Mode |
+|---|---|---|---|---|
+| **TikZ** | (compiled inline) | `.tex` | PDF | -- |
+| **Mermaid** | `mermaid_to_image.sh` | `.mmd` | PNG/PDF | No |
+| **Graphviz** | `graphviz_to_pdf.sh` | `.dot` | PDF/PNG | Yes (whole directory) |
+| **PlantUML** | `plantuml_to_pdf.sh` | `.puml` | PDF/PNG/SVG | Yes (whole directory) |
+
+**Graphviz** supports 6 layout engines: `dot` (hierarchical), `neato` (spring model), `circo` (circular), `fdp` (force-directed), `twopi` (radial), `sfdp` (scalable force-directed).
+
+**Mermaid** uses `npx @mermaid-js/mermaid-cli` with Puppeteer in `--no-sandbox` mode. Supports themes: `default`, `dark`, `forest`, `neutral`.
+
+**PlantUML** auto-downloads `plantuml.jar` to `~/.local/share/plantuml/` if not installed via package manager. Requires Java.
+
+---
+
+## Template Gallery -- 27 Templates
+
+### Resumes -- 5 ATS-Optimized + 1 Legacy
+
+All 5 modern templates designed to pass Applicant Tracking Systems (no columns, no tables for layout, no graphics in header, machine-readable text):
+
+| Template | Target Role | Key Design Choices |
+|---|---|---|
+| `resume-classic-ats.tex` | Finance, law, government | Single-column, minimal styling, maximum parsability |
+| `resume-modern-professional.tex` | Tech, corporate | Clean sections, subtle color accents |
+| `resume-executive.tex` | VP / Director / C-suite | Multi-page, executive summary section |
+| `resume-technical.tex` | Software, data, engineering | Skills matrix, project highlights |
+| `resume-entry-level.tex` | New graduates | Education-first, coursework, activities |
+| `resume.tex` (legacy) | Regions requiring photos | Photo area -- **not** ATS-compatible |
+
+<details>
+<summary>Resume preview screenshots</summary>
 
 | | | | |
 |---|---|---|---|
@@ -41,314 +278,153 @@ It also converts between formats (Markdown/DOCX/HTML/LaTeX) and can reconstruct 
 | ![Technical](examples/resume-technical.png) | ![Entry-Level](examples/resume-entry-level.png) | | |
 | Technical | Entry-Level | | |
 
-There is also a **legacy resume template** (`resume.tex`) with photo area and table layout -- not ATS-compatible, but useful for regions where photo resumes are standard.
+</details>
 
 ---
 
 ### Academic Documents
 
-#### Lecture Notes (Beautiful Mode)
+<details>
+<summary><strong>Thesis / Dissertation</strong> -- Full book-class, 38+ pages</summary>
 
-The `lecture-notes.tex` template produces publication-quality math and science notes with color-coded theorem environments (tcolorbox), TikZ graph theory macros, and 3 font options (Palatino, Libertine, MLModern).
+Palatino fonts, `microtype`, `mathtools`, `cleveref`. Front matter (title, declaration, abstract, acknowledgments, TOC), multiple chapters, appendices, bibliography with `biblatex`/biber. `\geometry{bindingoffset=1.5cm}` for professional printing.
 
-- Blue theorems, green definitions, orange examples, purple remarks, red warnings
-- Pre-built graph macros: `\CompleteGraph{n}`, `\CycleGraph{n}`, `\PathGraph{n}`
-- Custom math commands: `\R`, `\N`, `\Z`, `\Q`, `\C`, `\abs`, `\norm`, `\floor`, `\ceil`
-- Graph theory operators: `\adj`, `\deg`, `\diam`, `\chr`, `\Aut`
+| | | | |
+|---|---|---|---|
+| ![p1](examples/thesis-p1.png) | ![p2](examples/thesis-p2.png) | ![p3](examples/thesis-p3.png) | ![p4](examples/thesis-p4.png) |
+| Title Page | Table of Contents | Literature Review | TikZ Diagram |
+| ![p5](examples/thesis-p5.png) | ![p6](examples/thesis-p6.png) | ![p7](examples/thesis-p7.png) | ![p8](examples/thesis-p8.png) |
+| Results | Charts | Chapter Content | Bibliography |
 
-8 pages -- title, colored theorem boxes, TikZ graph drawings, Petersen graph, graph coloring:
+</details>
+
+<details>
+<summary><strong>Academic Paper</strong> -- 11 pages, arXiv-compatible</summary>
+
+Times fonts, colorblind-safe Tol palette, multi-author affiliations via `authblk`, `siunitx` for consistent units, algorithm environments, theorem/proof. `\pdfoutput=1` for arXiv submission.
+
+| | | | |
+|---|---|---|---|
+| ![p1](examples/academic-paper-p1.png) | ![p2](examples/academic-paper-p2.png) | ![p3](examples/academic-paper-p3.png) | ![p4](examples/academic-paper-p4.png) |
+| Title & Abstract | Tables + Charts | Ablation Study | References |
+
+</details>
+
+<details>
+<summary><strong>Lecture Notes (Beautiful Mode)</strong> -- Color-coded theorem environments</summary>
+
+`lecture-notes.tex`: Palatino fonts, `tcolorbox` with semantic colors -- blue theorems, green definitions, orange examples, purple remarks. TikZ graph theory macros, custom math operators (`\E`, `\Var`, `\Cov`).
 
 | | | | |
 |---|---|---|---|
 | ![p1](examples/lecture-notes-p1.png) | ![p2](examples/lecture-notes-p2.png) | ![p3](examples/lecture-notes-p3.png) | ![p4](examples/lecture-notes-p4.png) |
 | ![p5](examples/lecture-notes-p5.png) | ![p6](examples/lecture-notes-p6.png) | ![p7](examples/lecture-notes-p7.png) | ![p8](examples/lecture-notes-p8.png) |
 
-#### Thesis / Dissertation
+</details>
 
-Full `book`-class document with Palatino fonts (`newpxtext`+`newpxmath`), `microtype` with protrusion and expansion, `mathtools`, `cleveref`, `bookmark`, `emptypage`, `csquotes`, and `algorithm`+`algpseudocode`. Front matter (title page, declaration, abstract, acknowledgments, TOC), main chapters with proper theorem environments, appendices, and bibliography. Bindingoffset for professional printing.
+<details>
+<summary><strong>Academic CV</strong> -- Multi-page with publications, grants, teaching</summary>
 
-38 pages -- title page, abstract, TOC, chapters with math, algorithms, TikZ architecture diagrams, heatmaps, bar charts, results tables, bibliography, appendix:
-
-| | | | |
-|---|---|---|---|
-| ![p1](examples/thesis-p1.png) | ![p2](examples/thesis-p2.png) | ![p3](examples/thesis-p3.png) | ![p4](examples/thesis-p4.png) |
-| Title Page | Table of Contents | Literature Review | TikZ Architecture Diagram |
-| ![p5](examples/thesis-p5.png) | ![p6](examples/thesis-p6.png) | ![p7](examples/thesis-p7.png) | ![p8](examples/thesis-p8.png) |
-| Results Tables | Heatmap & Bar Chart | Chapter Content | Bibliography |
-
-#### Academic Paper
-
-Professional research paper with Times fonts (`newtxtext`+`newtxmath`), `microtype`, `mathtools` with `\DeclarePairedDelimiter`, `cleveref` with custom `\crefname` configs, `authblk` for multi-author affiliations, `siunitx`, `algorithm`+`algpseudocode`, `amsthm` theorem environments, and colorblind-safe Tol palette. arXiv-compatible (`\pdfoutput=1`). Structure: Abstract, Introduction, Related Work, Method (with theorem/proof/algorithm), Experiments (with subfigures and ablation), Conclusion.
-
-11 pages -- title, abstract, theorems & proofs, algorithm, pgfplots line chart & TikZ scatter plot, results tables, ablation, bibliography:
-
-| | | | |
-|---|---|---|---|
-| ![p1](examples/academic-paper-p1.png) | ![p2](examples/academic-paper-p2.png) | ![p3](examples/academic-paper-p3.png) | ![p4](examples/academic-paper-p4.png) |
-| Title & Abstract | Table + Charts (pgfplots & TikZ) | Ablation Tables & Conclusion | References |
-
-#### Academic CV
-
-Multi-page curriculum vitae with sections for publications (numbered: [J1], [C1], [W1]), grants with dollar amounts, teaching, student advising (current + graduated with placements), professional service, and invited talks. ORCID and Google Scholar links.
+Numbered publications ([J1], [C1], [W1]), grants with dollar amounts, student advising (current + graduated), professional service, invited talks. ORCID and Google Scholar links.
 
 | | | | |
 |---|---|---|---|
 | ![p1](examples/academic-cv-p1.png) | ![p2](examples/academic-cv-p2.png) | ![p3](examples/academic-cv-p3.png) | ![p4](examples/academic-cv-p4.png) |
 
-#### Homework / Assignment Submission
+</details>
 
-The `homework.tex` template handles the most frequent STEM student use case -- weekly problem sets with math, proofs, and code. Toggle solutions on/off with a single command (`\showsolutionstrue` / `\showsolutionsfalse`).
+<details>
+<summary><strong>Homework / Assignment</strong> -- Solution toggle</summary>
 
-- Custom `problem` and `solution` environments with automatic numbering
-- Code listings with syntax highlighting (Python, Java, C++, Matlab)
-- Honor code section with signature line
-- Customizable header fields: course name, assignment number, student name/ID, due date
-- 6 example problems included: calculus, proof by induction, Python algorithm, matrix algebra, kinematics, Java OOP
+Custom `problem`/`solution` environments, code listings (Python, Java, C++, Matlab), honor code section. Toggle solutions globally with `\showsolutionstrue`/`\showsolutionsfalse`.
 
-```
-"Create a calculus homework with 5 problems and solutions"
-"Make a CS assignment template with Python code problems"
-```
+</details>
 
-#### Lab Report
+<details>
+<summary><strong>Lab Report</strong> -- STEM lab writeups</summary>
 
-The `lab-report.tex` template covers weekly STEM lab writeups with proper scientific formatting -- uncertainties, SI units, data tables, and graphs.
+`siunitx` for uncertainties and SI units, `pgfplots` for data with error bars, structured sections: abstract → theory → procedure → data → analysis → discussion → conclusion.
 
-- `siunitx` for SI units and uncertainty notation throughout
-- `pgfplots` for data visualization (scatter plots with error bars, theoretical curves)
-- `booktabs` for professional data tables
-- Structured sections: abstract, theory, procedure, data/results, analysis, discussion (error analysis), conclusion, references, appendix
-- Example: pendulum period measurement with full error propagation
-
-```
-"Write a physics lab report for measuring the speed of sound"
-"Create a chemistry lab report template with titration data"
-```
+</details>
 
 ---
 
-### Scientific Posters -- 2 Orientations, 5 Color Schemes, 3 Layouts
+### Scientific Posters -- `tikzposter` class
 
-Full conference poster system built on `tikzposter` class with interactive workflow:
-
-**Step A -- Conference & Orientation:**
-
-| Conference | Orientation | Dimensions |
-|---|---|---|
-| Most conferences (default) | Portrait A0 | 841mm x 1189mm |
-| NeurIPS / ICML / CVPR / ICLR | Landscape A0 | 1189mm x 841mm |
-| NeurIPS workshop | Custom | 24" x 36" |
-| CVPR | Custom | 84" x 42" |
-
-**Step B -- Layout Archetype:**
+Interactive workflow asks: conference → orientation → layout → color scheme.
 
 | Layout | Usage | Description |
 |---|---|---|
-| **Traditional Column** | 70% of posters | 2-col (portrait) or 3-col (landscape) |
-| **#BetterPoster** | 10% (growing) | Central billboard with ONE key finding in 60-80pt text |
-| **Visual-Heavy** | 15% | Large central figure (40-50% of space) |
+| Traditional Column | ~70% of posters | 2-column (portrait) or 3-column (landscape) |
+| #BetterPoster | ~10% (growing) | Central billboard with ONE key finding at 60-80pt |
+| Visual-Heavy | ~15% | Large central figure consuming 40-50% of space |
 
-**Step C -- Color Scheme:**
-
-| Scheme | Best For | Colors |
-|---|---|---|
-| Navy + Amber | Professional, high contrast | Dark navy headers, amber accents |
-| Tech Purple | CS / ML / AI conferences | Deep purple + hot pink |
-| Forest Green | Biology, environmental science | Deep green + lime |
-| Medical Teal | Healthcare, neuroscience | Teal headers + rose accents |
-| Minimal Dark | Modern, high contrast | Dark slate + white |
-
-Both portrait and landscape templates include commented geometry presets for specific conference sizes, QR code support, `tikzfigure` environments for captioned figures, and `innerblock`/`coloredbox` for highlighted callouts.
+Conference presets: NeurIPS, ICML, CVPR, ICLR (main + workshop sizes).
 
 | Portrait A0 | Landscape A0 |
 |---|---|
-| ![Portrait Poster](examples/poster.png) | ![Landscape Poster](examples/poster-landscape.png) |
+| ![Portrait](examples/poster.png) | ![Landscape](examples/poster-landscape.png) |
 
 ---
 
-### Book
+### Book -- Full-Length Publishing Template
 
-Full `book`-class document with Palatino fonts (`newpxtext`+`newpxmath`), `microtype` with protrusion and expansion, classical asymmetric margins (inner/outer/top/bottom), `\linespread{1.35}` for comfortable reading, `lettrine` drop caps at chapter openings, `emptypage` for blank verso pages, `amsthm` theorem environments, `algorithm`+`algpseudocode`, `cleveref`, `csquotes`, `imakeidx` (modern index), `bookmark`, and colophon. Includes half-title, full title, copyright page (ISBN, edition, disclaimers), dedication, preface, acknowledgments, parts, chapters with epigraphs, index, and bibliography.
+`book` class, 37+ pages. Palatino fonts, `lettrine` drop caps, `imakeidx` for indexing. Structure: half-title → full title → copyright page (ISBN slot) → dedication → preface → acknowledgments → TOC → parts → chapters with epigraphs → appendices → bibliography → index → colophon.
 
-37 pages -- half title, full title, copyright, TOC, preface, acknowledgments, chapters with drop caps and epigraphs, theorems, algorithms, bibliography, index:
+<details>
+<summary>Book preview screenshots</summary>
 
 | | | | | |
 |---|---|---|---|---|
 | ![p1](examples/book-p1.png) | ![p2](examples/book-p2.png) | ![p3](examples/book-p3.png) | ![p4](examples/book-p4.png) | ![p5](examples/book-p5.png) |
 | Half Title | Full Title | Copyright | TOC | Preface |
-| ![p6](examples/book-p6.png) | ![p7](examples/book-p7.png) | ![p8](examples/book-p8.png) | ![p9](examples/book-p9.png) | ![p10](examples/book-p10.png) |
-| Acknowledgments | Part I | Ch 1: Drop Caps | Definitions & Theorems | Notation & Summary |
+
+</details>
 
 ---
 
-### Exam / Quiz
+### Exam / Quiz -- `exam` class
 
-Built on the `exam` class with automatic grading table, point tracking, and solution toggle (`\printanswers`).
+6 question types (multiple choice, true/false, fill-in-blank, matching, short answer, essay). Point values per question, `\gradetable[h][questions]` for grading grid. `\printanswers` / `\noprintanswers` toggles solution visibility.
 
-**Question types:** Multiple choice, True/False, fill-in-the-blank, matching, short answer, long answer/essay -- each with configurable point values and solution spaces.
+<details>
+<summary>Exam preview screenshots</summary>
 
 | | | | | | |
 |---|---|---|---|---|---|
 | ![p1](examples/exam-p1.png) | ![p2](examples/exam-p2.png) | ![p3](examples/exam-p3.png) | ![p4](examples/exam-p4.png) | ![p5](examples/exam-p5.png) | ![p6](examples/exam-p6.png) |
 
+</details>
+
 ---
 
-### Cheat Sheets / Reference Cards
+### Cheat Sheets -- 3 Variants
 
-Purpose-built templates for condensing large amounts of information into compact, scannable reference cards. Three specialized variants:
-
-| Template | Best For | Layout | Features |
+| Template | Columns | Font | Orientation |
 |---|---|---|---|
-| **Cheat Sheet (General)** | Course references, quick lookups | Landscape 3-column | Colored sections, formulas, tables, code, lists. 7pt body text, front+back |
-| **Cheat Sheet (Exam)** | Formula sheets, exam aids | Portrait 2-column | Maximum density, 6pt text, B&W printer friendly, theorem/definition/formula boxes |
-| **Cheat Sheet (Code)** | Programming references, CLI guides | Landscape 4-column | Syntax highlighting, API docs, language quick references |
+| `cheatsheet.tex` | 3 | 7pt | Landscape |
+| `cheatsheet-exam.tex` | 2 | 6pt | Portrait |
+| `cheatsheet-code.tex` | 4 | 7pt | Landscape |
 
-#### System Capabilities
-
-- **3 purpose-built templates** optimized for different use cases (general reference, exam conditions, programming)
-- **Interactive configuration workflow** -- type selection, source material upload, customization options
-- **PDF-to-cheatsheet pipeline** -- condense lecture notes, textbooks, past papers into compact reference cards
-- **Customizable color schemes** -- change 6 color values in preamble to match your preferences
-- **Flexible layout** -- supports 2-5 columns, any paper size, portrait/landscape orientation
-- **Production-tested packages:**
-  - `extarticle` for small fonts (6pt-7pt body text)
-  - `tcolorbox` for colored definition/theorem/formula boxes
-  - `microtype` for maximum text density and readability
-  - `listings` or `minted` for syntax-highlighted code blocks
-- **Exam-aware design:**
-  - B&W safe option for grayscale printing
-  - Student name/ID header area
-  - Grayscale-only color scheme (no color dependencies)
-
-#### Example: Algebraic Geometry Cheatsheet (from 162-page PDF)
-
-Generated from Harvard Math 137 lecture notes -- 162 pages condensed into a 2-page colorful reference card with continuous column flow:
+<details>
+<summary>Cheatsheet example: Algebraic Geometry (162 pages → 2 pages)</summary>
 
 | | |
 |---|---|
 | ![Cheatsheet p1](examples/cheatsheet-p1.png) | ![Cheatsheet p2](examples/cheatsheet-p2.png) |
 | Page 1 -- Affine/Projective Space, Varieties, Morphisms | Page 2 -- Sheaves, Schemes, Cohomology, Key Examples |
 
-#### Usage Examples
-
-```
-"Create a calculus exam cheat sheet"
-"Condense my lecture notes PDF into a reference card"
-"Make a Python quick reference card"
-"Generate a data structures cheat sheet with complexity tables"
-"Create a physics formula sheet for my final exam"
-```
-
-The skill will:
-1. Ask which template type fits your use case (general/exam/code)
-2. Request source material (PDF, notes, or description of content)
-3. Configure layout (columns, color scheme, content density)
-4. Generate the cheat sheet with optimal typography for small-format printing
-5. Compile to PDF with page-by-page PNG previews
+</details>
 
 ---
 
-### Interactive / Dynamic Content
+### Interactive / Dynamic Templates
 
-Four systems for producing documents that go beyond static PDFs: fillable forms, conditional content, mail merge, and version diffing.
-
-#### Fillable PDF Forms
-
-The `fillable-form.tex` template produces PDFs with interactive form fields that can be filled in Adobe Reader or Acrobat. Built on hyperref's form support.
-
-**Field types supported:**
-| Field | Command | Usage |
-|---|---|---|
-| Text input | `\TextField` | Names, emails, addresses |
-| Multi-line text | `\TextField[multiline=true]` | Comments, essays |
-| Checkbox | `\CheckBox` | Agreement toggles, skill selection |
-| Radio buttons | `\ChoiceMenu[radio]` | Single-select options |
-| Dropdown | `\ChoiceMenu[combo]` | Country, education level |
-| Push button | `\PushButton` | Reset, print, submit |
-
-**Custom helpers** for rapid form building:
-
-```latex
-\FormField[10cm]{First Name}{firstName}        % labeled text field
-\FormTextArea[\textwidth]{Comments}{notes}{3cm} % multi-line area
-\FormCheck{Programming}{skill_prog}             % checkbox with label
-\FormDropdown{Education}{edu}{High School, BA, MA, PhD} % dropdown
-```
-
-> **Note:** Full form interactivity requires Adobe Reader/Acrobat. Browser PDF viewers have limited support.
-
-#### Conditional Content
-
-The `conditional-document.tex` template demonstrates toggle-based conditional sections using `etoolbox`. Configure documents by flipping switches at the top of the file:
-
-```latex
-\toggletrue{showTOC}         % include table of contents
-\togglefalse{showAppendix}   % exclude appendix
-\toggletrue{isConfidential}  % add CONFIDENTIAL watermark
-\toggletrue{isDraft}         % add line numbers + DRAFT watermark
-```
-
-**12 toggles:** showTOC, showLOF, showLOT, showAppendix, showAcknowledgments, showAbstract, showWatermark, isDraft, isConfidential, showCoverPage, showPageNumbers, showHeaders.
-
-**3 visual profiles:** corporate (Helvetica, navy), academic (Palatino, dark green), minimal (Latin Modern, grayscale). Switch with one line: `\def\docprofile{corporate}`.
-
-**Template variables** with CLI override:
-
-```latex
-\providecommand{\doctitle}{Default Title}  % override from command line:
-% pdflatex "\def\doctitle{Custom Title}\input{document.tex}"
-```
-
-#### Mail Merge
-
-Generate N personalized documents from a single template + CSV/JSON data source. The `mail_merge.py` script handles template rendering, compilation, and optional PDF merging.
-
-```bash
-# Basic: 3 records -> 3 personalized PDFs
-python3 scripts/mail_merge.py template.tex data.csv --output-dir ./outputs
-
-# With custom naming and merged output
-python3 scripts/mail_merge.py template.tex data.csv \
-    --output-dir ./outputs --name-field last_name \
-    --merge --merge-name all_letters.pdf
-
-# Parallel compilation (4 workers)
-python3 scripts/mail_merge.py template.tex data.csv \
-    --output-dir ./outputs --workers 4
-```
-
-**Two template modes:**
-| Mode | Syntax | Features |
-|---|---|---|
-| Simple | `{{variable}}` | Variable substitution, auto LaTeX escaping |
-| Jinja2 | `<< variable >>`, `<% if ... %>` | Conditionals, loops, filters |
-
-**Data sources:** CSV, JSON (array or `{records: [...]}` wrapper), JSONL.
-
-The `mail-merge-letter.tex` template is included as a starter -- company-branded letter with placeholders for name, title, company, address, salutation, and position.
-
-#### Version Diffing (latexdiff)
-
-Generate change-tracked PDFs that highlight additions and deletions between two versions of a document. The `latex_diff.sh` script wraps `latexdiff` with auto-installation, git integration, and compilation.
-
-```bash
-# Compare two files
-bash scripts/latex_diff.sh old.tex new.tex --output diff.tex --compile
-
-# Compare against a git commit
-bash scripts/latex_diff.sh document.tex --git-rev HEAD~3 --compile
-
-# Compare against a branch/tag
-bash scripts/latex_diff.sh document.tex --git-rev v1.0 --compile
-
-# Custom markup style and colors
-bash scripts/latex_diff.sh old.tex new.tex \
-    --type CFONT --color-add green --color-del red --compile
-```
-
-**6 markup types:** UNDERLINE (default), CTRADITIONAL, CFONT, CHANGEBAR, CULINECHBAR, FONTSTRIKE.
-
-Additions are shown in blue (underlined by default), deletions in red (strikethrough). The `--flatten` flag handles multi-file documents with `\input`/`\include`.
+| Template | What It Does |
+|---|---|
+| `fillable-form.tex` | PDF form fields: text inputs, checkboxes, radio buttons, dropdowns, push buttons (via `hyperref`) |
+| `conditional-document.tex` | 12 `etoolbox` toggles (showTOC, isDraft, isConfidential...), 3 visual profiles, CLI-overridable with `\newcommand` |
+| `mail-merge-letter.tex` | Template for `mail_merge.py` -- `{{name}}` placeholders |
 
 ---
 
@@ -357,305 +433,191 @@ Additions are shown in blue (underlined by default), deletions in red (strikethr
 | | | |
 |---|---|---|
 | ![Letter](examples/letter.png) | ![Cover Letter](examples/cover-letter.png) | ![Invoice](examples/invoice.png) |
-| **Business Letter** -- Colored letterhead bar, logo placeholder, signature block, CC/enclosures | **Cover Letter** -- Job application format, 4-paragraph structure, color-matched to resume | **Invoice** -- Line items table, alternating row colors, totals with tax, payment terms |
+| `letter.tex` -- Business letter | `cover-letter.tex` -- Job application | `invoice.tex` -- Professional invoice |
 
 ---
 
-### Report
+### Presentation (`presentation.tex`) -- Beamer 16:9
 
-Executive summary, findings, recommendations structure with TOC, pgfplots bar charts, TikZ flowcharts, colored data tables, and fancyhdr headers.
+Custom theme, widescreen aspect ratio, title/section/content/two-column/code/image/thank-you frame types.
 
-| | | | |
-|---|---|---|---|
-| ![p1](examples/report-p1.png) | ![p2](examples/report-p2.png) | ![p3](examples/report-p3.png) | ![p4](examples/report-p4.png) |
-
-### Presentation (Beamer)
-
-Widescreen (16:9) slides with Madrid theme. Title slide, outline, section frames, two-column layouts, block environments, equations, TikZ diagrams, booktabs tables.
+<details>
+<summary>Slide previews</summary>
 
 | | | | | |
 |---|---|---|---|---|
 | ![p1](examples/presentation-p1.png) | ![p2](examples/presentation-p2.png) | ![p3](examples/presentation-p3.png) | ![p4](examples/presentation-p4.png) | ![p5](examples/presentation-p5.png) |
 | ![p6](examples/presentation-p6.png) | ![p7](examples/presentation-p7.png) | ![p8](examples/presentation-p8.png) | ![p9](examples/presentation-p9.png) | ![p10](examples/presentation-p10.png) |
 
----
-
-## Visual Elements
-
-Every document can include any combination of:
-
-### Charts & Graphs
-
-**Inline (pgfplots):** Line, bar, scatter, pie charts compiled directly in LaTeX -- no external tools needed.
-
-**External (matplotlib):** 9 chart types generated via script and included as images:
-
-```
-bar | line | scatter | pie | heatmap | box | histogram | area | radar
-```
-
-```bash
-python3 scripts/generate_chart.py bar \
-    --data '{"x":["Q1","Q2","Q3","Q4"],"y":[120,150,180,210]}' \
-    --output chart.png --title "Quarterly Revenue"
-```
-
-Supports CSV input (`--csv data.csv`), custom colors, DPI, figure size, and matplotlib styles.
-
-![Charts](examples/charts.png)
-
-### Diagrams
-
-**TikZ:** Flowcharts, architecture diagrams, block diagrams, graph theory diagrams -- compiled inline.
-
-**Mermaid:** Flowcharts, sequence diagrams, class diagrams, ER diagrams, Gantt charts, pie charts, mindmaps -- rendered to PNG/PDF via mermaid-cli:
-
-```bash
-bash scripts/mermaid_to_image.sh diagram.mmd output.png --theme forest
-```
-
-### Tables
-
-CSV-to-LaTeX conversion with 4 styles:
-
-```bash
-python3 scripts/csv_to_latex.py data.csv --style booktabs --alternating-rows --caption "Results"
-```
-
-Styles: `booktabs` (professional), `grid` (full borders), `simple` (minimal lines), `plain` (no lines).
-
-### Other Visual Elements
-
-- **QR codes** -- `\qrcode` package, used in posters and business documents
-- **Watermarks** -- text (DRAFT, CONFIDENTIAL) or logo background
-- **AI-generated images** -- via the `generate-image` skill
-- **Code listings** -- `listings` or `minted` packages with syntax highlighting
-- **Algorithms** -- `algorithm`/`algorithmic` packages
-- **Colored boxes** -- `tcolorbox` for callouts, theorems, warnings
-- **SI units** -- `siunitx` for consistent unit formatting
+</details>
 
 ---
 
-## Format Conversion
+### Report (`report.tex`)
 
-### Document Conversion (Pandoc)
+Executive summary, findings, recommendations with TOC, pgfplots bar charts, TikZ flowcharts, colored data tables.
 
-Bidirectional conversion between any combination:
+<details>
+<summary>Report preview screenshots</summary>
+
+| | | | |
+|---|---|---|---|
+| ![p1](examples/report-p1.png) | ![p2](examples/report-p2.png) | ![p3](examples/report-p3.png) | ![p4](examples/report-p4.png) |
+
+</details>
+
+---
+
+## Format Conversion (`convert_document.sh` -- 316 lines)
+
+Pandoc wrapper with auto-detection of input/output formats from file extensions:
 
 ```
 Markdown <-> LaTeX <-> DOCX <-> HTML <-> PDF
 ```
 
 ```bash
-bash scripts/convert_document.sh input.md output.tex
-bash scripts/convert_document.sh input.docx output.tex --bibliography refs.bib --toc
-bash scripts/convert_document.sh input.tex output.pdf
+# Markdown to LaTeX
+bash scripts/convert_document.sh notes.md notes.tex --standalone --toc
+
+# DOCX to LaTeX with bibliography
+bash scripts/convert_document.sh manuscript.docx manuscript.tex --bibliography refs.bib --csl ieee.csl
+
+# LaTeX to PDF (uses lualatex if available for Unicode)
+bash scripts/convert_document.sh paper.tex paper.pdf
 ```
 
-Supports custom templates, bibliography (.bib), citation styles (.csl), table of contents, and MathJax for HTML output.
-
-### PDF-to-LaTeX Reconstruction
-
-Converts scanned, handwritten, or printed PDFs back into clean, compilable LaTeX. Uses a 3-tier scaling strategy empirically validated on a 115-page handwritten math PDF:
-
-| PDF Size | Strategy | Agents | Error Rate |
-|---|---|---|---|
-| **1-10 pages** | Single agent | 1 | 0-2 minor (trivially fixable) |
-| **11-20 pages** | Split in half | 2 | Avoids error cliff at 10+ pages |
-| **21+ pages** | Batch-7 pipeline | ceil(N/7) | Optimal -- 0 errors per batch |
-
-**Why batch-7:** Testing showed 0 errors at 7 pages, 2 structural errors at 10, and 11 catastrophic errors at 15. The error cliff between 10 and 15 pages is steep.
-
-**4 conversion profiles** tune output for content type:
-
-| Content Type | Profile | Specialization |
-|---|---|---|
-| Math / science | `math-notes.md` | amsmath, amsthm, theorem environments, beautiful mode |
-| Business | `business-document.md` | fancyhdr, tabularx, financial tables |
-| Legal | `legal-document.md` | Roman numeral sections, 1.5 spacing, nested clauses |
-| General | `general-notes.md` | Minimal packages, adaptive |
-
----
-
-## Compilation Engine
-
-`compile_latex.sh` handles the entire build pipeline:
-
-```bash
-bash scripts/compile_latex.sh document.tex --preview --preview-dir ./outputs
-```
-
-**What it does automatically:**
-- Detects the right engine: `fontspec`/`xeCJK`/`polyglossia` -> XeLaTeX, `luacode`/`luatextra` -> LuaLaTeX, otherwise pdfLaTeX
-- Detects bibliography system: `\bibliography{}` -> bibtex, `\addbibresource{}` -> biber
-- Detects and runs `makeindex` and `makeglossaries` when needed
-- Runs 2-3 passes to resolve all cross-references
-- Generates page-by-page PNG previews (via pdftoppm)
-- Installs missing TeX Live packages automatically
-- Cleans up auxiliary files (.aux, .log, .toc, .bbl, .idx, etc.)
-
-**Options:**
-
-```bash
---preview              # Generate PNG previews
---preview-dir <dir>    # Where to put PNGs
---scale <pixels>       # Max PNG dimension (default: 1200)
---engine <engine>      # Force pdflatex, xelatex, or lualatex
---auto-fix             # Enable smart error recovery (see below)
-```
-
-### Auto-Fix Mode
-
-Pass `--auto-fix` to automatically detect and fix common LaTeX issues:
-
-```bash
-bash scripts/compile_latex.sh document.tex --auto-fix --preview
-```
-
-**Stage 1 -- Float placement:** Detects `\begin{figure}` and `\begin{table}` without placement specifiers and adds `[htbp]`. Only touches naked floats -- already-placed ones are left alone.
-
-**Stage 2 -- Overfull hbox:** If overfull hbox warnings are detected after compilation, automatically injects `\usepackage{microtype}` and recompiles. Fixes ~90% of overflow cases.
-
-**Intelligent error messages:** When compilation fails, the script parses the `.log` file and translates cryptic LaTeX errors into actionable English:
-
-| LaTeX Error | Translated Message |
-|---|---|
-| `Missing $ inserted` | "You used a math symbol outside of $ delimiters" |
-| `Undefined control sequence` | "Unknown command -- check spelling or add the required \\usepackage" |
-| `File not found` | "Package or file not found -- check the name" |
-| `Missing \\begin{document}` | "Document preamble issue" |
-| `Too many }'s` | "Unbalanced braces" |
-| `Citation undefined` | "Bibliography reference not found" |
-| `Overfull \\hbox` | "Text overflows margins -- try \\usepackage{microtype} or --auto-fix" |
+Auto-selects `--standalone` for most output formats. Adds `--mathjax` for HTML output. Prefers `lualatex` PDF engine for Unicode support when available.
 
 ---
 
 ## PDF Utilities
 
-### Encryption
+All 4 scripts use `qpdf` (auto-installed if missing via `install_deps.sh`):
 
-Password-protect PDFs with AES-256 encryption:
-
-```bash
-bash scripts/pdf_encrypt.sh document.pdf --user-password "secret"
-bash scripts/pdf_encrypt.sh document.pdf --user-password "secret" --restrict-print --restrict-modify
-```
-
-### Merge
-
-Combine multiple PDFs into one:
+| Script | What It Does | Key Flags |
+|---|---|---|
+| `pdf_encrypt.sh` | AES-256 password protection | `--restrict-print`, `--restrict-copy`, `--restrict-modify`, `--owner-password` |
+| `pdf_merge.sh` | Combine 2+ PDFs into one | `--output combined.pdf` |
+| `pdf_optimize.sh` | Compress + linearize for web | `--linearize`, `--compress-streams=y`, `--recompress-flate`, `--object-streams=generate` |
+| `pdf_extract_pages.sh` | Extract page ranges | `--pages 1-10`, `--pages odd`, `--pages even`, `--pages last:3`, `--pages 1,3,5-8` |
 
 ```bash
-bash scripts/pdf_merge.sh file1.pdf file2.pdf file3.pdf -o merged.pdf
-```
+# Encrypt with restrictions
+bash scripts/pdf_encrypt.sh report.pdf --user-password secret --restrict-print --restrict-modify
 
-### Optimize
+# Merge chapters into book
+bash scripts/pdf_merge.sh ch1.pdf ch2.pdf ch3.pdf --output book.pdf
 
-Compress and linearize PDFs for web delivery and email:
+# Compress for email (shows % reduction)
+bash scripts/pdf_optimize.sh large.pdf --output small.pdf
 
-```bash
-bash scripts/pdf_optimize.sh document.pdf optimized.pdf
+# Extract appendix
+bash scripts/pdf_extract_pages.sh thesis.pdf --pages last:3 --output appendix.pdf
 ```
 
 ---
 
-## LaTeX Quality Tools
+## LaTeX Quality & Analysis Tools
 
-### Lint
-
-Run `chktex` with formatted, human-readable output before compilation:
-
-```bash
-bash scripts/latex_lint.sh document.tex
-```
-
-### Word Count
-
-Strip LaTeX commands and count words (useful for conference submission limits):
-
-```bash
-bash scripts/latex_wordcount.sh document.tex
-```
-
-### Document Analysis
-
-Get document statistics -- word count, figure count, table count, citation count, section balance:
-
-```bash
-bash scripts/latex_analyze.sh document.tex
-```
-
-### Bibliography Auto-Fetch
-
-Download BibTeX entries from DOIs:
-
-```bash
-bash scripts/fetch_bibtex.sh 10.1145/359576.359579
-bash scripts/fetch_bibtex.sh 10.1145/359576.359579 >> references.bib
-```
-
-### Diagram Conversion
-
-Convert Graphviz and PlantUML diagrams to PDF/PNG for inclusion in LaTeX documents:
-
-```bash
-bash scripts/graphviz_to_pdf.sh diagram.dot output.pdf
-bash scripts/plantuml_to_pdf.sh diagram.puml output.pdf
-```
+| Script | Lines | What It Does | Key Details |
+|---|---|---|---|
+| `latex_lint.sh` | 173 | Run `chktex` with colored output | `--strict` treats warnings as errors |
+| `latex_wordcount.sh` | 149 | Word count via `detex` | `--detailed` adds figures/tables/equations/citations/section count |
+| `latex_analyze.sh` | 216 | Comprehensive document analysis | Checks: missing labels on figures/tables, unreferenced `\label{}`, TODO/FIXME comments, double spaces |
+| `latex_package_check.sh` | 265 | Pre-flight `\usepackage` verification | Uses `kpsewhich` for each `.sty`, `--install` auto-installs via `tlmgr`, also checks `\documentclass` |
+| `latex_citation_extract.sh` | 342 | Citation analysis | Extracts all `\cite*{}` variants, counts per key, `--check` cross-refs against `.bib`, `--format json` for programmatic use |
+| `fetch_bibtex.sh` | 251 | Auto-download BibTeX entries | DOIs (via `doi.org` content negotiation) and arXiv IDs (via Atom XML API), `--append` mode |
+| `validate_latex.py` | 426 | Python syntax validator for batch files | 6 checks: balanced environments, undefined commands, floats in tcolorbox, TikZ outside tikzpicture, missing node labels, stray ampersands |
 
 ---
 
 ## Multi-Language Support
 
-| Language Family | Package | Engine |
+The compile script auto-selects the engine based on package imports in your document:
+
+| Language Family | Package | Auto-Selected Engine |
 |---|---|---|
 | European (French, German, Spanish...) | `babel` | pdfLaTeX |
-| CJK (Chinese, Japanese, Korean) | `xeCJK` | XeLaTeX (auto-detected) |
-| RTL (Arabic, Hebrew, Farsi) | `polyglossia` | XeLaTeX (auto-detected) |
+| CJK (Chinese, Japanese, Korean) | `xeCJK` | XeLaTeX |
+| RTL (Arabic, Hebrew, Farsi) | `polyglossia` | XeLaTeX |
 | Cyrillic (Russian, Ukrainian) | `babel` or `polyglossia` | pdfLaTeX or XeLaTeX |
 
-The compile script auto-selects the correct engine based on package imports.
+---
+
+## Cross-Platform Dependency System (`install_deps.sh` -- 237 lines)
+
+All scripts source this shared library for dependency management. It provides:
+
+- **Package manager detection:** `apt-get` → `brew` → `dnf` → `apk` → `pacman`
+- **Logical package mapping:** `install_packages texlive poppler imagemagick` resolves to platform-specific package names (e.g., `texlive` → `texlive-latex-base texlive-latex-extra ...` on apt, `--cask basictex` on brew)
+- **Deduplication:** Removes duplicate packages before installing
+- **Privileged execution:** Uses `sudo` if available, direct execution otherwise
+- **Post-install hooks:** Adds `/Library/TeX/texbin` to PATH on macOS after BasicTeX install
 
 ---
 
 ## Reference Documentation
 
-22 reference guides covering every aspect of the skill:
+22 reference guides in `references/`:
 
-| Guide | What It Covers |
+<details>
+<summary>Full index</summary>
+
+| Guide | Covers |
 |---|---|
-| `resume-ats-guide.md` | ATS parsing rules, LaTeX pitfalls, keyword optimization |
-| `poster-design-guide.md` | Conference presets, #BetterPoster, typography at distance, 5 color schemes |
-| `bibliography-guide.md` | BibTeX vs biblatex, citation commands, .bib format |
-| `advanced-features.md` | Watermarks, landscape, multi-language, algorithms, tcolorbox, siunitx, AI images |
-| `charts-and-graphs.md` | pgfplots patterns (line, bar, scatter, pie), TikZ chart examples |
-| `python-charts.md` | matplotlib generation (9 types), CSV input, styling |
-| `mermaid-diagrams.md` | Flowcharts, sequence, class, ER, Gantt, pie, mindmaps |
-| `format-conversion.md` | Pandoc pipeline, templates, bibliography integration |
-| `pdf-conversion.md` | Full PDF-to-LaTeX pipeline, scaling strategy, batch processing |
-| `tables-and-images.md` | Colored rows, multi-row/column, booktabs, nicematrix, long tables, TikZ |
-| `interactive-features.md` | Forms, conditional content, mail merge, version diffing |
-| `packages.md` | Common LaTeX package reference (iftex, fontspec, nicematrix, pdfx, and more) |
-| `visual-packages.md` | 24 installed TikZ/visualization packages with minimal working examples |
-| `graphviz-plantuml.md` | Graphviz and PlantUML diagram workflows, examples, best practices |
-| `pdf-extraction-prompts.md` | Prompt templates for PDF-to-LaTeX extraction accuracy |
-| `cheatsheet-guide.md` | Cheat sheet design patterns, column layouts, compact formatting |
-| `debugging-guide.md` | 20 common LaTeX errors, .log reading, debugging strategies |
+| `resume-ats-guide.md` | ATS parsing rules, keyword optimization, formatting do's and don'ts |
+| `poster-design-guide.md` | Conference presets, #BetterPoster layout, typography at poster scale |
+| `bibliography-guide.md` | BibTeX vs biblatex, `\cite` variants, CSL styles |
+| `advanced-features.md` | Watermarks, landscape sections, multi-language, algorithms, siunitx |
+| `charts-and-graphs.md` | pgfplots patterns (line, bar, scatter, pie, 3D) |
+| `python-charts.md` | matplotlib via `generate_chart.py` -- all 9 types, CSV input |
+| `mermaid-diagrams.md` | Flowcharts, sequence, class, ER, Gantt, pie, mindmap |
+| `format-conversion.md` | Pandoc pipeline, custom templates, bibliography integration |
+| `pdf-conversion.md` | Full PDF-to-LaTeX pipeline, batch processing, profiles |
+| `tables-and-images.md` | Colored rows, multi-row/column, booktabs, subfigures |
+| `interactive-features.md` | Forms, conditional content, mail merge, diffing |
+| `packages.md` | Common LaTeX package reference |
+| `visual-packages.md` | 24 TikZ/visualization packages with examples |
+| `graphviz-plantuml.md` | Graphviz & PlantUML workflows and examples |
+| `pdf-extraction-prompts.md` | LLM prompts for PDF-to-cheatsheet conversion |
+| `cheatsheet-guide.md` | Density optimization, compression techniques |
+| `debugging-guide.md` | 20 common errors explained, .log file reading |
 | `accessibility-guide.md` | PDF/A, PDF/UA, tagged PDFs, WCAG compliance |
-| `beamer-guide.md` | Beamer themes, overlays, code slides, handout mode |
-| `font-guide.md` | Font families, iftex, fontspec, fontawesome5, CJK support |
+| `beamer-guide.md` | Themes, overlays, code slides, handout mode |
+| `font-guide.md` | Font families, fontspec, fontawesome5 icons |
 | `collaboration-guide.md` | Git workflows, GitHub Actions, Docker, CI/CD for LaTeX |
-| `profiles/` | 4 conversion profiles (math, business, legal, general) |
+| `profiles/` | 4 OCR conversion profiles (math, business, legal, general) |
+
+</details>
 
 ---
 
 ## Installation
 
 ```bash
+# Install as a Claude Code skill
 cp -r latex-document ~/.claude/skills/
+
+# Or run full dependency setup
+bash setup.sh            # Installs: TeX Live, Poppler, ImageMagick, Pandoc, Python deps
+bash setup.sh --check    # Verify everything is installed
 ```
 
-The skill triggers automatically when you ask Claude Code to create any document, resume, poster, exam, report, book, thesis, or anything that should be a PDF.
+**System dependencies** (auto-installed by `setup.sh` on Debian/macOS/Fedora/Alpine/Arch):
+- **TeX Live** -- pdflatex, xelatex, lualatex, biber, makeindex, makeglossaries
+- **Poppler** -- `pdftoppm` for PNG previews, `pdfinfo` for page counts
+- **ImageMagick** -- `mogrify` for image resizing, `identify` for dimensions
+- **Pandoc** -- format conversion engine
+- **Python 3** + `matplotlib`, `numpy`, `pandas`
+- **qpdf** -- PDF encryption, merging, optimization, page extraction
+
+**Optional:**
+- **Node.js 18+** -- for Mermaid diagram conversion via `npx @mermaid-js/mermaid-cli`
+- **Java** -- for PlantUML rendering
+- **Graphviz** -- for `.dot` diagram rendering
+- **chktex** -- for LaTeX linting
+- **latexdiff** -- for version diffing
 
 ---
 
@@ -663,88 +625,64 @@ The skill triggers automatically when you ask Claude Code to create any document
 
 ```
 latex-document/
-├── SKILL.md                              # Skill definition (workflow, rules, anti-patterns)
-├── README.md
-├── assets/templates/                     # 27 compile-tested templates
-│   ├── resume-classic-ats.tex            #   ATS 10/10 -- finance, law, government
-│   ├── resume-modern-professional.tex    #   ATS 9/10 -- tech, corporate
-│   ├── resume-executive.tex              #   ATS 9/10 -- VP, Director, C-suite
-│   ├── resume-technical.tex              #   ATS 9/10 -- software, data, engineering
-│   ├── resume-entry-level.tex            #   ATS 9/10 -- new graduates
-│   ├── resume.tex                        #   Legacy (photo, tables -- not ATS)
-│   ├── homework.tex                      #   Homework/assignment (toggle solutions)
-│   ├── lab-report.tex                    #   STEM lab report (siunitx, pgfplots)
-│   ├── lecture-notes.tex                 #   Beautiful math notes (tcolorbox, TikZ graphs)
-│   ├── thesis.tex                        #   PhD dissertation (book class)
-│   ├── academic-paper.tex                #   Research paper (natbib)
+├── SKILL.md                              # Skill definition (1,340 lines)
+├── README.md                             # This file
+├── setup.sh                              # One-click installer (apt/brew/dnf/apk/pacman)
+├── requirements.txt                      # Python: matplotlib, numpy, pandas
+│
+├── assets/templates/                     # 27 production-tested .tex templates
+│   ├── resume-*.tex (x6)                 #   5 ATS-optimized + 1 legacy with photo
+│   ├── thesis.tex                        #   PhD/Masters dissertation
+│   ├── academic-paper.tex                #   arXiv-compatible research paper
 │   ├── academic-cv.tex                   #   Multi-page academic CV
+│   ├── lecture-notes.tex                 #   Color-coded theorem environments
+│   ├── homework.tex                      #   Homework with solution toggle
+│   ├── lab-report.tex                    #   STEM lab writeup with siunitx
 │   ├── book.tex                          #   Full book (parts, chapters, index)
-│   ├── poster.tex                        #   Portrait A0 poster (tikzposter)
-│   ├── poster-landscape.tex              #   Landscape A0 poster (tikzposter)
-│   ├── exam.tex                          #   Exam/quiz (exam class)
-│   ├── cheatsheet.tex                    #   Landscape 3-col reference card (colored)
-│   ├── cheatsheet-exam.tex               #   Portrait 2-col exam formula sheet (B&W)
-│   ├── cheatsheet-code.tex               #   Landscape 4-col programming reference
-│   ├── fillable-form.tex                 #   Fillable PDF form (hyperref fields)
-│   ├── conditional-document.tex          #   Toggle-based conditional sections
-│   ├── mail-merge-letter.tex             #   Mail merge letter template
-│   ├── letter.tex                        #   Formal business letter
-│   ├── cover-letter.tex                  #   Job application cover letter
-│   ├── invoice.tex                       #   Invoice with line items
+│   ├── poster.tex, poster-landscape.tex  #   A0 conference posters (tikzposter)
+│   ├── exam.tex                          #   Exam/quiz (exam class, 6 question types)
+│   ├── cheatsheet*.tex (x3)              #   General, exam, code reference cards
+│   ├── fillable-form.tex                 #   Interactive PDF form (hyperref)
+│   ├── conditional-document.tex          #   etoolbox toggle-driven content
+│   ├── mail-merge-letter.tex             #   Personalized letter template
+│   ├── letter.tex, cover-letter.tex      #   Business + job application letters
+│   ├── invoice.tex                       #   Professional invoice
 │   ├── report.tex                        #   Business report with charts
 │   ├── presentation.tex                  #   Beamer slides (16:9)
 │   └── references.bib                    #   Example bibliography
-├── scripts/                              #   22 automation scripts
-│   ├── compile_latex.sh                  #   .tex -> PDF + PNG (auto engine/bib/index/auto-fix)
-│   ├── generate_chart.py                 #   matplotlib charts (9 types, legends, multi-series)
-│   ├── csv_to_latex.py                   #   CSV -> LaTeX tables (4 styles)
-│   ├── mermaid_to_image.sh               #   Mermaid .mmd -> PNG/PDF
-│   ├── convert_document.sh               #   Pandoc format conversion
-│   ├── pdf_to_images.sh                  #   PDF -> page images (for OCR pipeline)
-│   ├── mail_merge.py                     #   Template + CSV/JSON -> N personalized PDFs
-│   ├── latex_diff.sh                     #   latexdiff wrapper (auto-install, git, compile)
-│   ├── latex_lint.sh                     #   chktex linting with colored output
-│   ├── pdf_encrypt.sh                    #   PDF password protection (AES-256)
-│   ├── pdf_merge.sh                      #   Merge multiple PDFs into one
-│   ├── pdf_optimize.sh                   #   Compress/linearize PDFs for web
-│   ├── pdf_extract_pages.sh             #   Extract page ranges from PDF (odd/even/ranges)
-│   ├── latex_wordcount.sh                #   Word count (strips LaTeX commands)
-│   ├── latex_analyze.sh                  #   Document statistics (figures, tables, citations)
-│   ├── latex_package_check.sh           #   Pre-flight package availability check
-│   ├── latex_citation_extract.sh        #   Citation analysis and .bib cross-reference
-│   ├── fetch_bibtex.sh                   #   Auto-download BibTeX from DOIs
-│   ├── validate_latex.py                #   Python LaTeX syntax validator
-│   ├── graphviz_to_pdf.sh               #   .dot -> PDF/PNG via Graphviz
-│   └── plantuml_to_pdf.sh               #   .puml -> PDF/PNG via PlantUML
-├── references/                           #   22 reference guides
-│   ├── resume-ats-guide.md
-│   ├── poster-design-guide.md
-│   ├── bibliography-guide.md
-│   ├── advanced-features.md
-│   ├── charts-and-graphs.md
-│   ├── python-charts.md
-│   ├── mermaid-diagrams.md
-│   ├── format-conversion.md
-│   ├── pdf-conversion.md
-│   ├── tables-and-images.md
-│   ├── interactive-features.md
-│   ├── packages.md
-│   ├── visual-packages.md               #   24 TikZ/visualization packages with examples
-│   ├── graphviz-plantuml.md              #   Graphviz & PlantUML diagram workflows
-│   ├── cheatsheet-guide.md              #   Cheat sheet design and layout
-│   ├── debugging-guide.md              #   20 common errors, .log reading, debugging
-│   ├── accessibility-guide.md          #   PDF/A, PDF/UA, tagged PDFs, WCAG
-│   ├── beamer-guide.md                 #   Beamer presentations, themes, overlays
-│   ├── font-guide.md                   #   Font selection, iftex, fontspec, icons
-│   ├── collaboration-guide.md          #   Git, GitHub Actions, Docker, CI/CD
-│   ├── pdf-extraction-prompts.md       #   LLM prompts for PDF-to-cheatsheet
-│   └── profiles/                         #   4 conversion profiles
-│       ├── math-notes.md
-│       ├── business-document.md
-│       ├── legal-document.md
-│       └── general-notes.md
-└── examples/                             #   Preview images
+│
+├── scripts/                              # 22 automation scripts
+│   ├── compile_latex.sh          (525)   #   Core: .tex → PDF + PNG
+│   ├── mail_merge.py             (574)   #   Template + data → N PDFs
+│   ├── generate_chart.py         (459)   #   9 chart types (matplotlib)
+│   ├── validate_latex.py         (426)   #   6-check syntax validator
+│   ├── latex_diff.sh             (409)   #   latexdiff + git integration
+│   ├── csv_to_latex.py           (364)   #   CSV → LaTeX tables (4 styles)
+│   ├── plantuml_to_pdf.sh        (362)   #   .puml → PDF/PNG/SVG
+│   ├── latex_citation_extract.sh (342)   #   Citation analysis + bib cross-ref
+│   ├── convert_document.sh       (316)   #   Pandoc format conversion
+│   ├── latex_package_check.sh    (265)   #   Pre-flight package checker
+│   ├── fetch_bibtex.sh           (251)   #   DOI/arXiv → BibTeX
+│   ├── graphviz_to_pdf.sh        (250)   #   .dot → PDF/PNG (6 engines)
+│   ├── pdf_extract_pages.sh      (247)   #   Extract page ranges
+│   ├── install_deps.sh           (237)   #   Cross-platform dependency lib
+│   ├── latex_analyze.sh          (216)   #   Document statistics + issues
+│   ├── pdf_encrypt.sh            (215)   #   AES-256 PDF encryption
+│   ├── mermaid_to_image.sh       (178)   #   .mmd → PNG/PDF
+│   ├── latex_lint.sh             (173)   #   chktex with colored output
+│   ├── pdf_optimize.sh           (157)   #   Compress + linearize
+│   ├── latex_wordcount.sh        (149)   #   Word count via detex
+│   ├── pdf_to_images.sh          (144)   #   PDF → page images (OCR pipeline)
+│   └── pdf_merge.sh              (136)   #   Merge multiple PDFs
+│
+├── references/                           # 22 deep-dive reference guides
+│   ├── *.md (x22)
+│   └── profiles/ (x4)                    #   OCR profiles: math, business, legal, general
+│
+└── examples/                             # 78 PNG preview images of compiled templates
 ```
+
+---
 
 ## License
 
