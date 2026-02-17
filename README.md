@@ -220,6 +220,15 @@ Purpose-built templates for condensing large amounts of information into compact
   - Student name/ID header area
   - Grayscale-only color scheme (no color dependencies)
 
+#### Example: Algebraic Geometry Cheatsheet (from 162-page PDF)
+
+Generated from Harvard Math 137 lecture notes -- 162 pages condensed into a 2-page colorful reference card with continuous column flow:
+
+| | |
+|---|---|
+| ![Cheatsheet p1](examples/cheatsheet-p1.png) | ![Cheatsheet p2](examples/cheatsheet-p2.png) |
+| Page 1 -- Affine/Projective Space, Varieties, Morphisms | Page 2 -- Sheaves, Schemes, Cohomology, Key Examples |
+
 #### Usage Examples
 
 ```
