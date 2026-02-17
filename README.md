@@ -644,12 +644,44 @@ latex-document/
 │   ├── pdf_to_images.sh          (144)   #   PDF → page images (OCR pipeline)
 │   └── pdf_merge.sh              (136)   #   Merge multiple PDFs
 │
-├── references/                           # 22 deep-dive reference guides
-│   ├── *.md (x22)
+├── references/                           # 25 deep-dive reference guides
+│   ├── *.md (x25)
 │   └── profiles/ (x4)                    #   OCR profiles: math, business, legal, general
+│
+├── tests/                               # 199 tests across 5 test suites
+│   ├── test_python_scripts.py   (1224)  #   83 pytest tests (mail_merge, chart, csv, validate)
+│   ├── test_compile_latex.sh     (844)  #   36 tests (engine detection, auto-fix, microtype)
+│   ├── test_analysis_tools.sh   (1093)  #   47 tests + 6 skipped (lint, analyze, citations, diff)
+│   ├── test_pdf_utils.sh         (834)  #   33 tests (encrypt, merge, optimize, extract, convert)
+│   ├── test_templates.sh         (276)  #   Template compilation framework
+│   ├── run_all_tests.sh          (191)  #   Master test runner
+│   ├── fixtures/                        #   8 test fixtures (.tex, .bib, .dot, .puml, .mmd)
+│   └── README.md                        #   Test documentation
 │
 └── examples/                             # 78 PNG preview images of compiled templates
 ```
+
+---
+
+## Testing
+
+199 tests covering all 22 scripts, 0 failures:
+
+```bash
+# Run all tests
+bash tests/run_all_tests.sh
+
+# Run individual suites
+python -m pytest tests/test_python_scripts.py -v    # 83 tests: mail_merge, generate_chart, csv_to_latex, validate_latex
+bash tests/test_compile_latex.sh                     # 36 tests: engine detection, bibliography, auto-fix floats, microtype
+bash tests/test_pdf_utils.sh                         # 33 tests: pdf_encrypt, pdf_merge, pdf_optimize, pdf_extract, convert, wordcount
+bash tests/test_analysis_tools.sh                    # 47 tests: lint, analyze, package check, citations, graphviz, plantuml, mermaid, diff
+bash tests/test_templates.sh                         # Compiles all 27 templates, verifies PDF output
+```
+
+Tests found and fixed 2 real bugs in `compile_latex.sh`:
+1. Engine detection matched `%\usepackage{fontspec}` in comments -- now filters commented lines before checking
+2. Float auto-fix regex failed when `\begin{figure}` was at end of line -- now uses two-pass approach
 
 ---
 
