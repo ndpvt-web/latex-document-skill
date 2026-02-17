@@ -115,7 +115,7 @@ extract_packages() {
     tr ',' '\n' | \
     sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | \
     grep -v '^$' | \
-    sort -u
+    sort -u || true
 }
 
 # --- Extract document class ---

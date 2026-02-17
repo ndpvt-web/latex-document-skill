@@ -611,7 +611,7 @@ The compile script auto-selects the correct engine based on package imports.
 
 ## Reference Documentation
 
-15 reference guides covering every aspect of the skill:
+22 reference guides covering every aspect of the skill:
 
 | Guide | What It Covers |
 |---|---|
@@ -624,11 +624,18 @@ The compile script auto-selects the correct engine based on package imports.
 | `mermaid-diagrams.md` | Flowcharts, sequence, class, ER, Gantt, pie, mindmaps |
 | `format-conversion.md` | Pandoc pipeline, templates, bibliography integration |
 | `pdf-conversion.md` | Full PDF-to-LaTeX pipeline, scaling strategy, batch processing |
-| `tables-and-images.md` | Colored rows, multi-row/column, booktabs, long tables, TikZ |
+| `tables-and-images.md` | Colored rows, multi-row/column, booktabs, nicematrix, long tables, TikZ |
 | `interactive-features.md` | Forms, conditional content, mail merge, version diffing |
-| `packages.md` | Common LaTeX package reference |
+| `packages.md` | Common LaTeX package reference (iftex, fontspec, nicematrix, pdfx, and more) |
 | `visual-packages.md` | 24 installed TikZ/visualization packages with minimal working examples |
 | `graphviz-plantuml.md` | Graphviz and PlantUML diagram workflows, examples, best practices |
+| `pdf-extraction-prompts.md` | Prompt templates for PDF-to-LaTeX extraction accuracy |
+| `cheatsheet-guide.md` | Cheat sheet design patterns, column layouts, compact formatting |
+| `debugging-guide.md` | 20 common LaTeX errors, .log reading, debugging strategies |
+| `accessibility-guide.md` | PDF/A, PDF/UA, tagged PDFs, WCAG compliance |
+| `beamer-guide.md` | Beamer themes, overlays, code slides, handout mode |
+| `font-guide.md` | Font families, iftex, fontspec, fontawesome5, CJK support |
+| `collaboration-guide.md` | Git workflows, GitHub Actions, Docker, CI/CD for LaTeX |
 | `profiles/` | 4 conversion profiles (math, business, legal, general) |
 
 ---

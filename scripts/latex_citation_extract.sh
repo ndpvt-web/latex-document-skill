@@ -140,7 +140,7 @@ extract_citations() {
   # Extract all cite commands: \cite, \citep, \citet, \citealp, \citealt, \nocite
   # Handle optional arguments and comma-separated keys
   grep -oP '\\(?:cite[a-z]*|nocite)(?:\[[^\]]*\])?(?:\[[^\]]*\])?\{[^\}]+\}' "$tex_file" 2>/dev/null | \
-    sed -E 's/\\[a-z]+(\[[^\]]*\])?(\[[^\]]*\])?\{([^\}]+)\}/\3/' | \
+    sed -E 's/\\(cite[a-z]*|nocite)(\[[^]]*\])?(\[[^]]*\])?\{([^}]+)\}/\4/' | \
     tr ',' '\n' | \
     sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | \
     grep -v '^$' || true
