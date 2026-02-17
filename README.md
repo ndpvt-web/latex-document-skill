@@ -4,7 +4,7 @@
 >
 > An 80-page handwritten math PDF becomes color-coded lecture notes with proper equations and TikZ diagrams. A 162-page textbook becomes a 2-page cheat sheet. A CSV becomes nine chart types. A one-line prompt becomes a thesis, a resume, a conference poster, or a 37-page book with drop caps. 27 templates. 22 scripts. You just describe what you want.
 
-**27 templates · 22 automation scripts · 22 reference guides · 4 OCR conversion profiles**
+**27 templates · 22 automation scripts · 25 reference guides · 4 OCR conversion profiles**
 
 ---
 
@@ -31,6 +31,177 @@
 | "Check if my paper is ready to submit" | `latex_package_check.sh` verifies all `\usepackage` via `kpsewhich` → `latex_citation_extract.sh --check` cross-refs `\cite{}` keys against `.bib` → `latex_analyze.sh` counts figures/tables/equations/unreferenced labels → `latex_lint.sh` runs chktex for style issues |
 | "Create a fillable PDF application form" | `fillable-form.tex` with `hyperref` form fields → text inputs, checkboxes, radio buttons, dropdowns, push buttons → compiled to interactive PDF (works in Adobe Reader/Acrobat) |
 | "Password-protect this report" | `pdf_encrypt.sh` calls `qpdf --encrypt <pw> <pw> 256 --print=none --modify=none -- input.pdf output.pdf` |
+
+---
+
+## Template Gallery -- 27 Templates
+
+### Resumes -- 5 ATS-Optimized + 1 Legacy
+
+All 5 modern templates designed to pass Applicant Tracking Systems (no columns, no tables for layout, no graphics in header, machine-readable text):
+
+| Template | Target Role | Key Design Choices |
+|---|---|---|
+| `resume-classic-ats.tex` | Finance, law, government | Single-column, minimal styling, maximum parsability |
+| `resume-modern-professional.tex` | Tech, corporate | Clean sections, subtle color accents |
+| `resume-executive.tex` | VP / Director / C-suite | Multi-page, executive summary section |
+| `resume-technical.tex` | Software, data, engineering | Skills matrix, project highlights |
+| `resume-entry-level.tex` | New graduates | Education-first, coursework, activities |
+| `resume.tex` (legacy) | Regions requiring photos | Photo area -- **not** ATS-compatible |
+
+| | | | |
+|---|---|---|---|
+| ![Classic ATS](examples/resume-classic-ats.png) | ![Modern Professional](examples/resume-modern-professional.png) | ![Executive p1](examples/resume-executive-p1.png) | ![Executive p2](examples/resume-executive-p2.png) |
+| Classic ATS | Modern Professional | Executive (p1) | Executive (p2) |
+| ![Technical](examples/resume-technical.png) | ![Entry-Level](examples/resume-entry-level.png) | | |
+| Technical | Entry-Level | | |
+
+---
+
+### Academic Documents
+
+#### Thesis / Dissertation -- Full book-class, 38+ pages
+
+Palatino fonts, `microtype`, `mathtools`, `cleveref`. Front matter (title, declaration, abstract, acknowledgments, TOC), multiple chapters, appendices, bibliography with `biblatex`/biber. `\geometry{bindingoffset=1.5cm}` for professional printing.
+
+| | | | |
+|---|---|---|---|
+| ![p1](examples/thesis-p1.png) | ![p2](examples/thesis-p2.png) | ![p3](examples/thesis-p3.png) | ![p4](examples/thesis-p4.png) |
+| Title Page | Table of Contents | Literature Review | TikZ Diagram |
+| ![p5](examples/thesis-p5.png) | ![p6](examples/thesis-p6.png) | ![p7](examples/thesis-p7.png) | ![p8](examples/thesis-p8.png) |
+| Results | Charts | Chapter Content | Bibliography |
+
+#### Academic Paper -- 11 pages, arXiv-compatible
+
+Times fonts, colorblind-safe Tol palette, multi-author affiliations via `authblk`, `siunitx` for consistent units, algorithm environments, theorem/proof. `\pdfoutput=1` for arXiv submission.
+
+| | | | |
+|---|---|---|---|
+| ![p1](examples/academic-paper-p1.png) | ![p2](examples/academic-paper-p2.png) | ![p3](examples/academic-paper-p3.png) | ![p4](examples/academic-paper-p4.png) |
+| Title & Abstract | Tables + Charts | Ablation Study | References |
+
+#### Lecture Notes (Beautiful Mode) -- Color-coded theorem environments
+
+`lecture-notes.tex`: Palatino fonts, `tcolorbox` with semantic colors -- blue theorems, green definitions, orange examples, purple remarks. TikZ graph theory macros, custom math operators (`\E`, `\Var`, `\Cov`).
+
+| | | | |
+|---|---|---|---|
+| ![p1](examples/lecture-notes-p1.png) | ![p2](examples/lecture-notes-p2.png) | ![p3](examples/lecture-notes-p3.png) | ![p4](examples/lecture-notes-p4.png) |
+| ![p5](examples/lecture-notes-p5.png) | ![p6](examples/lecture-notes-p6.png) | ![p7](examples/lecture-notes-p7.png) | ![p8](examples/lecture-notes-p8.png) |
+
+#### Academic CV -- Multi-page with publications, grants, teaching
+
+Numbered publications ([J1], [C1], [W1]), grants with dollar amounts, student advising (current + graduated), professional service, invited talks. ORCID and Google Scholar links.
+
+| | | | |
+|---|---|---|---|
+| ![p1](examples/academic-cv-p1.png) | ![p2](examples/academic-cv-p2.png) | ![p3](examples/academic-cv-p3.png) | ![p4](examples/academic-cv-p4.png) |
+
+#### Homework / Assignment -- Solution toggle
+
+Custom `problem`/`solution` environments, code listings (Python, Java, C++, Matlab), honor code section. Toggle solutions globally with `\showsolutionstrue`/`\showsolutionsfalse`.
+
+#### Lab Report -- STEM lab writeups
+
+`siunitx` for uncertainties and SI units, `pgfplots` for data with error bars, structured sections: abstract → theory → procedure → data → analysis → discussion → conclusion.
+
+---
+
+### Scientific Posters -- `tikzposter` class
+
+Interactive workflow asks: conference → orientation → layout → color scheme.
+
+| Layout | Usage | Description |
+|---|---|---|
+| Traditional Column | ~70% of posters | 2-column (portrait) or 3-column (landscape) |
+| #BetterPoster | ~10% (growing) | Central billboard with ONE key finding at 60-80pt |
+| Visual-Heavy | ~15% | Large central figure consuming 40-50% of space |
+
+Conference presets: NeurIPS, ICML, CVPR, ICLR (main + workshop sizes).
+
+| Portrait A0 | Landscape A0 |
+|---|---|
+| ![Portrait](examples/poster.png) | ![Landscape](examples/poster-landscape.png) |
+
+---
+
+### Book -- Full-Length Publishing Template
+
+`book` class, 37+ pages. Palatino fonts, `lettrine` drop caps, `imakeidx` for indexing. Structure: half-title → full title → copyright page (ISBN slot) → dedication → preface → acknowledgments → TOC → parts → chapters with epigraphs → appendices → bibliography → index → colophon.
+
+| | | | | |
+|---|---|---|---|---|
+| ![p1](examples/book-p1.png) | ![p2](examples/book-p2.png) | ![p3](examples/book-p3.png) | ![p4](examples/book-p4.png) | ![p5](examples/book-p5.png) |
+| Half Title | Full Title | Copyright | TOC | Preface |
+| ![p6](examples/book-p6.png) | ![p7](examples/book-p7.png) | ![p8](examples/book-p8.png) | ![p9](examples/book-p9.png) | ![p10](examples/book-p10.png) |
+| Acknowledgments | Part I | Ch 1: Drop Caps | Definitions & Theorems | Notation & Summary |
+
+---
+
+### Exam / Quiz -- `exam` class
+
+6 question types (multiple choice, true/false, fill-in-blank, matching, short answer, essay). Point values per question, `\gradetable[h][questions]` for grading grid. `\printanswers` / `\noprintanswers` toggles solution visibility.
+
+| | | | | | |
+|---|---|---|---|---|---|
+| ![p1](examples/exam-p1.png) | ![p2](examples/exam-p2.png) | ![p3](examples/exam-p3.png) | ![p4](examples/exam-p4.png) | ![p5](examples/exam-p5.png) | ![p6](examples/exam-p6.png) |
+
+---
+
+### Cheat Sheets -- 3 Variants
+
+| Template | Columns | Font | Orientation |
+|---|---|---|---|
+| `cheatsheet.tex` | 3 | 7pt | Landscape |
+| `cheatsheet-exam.tex` | 2 | 6pt | Portrait |
+| `cheatsheet-code.tex` | 4 | 7pt | Landscape |
+
+**Example: Algebraic Geometry (162 pages → 2 pages)**
+
+| | |
+|---|---|
+| ![Cheatsheet p1](examples/cheatsheet-p1.png) | ![Cheatsheet p2](examples/cheatsheet-p2.png) |
+| Page 1 -- Affine/Projective Space, Varieties, Morphisms | Page 2 -- Sheaves, Schemes, Cohomology, Key Examples |
+
+---
+
+### Interactive / Dynamic Templates
+
+| Template | What It Does |
+|---|---|
+| `fillable-form.tex` | PDF form fields: text inputs, checkboxes, radio buttons, dropdowns, push buttons (via `hyperref`) |
+| `conditional-document.tex` | 12 `etoolbox` toggles (showTOC, isDraft, isConfidential...), 3 visual profiles, CLI-overridable with `\newcommand` |
+| `mail-merge-letter.tex` | Template for `mail_merge.py` -- `{{name}}` placeholders |
+
+---
+
+### Business Documents
+
+| | | |
+|---|---|---|
+| ![Letter](examples/letter.png) | ![Cover Letter](examples/cover-letter.png) | ![Invoice](examples/invoice.png) |
+| `letter.tex` -- Business letter | `cover-letter.tex` -- Job application | `invoice.tex` -- Professional invoice |
+
+---
+
+### Presentation (`presentation.tex`) -- Beamer 16:9
+
+Custom theme, widescreen aspect ratio, title/section/content/two-column/code/image/thank-you frame types.
+
+| | | | | |
+|---|---|---|---|---|
+| ![p1](examples/presentation-p1.png) | ![p2](examples/presentation-p2.png) | ![p3](examples/presentation-p3.png) | ![p4](examples/presentation-p4.png) | ![p5](examples/presentation-p5.png) |
+| ![p6](examples/presentation-p6.png) | ![p7](examples/presentation-p7.png) | ![p8](examples/presentation-p8.png) | ![p9](examples/presentation-p9.png) | ![p10](examples/presentation-p10.png) |
+
+---
+
+### Report (`report.tex`)
+
+Executive summary, findings, recommendations with TOC, pgfplots bar charts, TikZ flowcharts, colored data tables.
+
+| | | | |
+|---|---|---|---|
+| ![p1](examples/report-p1.png) | ![p2](examples/report-p2.png) | ![p3](examples/report-p3.png) | ![p4](examples/report-p4.png) |
 
 ---
 
@@ -263,177 +434,6 @@ Auto-detects column alignment (right-aligns numeric columns). Handles LaTeX spec
 
 ---
 
-## Template Gallery -- 27 Templates
-
-### Resumes -- 5 ATS-Optimized + 1 Legacy
-
-All 5 modern templates designed to pass Applicant Tracking Systems (no columns, no tables for layout, no graphics in header, machine-readable text):
-
-| Template | Target Role | Key Design Choices |
-|---|---|---|
-| `resume-classic-ats.tex` | Finance, law, government | Single-column, minimal styling, maximum parsability |
-| `resume-modern-professional.tex` | Tech, corporate | Clean sections, subtle color accents |
-| `resume-executive.tex` | VP / Director / C-suite | Multi-page, executive summary section |
-| `resume-technical.tex` | Software, data, engineering | Skills matrix, project highlights |
-| `resume-entry-level.tex` | New graduates | Education-first, coursework, activities |
-| `resume.tex` (legacy) | Regions requiring photos | Photo area -- **not** ATS-compatible |
-
-| | | | |
-|---|---|---|---|
-| ![Classic ATS](examples/resume-classic-ats.png) | ![Modern Professional](examples/resume-modern-professional.png) | ![Executive p1](examples/resume-executive-p1.png) | ![Executive p2](examples/resume-executive-p2.png) |
-| Classic ATS | Modern Professional | Executive (p1) | Executive (p2) |
-| ![Technical](examples/resume-technical.png) | ![Entry-Level](examples/resume-entry-level.png) | | |
-| Technical | Entry-Level | | |
-
----
-
-### Academic Documents
-
-#### Thesis / Dissertation -- Full book-class, 38+ pages
-
-Palatino fonts, `microtype`, `mathtools`, `cleveref`. Front matter (title, declaration, abstract, acknowledgments, TOC), multiple chapters, appendices, bibliography with `biblatex`/biber. `\geometry{bindingoffset=1.5cm}` for professional printing.
-
-| | | | |
-|---|---|---|---|
-| ![p1](examples/thesis-p1.png) | ![p2](examples/thesis-p2.png) | ![p3](examples/thesis-p3.png) | ![p4](examples/thesis-p4.png) |
-| Title Page | Table of Contents | Literature Review | TikZ Diagram |
-| ![p5](examples/thesis-p5.png) | ![p6](examples/thesis-p6.png) | ![p7](examples/thesis-p7.png) | ![p8](examples/thesis-p8.png) |
-| Results | Charts | Chapter Content | Bibliography |
-
-#### Academic Paper -- 11 pages, arXiv-compatible
-
-Times fonts, colorblind-safe Tol palette, multi-author affiliations via `authblk`, `siunitx` for consistent units, algorithm environments, theorem/proof. `\pdfoutput=1` for arXiv submission.
-
-| | | | |
-|---|---|---|---|
-| ![p1](examples/academic-paper-p1.png) | ![p2](examples/academic-paper-p2.png) | ![p3](examples/academic-paper-p3.png) | ![p4](examples/academic-paper-p4.png) |
-| Title & Abstract | Tables + Charts | Ablation Study | References |
-
-#### Lecture Notes (Beautiful Mode) -- Color-coded theorem environments
-
-`lecture-notes.tex`: Palatino fonts, `tcolorbox` with semantic colors -- blue theorems, green definitions, orange examples, purple remarks. TikZ graph theory macros, custom math operators (`\E`, `\Var`, `\Cov`).
-
-| | | | |
-|---|---|---|---|
-| ![p1](examples/lecture-notes-p1.png) | ![p2](examples/lecture-notes-p2.png) | ![p3](examples/lecture-notes-p3.png) | ![p4](examples/lecture-notes-p4.png) |
-| ![p5](examples/lecture-notes-p5.png) | ![p6](examples/lecture-notes-p6.png) | ![p7](examples/lecture-notes-p7.png) | ![p8](examples/lecture-notes-p8.png) |
-
-#### Academic CV -- Multi-page with publications, grants, teaching
-
-Numbered publications ([J1], [C1], [W1]), grants with dollar amounts, student advising (current + graduated), professional service, invited talks. ORCID and Google Scholar links.
-
-| | | | |
-|---|---|---|---|
-| ![p1](examples/academic-cv-p1.png) | ![p2](examples/academic-cv-p2.png) | ![p3](examples/academic-cv-p3.png) | ![p4](examples/academic-cv-p4.png) |
-
-#### Homework / Assignment -- Solution toggle
-
-Custom `problem`/`solution` environments, code listings (Python, Java, C++, Matlab), honor code section. Toggle solutions globally with `\showsolutionstrue`/`\showsolutionsfalse`.
-
-#### Lab Report -- STEM lab writeups
-
-`siunitx` for uncertainties and SI units, `pgfplots` for data with error bars, structured sections: abstract → theory → procedure → data → analysis → discussion → conclusion.
-
----
-
-### Scientific Posters -- `tikzposter` class
-
-Interactive workflow asks: conference → orientation → layout → color scheme.
-
-| Layout | Usage | Description |
-|---|---|---|
-| Traditional Column | ~70% of posters | 2-column (portrait) or 3-column (landscape) |
-| #BetterPoster | ~10% (growing) | Central billboard with ONE key finding at 60-80pt |
-| Visual-Heavy | ~15% | Large central figure consuming 40-50% of space |
-
-Conference presets: NeurIPS, ICML, CVPR, ICLR (main + workshop sizes).
-
-| Portrait A0 | Landscape A0 |
-|---|---|
-| ![Portrait](examples/poster.png) | ![Landscape](examples/poster-landscape.png) |
-
----
-
-### Book -- Full-Length Publishing Template
-
-`book` class, 37+ pages. Palatino fonts, `lettrine` drop caps, `imakeidx` for indexing. Structure: half-title → full title → copyright page (ISBN slot) → dedication → preface → acknowledgments → TOC → parts → chapters with epigraphs → appendices → bibliography → index → colophon.
-
-| | | | | |
-|---|---|---|---|---|
-| ![p1](examples/book-p1.png) | ![p2](examples/book-p2.png) | ![p3](examples/book-p3.png) | ![p4](examples/book-p4.png) | ![p5](examples/book-p5.png) |
-| Half Title | Full Title | Copyright | TOC | Preface |
-| ![p6](examples/book-p6.png) | ![p7](examples/book-p7.png) | ![p8](examples/book-p8.png) | ![p9](examples/book-p9.png) | ![p10](examples/book-p10.png) |
-| Acknowledgments | Part I | Ch 1: Drop Caps | Definitions & Theorems | Notation & Summary |
-
----
-
-### Exam / Quiz -- `exam` class
-
-6 question types (multiple choice, true/false, fill-in-blank, matching, short answer, essay). Point values per question, `\gradetable[h][questions]` for grading grid. `\printanswers` / `\noprintanswers` toggles solution visibility.
-
-| | | | | | |
-|---|---|---|---|---|---|
-| ![p1](examples/exam-p1.png) | ![p2](examples/exam-p2.png) | ![p3](examples/exam-p3.png) | ![p4](examples/exam-p4.png) | ![p5](examples/exam-p5.png) | ![p6](examples/exam-p6.png) |
-
----
-
-### Cheat Sheets -- 3 Variants
-
-| Template | Columns | Font | Orientation |
-|---|---|---|---|
-| `cheatsheet.tex` | 3 | 7pt | Landscape |
-| `cheatsheet-exam.tex` | 2 | 6pt | Portrait |
-| `cheatsheet-code.tex` | 4 | 7pt | Landscape |
-
-**Example: Algebraic Geometry (162 pages → 2 pages)**
-
-| | |
-|---|---|
-| ![Cheatsheet p1](examples/cheatsheet-p1.png) | ![Cheatsheet p2](examples/cheatsheet-p2.png) |
-| Page 1 -- Affine/Projective Space, Varieties, Morphisms | Page 2 -- Sheaves, Schemes, Cohomology, Key Examples |
-
----
-
-### Interactive / Dynamic Templates
-
-| Template | What It Does |
-|---|---|
-| `fillable-form.tex` | PDF form fields: text inputs, checkboxes, radio buttons, dropdowns, push buttons (via `hyperref`) |
-| `conditional-document.tex` | 12 `etoolbox` toggles (showTOC, isDraft, isConfidential...), 3 visual profiles, CLI-overridable with `\newcommand` |
-| `mail-merge-letter.tex` | Template for `mail_merge.py` -- `{{name}}` placeholders |
-
----
-
-### Business Documents
-
-| | | |
-|---|---|---|
-| ![Letter](examples/letter.png) | ![Cover Letter](examples/cover-letter.png) | ![Invoice](examples/invoice.png) |
-| `letter.tex` -- Business letter | `cover-letter.tex` -- Job application | `invoice.tex` -- Professional invoice |
-
----
-
-### Presentation (`presentation.tex`) -- Beamer 16:9
-
-Custom theme, widescreen aspect ratio, title/section/content/two-column/code/image/thank-you frame types.
-
-| | | | | |
-|---|---|---|---|---|
-| ![p1](examples/presentation-p1.png) | ![p2](examples/presentation-p2.png) | ![p3](examples/presentation-p3.png) | ![p4](examples/presentation-p4.png) | ![p5](examples/presentation-p5.png) |
-| ![p6](examples/presentation-p6.png) | ![p7](examples/presentation-p7.png) | ![p8](examples/presentation-p8.png) | ![p9](examples/presentation-p9.png) | ![p10](examples/presentation-p10.png) |
-
----
-
-### Report (`report.tex`)
-
-Executive summary, findings, recommendations with TOC, pgfplots bar charts, TikZ flowcharts, colored data tables.
-
-| | | | |
-|---|---|---|---|
-| ![p1](examples/report-p1.png) | ![p2](examples/report-p2.png) | ![p3](examples/report-p3.png) | ![p4](examples/report-p4.png) |
-
----
-
 ## Format Conversion (`convert_document.sh` -- 316 lines)
 
 Pandoc wrapper with auto-detection of input/output formats from file extensions:
@@ -525,7 +525,7 @@ All scripts source this shared library for dependency management. It provides:
 
 ## Reference Documentation
 
-22 reference guides in `references/`:
+25 reference guides in `references/`:
 
 <details>
 <summary>Full index</summary>
@@ -553,6 +553,9 @@ All scripts source this shared library for dependency management. It provides:
 | `beamer-guide.md` | Themes, overlays, code slides, handout mode |
 | `font-guide.md` | Font families, fontspec, fontawesome5 icons |
 | `collaboration-guide.md` | Git workflows, GitHub Actions, Docker, CI/CD for LaTeX |
+| `long-form-best-practices.md` | 9 anti-patterns for 5+ page documents, report preamble, quality checklist |
+| `code-patterns.md` | 16 ready-to-use LaTeX snippets (tables, charts, flowcharts, bibliography, etc.) |
+| `script-tools.md` | PDF utilities, quality tools, compilation helpers documentation |
 | `profiles/` | 4 OCR conversion profiles (math, business, legal, general) |
 
 </details>
@@ -591,7 +594,7 @@ bash setup.sh --check    # Verify everything is installed
 
 ```
 latex-document/
-├── SKILL.md                              # Skill definition (1,340 lines)
+├── SKILL.md                              # Skill definition (329 lines, modular)
 ├── README.md                             # This file
 ├── setup.sh                              # One-click installer (apt/brew/dnf/apk/pacman)
 ├── requirements.txt                      # Python: matplotlib, numpy, pandas
