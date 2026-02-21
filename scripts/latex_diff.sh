@@ -261,7 +261,8 @@ build_diff_cmd() {
     # Input files
     cmd+=("$old" "$new")
 
-    echo "${cmd[@]}"
+    # Store command in global array for direct execution (avoids eval)
+    DIFF_CMD_ARRAY=("${cmd[@]}")
 }
 
 # --- Custom color preamble injection ---
@@ -334,13 +335,14 @@ echo "   Type: $MARKUP_TYPE"
 echo "   Output: $OUTPUT_FILE"
 
 # Build and run latexdiff
-DIFF_CMD=$(build_diff_cmd "$OLD_FILE" "$NEW_FILE" "$OUTPUT_FILE")
+DIFF_CMD_ARRAY=()
+build_diff_cmd "$OLD_FILE" "$NEW_FILE" "$OUTPUT_FILE"
 
 if [[ "$VERBOSE" == true ]]; then
-    echo ":: Running: $DIFF_CMD" >&2
+    echo ":: Running: ${DIFF_CMD_ARRAY[*]}" >&2
 fi
 
-if eval "$DIFF_CMD" > "$OUTPUT_FILE" 2>/tmp/latexdiff_stderr.txt; then
+if "${DIFF_CMD_ARRAY[@]}" > "$OUTPUT_FILE" 2>/tmp/latexdiff_stderr.txt; then
     echo ":: Diff generated: $OUTPUT_FILE"
 else
     STDERR=$(cat /tmp/latexdiff_stderr.txt)
@@ -368,18 +370,19 @@ inject_custom_colors "$OUTPUT_FILE" "$COLOR_ADD" "$COLOR_DEL"
 if [[ "$COMPILE" == true ]]; then
     echo ":: Compiling diff PDF..."
 
+    COMPILE_CMD_ARRAY=()
     if [[ -n "$COMPILE_SCRIPT" ]]; then
-        COMPILE_CMD="bash $COMPILE_SCRIPT $OUTPUT_FILE"
+        COMPILE_CMD_ARRAY=(bash "$COMPILE_SCRIPT" "$OUTPUT_FILE")
         if [[ "$PREVIEW" == true ]]; then
-            COMPILE_CMD="$COMPILE_CMD --preview --preview-dir $OUTPUT_DIR"
+            COMPILE_CMD_ARRAY+=(--preview --preview-dir "$OUTPUT_DIR")
         fi
     else
         # Find compile_latex.sh relative to this script
         SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
         if [[ -f "${SCRIPT_DIR}/compile_latex.sh" ]]; then
-            COMPILE_CMD="bash ${SCRIPT_DIR}/compile_latex.sh $OUTPUT_FILE"
+            COMPILE_CMD_ARRAY=(bash "${SCRIPT_DIR}/compile_latex.sh" "$OUTPUT_FILE")
             if [[ "$PREVIEW" == true ]]; then
-                COMPILE_CMD="$COMPILE_CMD --preview --preview-dir $OUTPUT_DIR"
+                COMPILE_CMD_ARRAY+=(--preview --preview-dir "$OUTPUT_DIR")
             fi
         else
             # Direct compilation fallback
@@ -388,15 +391,15 @@ if [[ "$COMPILE" == true ]]; then
             if grep -qE '\\usepackage\{fontspec\}|\\usepackage\{xeCJK\}' "$OUTPUT_FILE" 2>/dev/null; then
                 ENGINE="xelatex"
             fi
-            COMPILE_CMD="cd $(dirname "$OUTPUT_FILE") && $ENGINE -interaction=nonstopmode $(basename "$OUTPUT_FILE")"
+            COMPILE_CMD_ARRAY=("$ENGINE" -interaction=nonstopmode -output-directory "$(dirname "$OUTPUT_FILE")" "$OUTPUT_FILE")
         fi
     fi
 
     if [[ "$VERBOSE" == true ]]; then
-        echo ":: Running: $COMPILE_CMD" >&2
+        echo ":: Running: ${COMPILE_CMD_ARRAY[*]}" >&2
     fi
 
-    if eval "$COMPILE_CMD"; then
+    if "${COMPILE_CMD_ARRAY[@]}"; then
         PDF_FILE="${OUTPUT_FILE%.tex}.pdf"
         if [[ -f "$PDF_FILE" ]]; then
             echo ":: Diff PDF: $PDF_FILE"

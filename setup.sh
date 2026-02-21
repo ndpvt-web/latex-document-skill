@@ -64,6 +64,26 @@ if [[ "$CHECK_ONLY" == false ]]; then
   fi
   echo ""
 
+  echo ":: Checking latexmk (build automation)..."
+  if command -v latexmk &>/dev/null; then
+    echo "   Already installed: $(latexmk --version 2>/dev/null | head -n1)"
+  else
+    echo "   latexmk not found. It is usually included with texlive."
+    echo "   Install with: sudo apt-get install latexmk (or equivalent)"
+    echo "   Note: latexmk is optional -- the compile script works without it."
+  fi
+  echo ""
+
+  echo ":: Checking texfot (log filtering)..."
+  if command -v texfot &>/dev/null; then
+    echo "   Already installed."
+  else
+    echo "   texfot not found. It is usually included with texlive."
+    echo "   Install with: sudo apt-get install texlive-extra-utils (or equivalent)"
+    echo "   Note: texfot is optional -- compilation works without it."
+  fi
+  echo ""
+
   # --- Phase 2: Python packages ---
   echo "--- Phase 2: Python Packages ---"
   echo ""
@@ -105,7 +125,7 @@ echo "--- Verification ---"
 echo ""
 
 PASS=0
-TOTAL=7
+TOTAL=9
 
 check_cmd() {
   local name="$1"
@@ -121,16 +141,18 @@ check_cmd() {
 check_cmd "pdflatex (TeX Live)"    "command -v pdflatex"
 check_cmd "xelatex  (XeLaTeX)"     "command -v xelatex"
 check_cmd "biber    (Bibliography)" "command -v biber"
+check_cmd "latexmk  (Build Auto)"  "command -v latexmk"
+check_cmd "texfot   (Log Filter)"  "command -v texfot"
 check_cmd "pdftoppm (Poppler)"      "command -v pdftoppm"
 check_cmd "mogrify  (ImageMagick)"  "command -v mogrify"
 check_cmd "pandoc   (Conversion)"   "command -v pandoc"
-check_cmd "Python packages"         "python3 -c 'import matplotlib, numpy, pandas'"
+check_cmd "Python packages"         "python3 -c 'import matplotlib, numpy, pandas, jinja2'"
 
 echo ""
 echo ":: Result: ${PASS}/${TOTAL} checks passed."
 echo ""
 
-if [[ $PASS -ge 6 ]]; then
+if [[ $PASS -ge 7 ]]; then
   echo "Setup complete. The LaTeX document skill is ready to use."
   echo ""
   echo "Scripts:"

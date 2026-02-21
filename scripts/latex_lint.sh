@@ -128,12 +128,20 @@ fi
 TEMP_OUTPUT=$(mktemp)
 trap "rm -f $TEMP_OUTPUT" EXIT
 
-# Run chktex (ignore exit code for now)
-chktex -q -v0 "$TEX_FILE" > "$TEMP_OUTPUT" 2>&1 || true
+# Build chktex command with optional .chktexrc config
+CHKTEX_ARGS=(-q -v0)
+# Look for .chktexrc in skill root (parent of scripts dir)
+SKILL_CHKTEXRC="${SCRIPT_DIR}/../.chktexrc"
+if [[ -f "$SKILL_CHKTEXRC" ]]; then
+    CHKTEX_ARGS+=(-l "$SKILL_CHKTEXRC")
+fi
 
-# Count warnings and errors
-WARNING_COUNT=$(grep -c "Warning" "$TEMP_OUTPUT" || true)
-ERROR_COUNT=$(grep -c "Error" "$TEMP_OUTPUT" || true)
+# Run chktex (ignore exit code for now)
+chktex "${CHKTEX_ARGS[@]}" "$TEX_FILE" > "$TEMP_OUTPUT" 2>&1 || true
+
+# Count warnings and errors (match chktex output format: "Warning N in ..." / "Error N in ...")
+WARNING_COUNT=$(grep -cE "^Warning [0-9]+ in " "$TEMP_OUTPUT" || true)
+ERROR_COUNT=$(grep -cE "^Error [0-9]+ in " "$TEMP_OUTPUT" || true)
 TOTAL_COUNT=$((WARNING_COUNT + ERROR_COUNT))
 
 # Display output

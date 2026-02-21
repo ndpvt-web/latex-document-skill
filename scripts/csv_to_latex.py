@@ -274,8 +274,10 @@ def parse_args():
                        help='Table label for cross-referencing (e.g., tab:results)')
     parser.add_argument('--align', type=str, default=None,
                        help='Column alignment string (e.g., "lcr") or auto-detect')
-    parser.add_argument('--highlight-header', type=bool, default=True,
-                       help='Bold headers (default: True)')
+    parser.add_argument('--no-highlight-header', dest='highlight_header',
+                       action='store_false',
+                       help='Disable bold headers (enabled by default)')
+    parser.set_defaults(highlight_header=True)
     parser.add_argument('--alternating-rows', action='store_true',
                        help='Use alternating row colors (requires xcolor package)')
     parser.add_argument('--max-rows', type=int, default=None,

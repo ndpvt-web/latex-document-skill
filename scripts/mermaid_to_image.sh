@@ -153,7 +153,7 @@ EOF
 echo "Converting $INPUT_FILE to $OUTPUT_FILE..." >&2
 
 MMD_CMD=(
-    npx -y @mermaid-js/mermaid-cli@11.12.0 mmdc
+    npx -y @mermaid-js/mermaid-cli mmdc
     -i "$INPUT_FILE"
     -o "$OUTPUT_FILE"
     -t "$THEME"

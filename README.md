@@ -2,9 +2,9 @@
 
 > **Turn handwritten notes, scanned textbooks, and raw data into publication-ready LaTeX -- without knowing a single LaTeX command.**
 >
-> An 80-page handwritten math PDF becomes color-coded lecture notes with proper equations and TikZ diagrams. A 162-page textbook becomes a 2-page cheat sheet. A CSV becomes nine chart types. A one-line prompt becomes a thesis, a resume, a conference poster, or a 37-page book with drop caps. 27 templates. 22 scripts. You just describe what you want.
+> An 80-page handwritten math PDF becomes color-coded lecture notes with proper equations and TikZ diagrams. A 162-page textbook becomes a 2-page cheat sheet. A CSV becomes nine chart types. A one-line prompt becomes a thesis, a resume, a conference poster, or a 37-page book with drop caps. 27 templates. 27 scripts. You just describe what you want.
 
-**27 templates · 22 automation scripts · 25 reference guides · 4 OCR conversion profiles**
+**27 templates · 27 automation scripts · 26 reference guides · 4 OCR conversion profiles**
 
 ---
 
@@ -30,6 +30,8 @@
 | "Fetch BibTeX for these 3 DOIs and check my citations" | `fetch_bibtex.sh` hits `doi.org` with `Accept: application/x-bibtex` header → appends to `.bib` → `latex_citation_extract.sh --check` cross-refs every `\cite{}` key against the `.bib` file → reports missing/unused entries |
 | "Check if my paper is ready to submit" | `latex_package_check.sh` verifies all `\usepackage` via `kpsewhich` → `latex_citation_extract.sh --check` cross-refs `\cite{}` keys against `.bib` → `latex_analyze.sh` counts figures/tables/equations/unreferenced labels → `latex_lint.sh` runs chktex for style issues |
 | "Create a fillable PDF application form" | `fillable-form.tex` with `hyperref` form fields → text inputs, checkboxes, radio buttons, dropdowns, push buttons → compiled to interactive PDF (works in Adobe Reader/Acrobat) |
+| "Fill out this existing PDF form with my data" | `pdf_check_form.py` detects fillable fields → `pdf_extract_fields.py` exports field metadata (IDs, types, pages, rects) → create `field_values.json` → `pdf_fill_form.py` validates and fills all fields (text, checkbox, radio, choice) → completed PDF |
+| "Fill this non-fillable PDF application" | `pdf_to_images.sh` renders pages → visual analysis to identify fields → create `fields.json` with bounding boxes → `pdf_validate_boxes.py` checks intersections + creates validation images → `pdf_fill_annotations.py` adds FreeText annotations at precise positions → completed PDF |
 | "Password-protect this report" | `pdf_encrypt.sh` calls `qpdf --encrypt <pw> <pw> 256 --print=none --modify=none -- input.pdf output.pdf` |
 
 ---
@@ -555,6 +557,7 @@ All scripts source this shared library for dependency management. It provides:
 | `collaboration-guide.md` | Git workflows, GitHub Actions, Docker, CI/CD for LaTeX |
 | `long-form-best-practices.md` | 9 anti-patterns for 5+ page documents, report preamble, quality checklist |
 | `code-patterns.md` | 16 ready-to-use LaTeX snippets (tables, charts, flowcharts, bibliography, etc.) |
+| `pdf-operations.md` | Advanced PDF ops: form filling, text extraction, OCR, watermark, rotation, reportlab, JavaScript |
 | `script-tools.md` | PDF utilities, quality tools, compilation helpers documentation |
 | `profiles/` | 4 OCR conversion profiles (math, business, legal, general) |
 
@@ -620,7 +623,7 @@ latex-document/
 │   ├── presentation.tex                  #   Beamer slides (16:9)
 │   └── references.bib                    #   Example bibliography
 │
-├── scripts/                              # 22 automation scripts
+├── scripts/                              # 27 automation scripts
 │   ├── compile_latex.sh          (525)   #   Core: .tex → PDF + PNG
 │   ├── mail_merge.py             (574)   #   Template + data → N PDFs
 │   ├── generate_chart.py         (459)   #   9 chart types (matplotlib)
@@ -642,17 +645,23 @@ latex-document/
 │   ├── pdf_optimize.sh           (157)   #   Compress + linearize
 │   ├── latex_wordcount.sh        (149)   #   Word count via detex
 │   ├── pdf_to_images.sh          (144)   #   PDF → page images (OCR pipeline)
-│   └── pdf_merge.sh              (136)   #   Merge multiple PDFs
+│   ├── pdf_merge.sh              (136)   #   Merge multiple PDFs
+│   ├── pdf_check_form.py         (106)   #   Check if PDF has fillable fields
+│   ├── pdf_extract_fields.py     (228)   #   Extract form field metadata to JSON
+│   ├── pdf_fill_form.py          (223)   #   Fill fillable form fields with validation
+│   ├── pdf_fill_annotations.py   (214)   #   Fill non-fillable forms via annotations
+│   └── pdf_validate_boxes.py     (235)   #   Validate bounding boxes + validation images
 │
-├── references/                           # 25 deep-dive reference guides
-│   ├── *.md (x25)
+├── references/                           # 26 deep-dive reference guides
+│   ├── *.md (x26)
 │   └── profiles/ (x4)                    #   OCR profiles: math, business, legal, general
 │
-├── tests/                               # 199 tests across 5 test suites
+├── tests/                               # 217 tests across 6 test suites
 │   ├── test_python_scripts.py   (1224)  #   83 pytest tests (mail_merge, chart, csv, validate)
 │   ├── test_compile_latex.sh     (844)  #   36 tests (engine detection, auto-fix, microtype)
 │   ├── test_analysis_tools.sh   (1093)  #   47 tests + 6 skipped (lint, analyze, citations, diff)
 │   ├── test_pdf_utils.sh         (834)  #   33 tests (encrypt, merge, optimize, extract, convert)
+│   ├── test_pdf_forms.py         (300)  #   18 pytest tests (bounding box validation, image creation)
 │   ├── test_templates.sh         (276)  #   Template compilation framework
 │   ├── run_all_tests.sh          (191)  #   Master test runner
 │   ├── fixtures/                        #   8 test fixtures (.tex, .bib, .dot, .puml, .mmd)
@@ -665,7 +674,7 @@ latex-document/
 
 ## Testing
 
-199 tests covering all 22 scripts, 0 failures:
+217 tests covering all 27 scripts, 0 failures:
 
 ```bash
 # Run all tests
@@ -673,6 +682,7 @@ bash tests/run_all_tests.sh
 
 # Run individual suites
 python -m pytest tests/test_python_scripts.py -v    # 83 tests: mail_merge, generate_chart, csv_to_latex, validate_latex
+python -m pytest tests/test_pdf_forms.py -v          # 18 tests: bounding box validation, image creation, helper functions
 bash tests/test_compile_latex.sh                     # 36 tests: engine detection, bibliography, auto-fix floats, microtype
 bash tests/test_pdf_utils.sh                         # 33 tests: pdf_encrypt, pdf_merge, pdf_optimize, pdf_extract, convert, wordcount
 bash tests/test_analysis_tools.sh                    # 47 tests: lint, analyze, package check, citations, graphviz, plantuml, mermaid, diff

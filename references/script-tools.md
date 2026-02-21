@@ -67,6 +67,35 @@ bash <skill_path>/scripts/pdf_extract_pages.sh input.pdf --pages odd --output od
 bash <skill_path>/scripts/pdf_extract_pages.sh input.pdf --pages last:3
 ```
 
+### PDF Form Operations
+
+```bash
+# Check if PDF has fillable form fields
+python3 <skill_path>/scripts/pdf_check_form.py input.pdf
+
+# Extract form field info to JSON (field IDs, types, pages, rects)
+python3 <skill_path>/scripts/pdf_extract_fields.py input.pdf field_info.json
+
+# Fill fillable form fields (validates field IDs/pages/values before writing)
+python3 <skill_path>/scripts/pdf_fill_form.py input.pdf field_values.json output.pdf
+
+# Fill non-fillable forms with text annotations at bounding box positions
+python3 <skill_path>/scripts/pdf_fill_annotations.py input.pdf fields.json output.pdf
+
+# Validate bounding boxes (check intersections and entry height vs font size)
+python3 <skill_path>/scripts/pdf_validate_boxes.py fields.json
+
+# Create validation image showing bounding boxes overlaid on page image
+python3 <skill_path>/scripts/pdf_validate_boxes.py fields.json \
+    --image page-001.png --output validation.png --page 1
+```
+
+**Workflow for fillable PDFs:** `pdf_check_form.py` -> `pdf_extract_fields.py` -> create `field_values.json` -> `pdf_fill_form.py`
+
+**Workflow for non-fillable PDFs:** `pdf_check_form.py` -> `pdf_to_images.sh` -> create `fields.json` with bounding boxes -> `pdf_validate_boxes.py` (validate + create validation images) -> `pdf_fill_annotations.py`
+
+See `references/pdf-operations.md` for detailed field format documentation and advanced PDF operations.
+
 ## LaTeX Quality Tools
 
 ### Lint (Pre-Compilation Check)

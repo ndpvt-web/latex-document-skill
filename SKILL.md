@@ -15,7 +15,8 @@ description: >
   Pandoc format conversion (Markdown/DOCX/HTML ↔ LaTeX),
   and PDF-to-LaTeX conversion of handwritten or printed documents (math, business,
   legal, general). Compile script supports pdflatex, xelatex, lualatex with
-  auto-detection. Empirically optimized scaling: single agent 1-10 pages, split
+  auto-detection, latexmk backend, texfot log filtering, PDF/A output, and
+  verbosity control (--verbose/--quiet). Empirically optimized scaling: single agent 1-10 pages, split
   11-20, batch-7 pipeline 21+. Use when user asks to: (1) create a resume/CV/cover
   letter, (2) write a LaTeX document, (3) create PDF with tables/charts/images,
   (4) compile a .tex file, (5) make a report/invoice/presentation, (6) anything
@@ -49,7 +50,14 @@ description: >
   (41) analyze citations and cross-reference with .bib files,
   (42) debug LaTeX compilation errors,
   (43) make a document accessible (PDF/A, tagged PDF),
-  (44) create lecture notes or course handouts.
+  (44) create lecture notes or course handouts,
+  (45) fill an existing PDF form (fillable fields or non-fillable with annotations),
+  (46) extract text or tables from a PDF (pdfplumber, pypdf),
+  (47) OCR a scanned PDF to text (pytesseract),
+  (48) create a PDF programmatically with reportlab (Canvas, Platypus),
+  (49) rotate or crop PDF pages (pypdf),
+  (50) add a watermark to an existing PDF,
+  (51) extract metadata from a PDF (title, author, subject).
 ---
 
 # LaTeX Document Skill
@@ -113,6 +121,38 @@ Convert existing PDFs (handwritten notes, printed reports, legal docs) to LaTeX.
 
 **Conversion profiles** (in `references/profiles/`): `math-notes.md` (equations, theorems -- has beautiful mode), `business-document.md` (reports, memos), `legal-document.md` (contracts, statutes), `general-notes.md` (handwritten, mixed content).
 
+## Workflow: Fill PDF Forms
+
+Fill existing PDF forms -- both fillable (with form fields) and non-fillable (image-based). Full guide: [references/pdf-operations.md](references/pdf-operations.md).
+
+**Step 1: Check form type:**
+```bash
+python3 <skill_path>/scripts/pdf_check_form.py form.pdf
+```
+
+**If fillable** (has form fields):
+```bash
+# Extract field metadata
+python3 <skill_path>/scripts/pdf_extract_fields.py form.pdf field_info.json
+# Create field_values.json with values for each field, then fill
+python3 <skill_path>/scripts/pdf_fill_form.py form.pdf field_values.json output.pdf
+```
+
+**If non-fillable** (no form fields):
+```bash
+# Convert to images for visual analysis
+bash <skill_path>/scripts/pdf_to_images.sh form.pdf ./tmp/pages
+# Visually identify fields, create fields.json with bounding boxes
+# Validate bounding boxes (+ optional validation image)
+python3 <skill_path>/scripts/pdf_validate_boxes.py fields.json --image page_1.png --output validation.png --page 1
+# Fill with text annotations
+python3 <skill_path>/scripts/pdf_fill_annotations.py form.pdf fields.json output.pdf
+```
+
+## Workflow: Advanced PDF Operations
+
+For text/table extraction (pdfplumber), OCR (pytesseract), programmatic PDF creation (reportlab), watermarking, page rotation/cropping, metadata extraction, JavaScript libraries (pdf-lib, pdfjs-dist), and batch processing, see [references/pdf-operations.md](references/pdf-operations.md).
+
 ## Compile Script
 
 ```bash
@@ -128,7 +168,46 @@ bash <skill_path>/scripts/compile_latex.sh document.tex --preview --preview-dir 
 # Force a specific engine
 bash <skill_path>/scripts/compile_latex.sh document.tex --engine xelatex
 bash <skill_path>/scripts/compile_latex.sh document.tex --engine lualatex
+
+# Use latexmk for automatic multi-pass (recommended for complex documents)
+bash <skill_path>/scripts/compile_latex.sh document.tex --use-latexmk --preview
+
+# PDF/A output for thesis submissions and archival compliance
+bash <skill_path>/scripts/compile_latex.sh document.tex --pdfa
+
+# Verbose output for debugging compilation issues
+bash <skill_path>/scripts/compile_latex.sh document.tex --verbose
+
+# Quiet mode for batch/CI jobs (only errors shown)
+bash <skill_path>/scripts/compile_latex.sh document.tex --quiet
+
+# Clean auxiliary files only (no compilation)
+bash <skill_path>/scripts/compile_latex.sh document.tex --clean
 ```
+
+### Compilation Flags
+
+| Flag | Description |
+|---|---|
+| `--preview` | Generate PNG previews of each page after compilation |
+| `--preview-dir DIR` | Directory for PNG output (default: same as .tex file) |
+| `--engine ENGINE` | Force engine: `pdflatex`, `xelatex`, or `lualatex` |
+| `--use-latexmk` | Use `latexmk` as compilation backend (auto multi-pass, bibliography, index) |
+| `--verbose` | Show full compilation output (all engine logs) |
+| `--quiet` | Suppress all non-error output |
+| `--clean` | Remove auxiliary files (.aux, .log, .bbl, .fdb_latexmk, etc.) and exit |
+| `--pdfa` | Produce PDF/A-2b compliant output (auto-injects `pdfx` package) |
+| `--auto-fix` | Auto-fix common compilation errors (float placement, encoding) |
+
+### Compilation Backends
+
+**Manual multi-pass (default):** Runs the engine multiple times with bibliography/index/glossary passes as needed. This is the traditional approach and works without `latexmk` installed.
+
+**latexmk (`--use-latexmk`):** Uses `latexmk` for automatic dependency-driven compilation. Recommended for complex documents with bibliographies, indexes, glossaries, or cross-references -- latexmk determines the correct number of passes automatically. Requires `latexmk` (included with TeX Live).
+
+### Log Filtering (texfot)
+
+When `texfot` is installed (included with TeX Live), compilation output is automatically filtered to show only relevant warnings and errors, suppressing noisy package loading messages. This applies in the default verbosity mode. Use `--verbose` to see unfiltered output, or `--quiet` to suppress all non-error output.
 
 **Engine auto-detection**: If the .tex file uses `fontspec`, `xeCJK`, or `polyglossia`, the script automatically uses `xelatex`. If it uses `luacode` or `luatextra`, it uses `lualatex`. Otherwise defaults to `pdflatex`. Override with `--engine`.
 
@@ -296,6 +375,7 @@ When uncertain about LaTeX patterns, compilation issues, or document quality, co
 | Beamer Presentations | [beamer-guide.md](references/beamer-guide.md) | Themes, overlays/animations, code slides, handouts, presenter notes |
 | Font Selection | [font-guide.md](references/font-guide.md) | Font families, fontspec, mathematical fonts, fontawesome5, microtype, CJK |
 | Collaboration & CI/CD | [collaboration-guide.md](references/collaboration-guide.md) | Git for LaTeX, GitHub Actions, Docker, multi-author workflows |
+| PDF Operations | [pdf-operations.md](references/pdf-operations.md) | Form filling (fillable + non-fillable), text/table extraction (pdfplumber), OCR (pytesseract), programmatic PDF creation (reportlab), watermarking, rotation/cropping, metadata, JavaScript (pdf-lib, pdfjs-dist), batch processing, performance tips |
 
 ## Critical Notes and Common Mistakes
 
@@ -323,6 +403,8 @@ These cause `Undefined control sequence` -- always include the required package:
 ### Compilation Environment
 - If texlive is not installed, the compile script auto-installs it. Do NOT run multiple compile commands in parallel before texlive is installed -- they will all try to install simultaneously, causing dpkg lock contention. Install once first or run compiles sequentially.
 - The compile script uses `-interaction=nonstopmode` (not `-halt-on-error`) to ensure PDFs are produced even with warnings. This is intentional -- many documents produce warnings on first pass that resolve on subsequent passes.
+- **latexmk** and **texfot** are included with TeX Live. The setup script (`setup.sh`) verifies their availability. latexmk is used when `--use-latexmk` is passed; texfot is used automatically when available (default verbosity mode).
+- A `.chktexrc` configuration file is included at the skill root to suppress common false positives when linting generated LaTeX documents. The `latex_lint.sh` script uses it automatically.
 
 ## Long-Form Document Anti-Patterns
 

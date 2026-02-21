@@ -149,44 +149,23 @@ fetch_arxiv() {
 
     echo "Fetching arXiv: $arxiv_id..." >&2
 
-    # Fetch from arXiv API (returns Atom XML)
-    local xml
-    xml=$(curl -sL "http://export.arxiv.org/api/query?id_list=$arxiv_id" 2>&1)
+    # Use arXiv's native BibTeX endpoint (more reliable than parsing Atom XML)
+    local bibtex
+    bibtex=$(curl -sL "https://arxiv.org/bibtex/${arxiv_id}" 2>&1)
 
-    if [[ $? -ne 0 ]] || [[ -z "$xml" ]]; then
-        echo -e "${RED}Error: Failed to fetch metadata for arXiv: $arxiv_id${NC}" >&2
+    if [[ $? -ne 0 ]] || [[ -z "$bibtex" ]]; then
+        echo -e "${RED}Error: Failed to fetch BibTeX for arXiv: $arxiv_id${NC}" >&2
         return 1
     fi
 
-    # Check if entry exists
-    if echo "$xml" | grep -q "Error: incorrect id format"; then
-        echo -e "${RED}Error: Invalid arXiv ID: $arxiv_id${NC}" >&2
+    # Validate: check if response looks like BibTeX
+    if ! echo "$bibtex" | grep -q '@'; then
+        echo -e "${RED}Error: Invalid BibTeX response for arXiv: $arxiv_id${NC}" >&2
+        echo "Response: $bibtex" >&2
         return 1
     fi
 
-    # Parse XML and generate BibTeX
-    # Extract: title, authors, published date, summary
-    local title=$(echo "$xml" | sed -n 's/.*<title>\(.*\)<\/title>.*/\1/p' | tail -n 1 | sed 's/^[ \t]*//;s/[ \t]*$//')
-    local authors=$(echo "$xml" | sed -n 's/.*<name>\(.*\)<\/name>.*/\1/p' | paste -sd " and " -)
-    local year=$(echo "$xml" | sed -n 's/.*<published>\([0-9]\{4\}\).*/\1/p' | head -n 1)
-    local summary=$(echo "$xml" | sed -n 's/.*<summary>\(.*\)<\/summary>.*/\1/p' | sed 's/^[ \t]*//;s/[ \t]*$//')
-
-    # Generate citation key
-    local first_author=$(echo "$authors" | cut -d' ' -f1)
-    local cite_key="${first_author}${year}arxiv"
-
-    # Build BibTeX entry
-    cat << EOF
-@misc{$cite_key,
-  title={$title},
-  author={$authors},
-  year={$year},
-  eprint={$arxiv_id},
-  archivePrefix={arXiv},
-  primaryClass={cs.AI}
-}
-EOF
-
+    echo "$bibtex"
     return 0
 }
 

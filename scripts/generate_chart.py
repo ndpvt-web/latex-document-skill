@@ -280,9 +280,14 @@ def plot_radar(data, ax, **kwargs):
         values = values + [values[0]]  # Complete the circle
         angles += angles[:1]
 
-        ax = plt.subplot(111, projection='polar')
-        ax.plot(angles, values, 'o-', linewidth=2, color=kwargs.get('colors', [None])[0] if kwargs.get('colors') else None)
-        ax.fill(angles, values, alpha=0.25, color=kwargs.get('colors', [None])[0] if kwargs.get('colors') else None)
+        # Use the figure from the passed-in ax (or current figure) to create polar subplot
+        fig = ax.get_figure() if ax is not None else plt.gcf()
+        if ax is not None:
+            ax.remove()  # Remove the non-polar axes created by caller
+        ax = fig.add_subplot(111, projection='polar')
+        color = kwargs.get('colors', [None])[0] if kwargs.get('colors') else None
+        ax.plot(angles, values, 'o-', linewidth=2, color=color)
+        ax.fill(angles, values, alpha=0.25, color=color)
         ax.set_xticks(angles[:-1])
         ax.set_xticklabels(labels)
         ax.set_ylim(0, max(values) * 1.1)
@@ -409,11 +414,7 @@ def main():
         print(f"Warning: Style '{args.style}' not found, using default", file=sys.stderr)
 
     # Create figure
-    if args.chart_type == 'radar':
-        fig = plt.figure(figsize=figsize, dpi=args.dpi)
-        ax = None  # Radar chart creates its own axes
-    else:
-        fig, ax = plt.subplots(figsize=figsize, dpi=args.dpi)
+    fig, ax = plt.subplots(figsize=figsize, dpi=args.dpi)
 
     # Generate chart
     try:

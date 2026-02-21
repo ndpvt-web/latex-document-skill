@@ -1,0 +1,64 @@
+# .chktexrc - chktex configuration for the latex-document skill
+# Suppresses false positives common in generated LaTeX documents.
+#
+# Place this file alongside .tex files or in the skill root.
+# Usage: chktex -l /path/to/.chktexrc document.tex
+#
+# Severity levels: 0 = ignore, 1 = message, 2 = warning, 3 = error
+
+# ---- Suppress common false positives ----
+
+# Warning 1: Command terminated with space
+# Triggered by macros like \LaTeX followed by space -- normal usage.
+CmdSpaceStyle = ignore
+
+# Warning 8: Wrong length of dash (may be right)
+# Often triggered by date ranges in generated resumes/CVs (2019--2025)
+# and command-line flags (--output). Acceptable in many contexts.
+-n8
+
+# Warning 24: Delete this space to maintain correct pagereferences
+# Triggered in cross-ref patterns like "Section \ref{sec:intro}" which
+# is correct LaTeX style and should not be flagged.
+-n24
+
+# Warning 36: You should put a space in front of parenthesis
+# Many generated LaTeX documents intentionally omit the space before
+# parentheses in citations like \cite{foo}(2024) or function-like macros.
+-n36
+
+# Warning 38: You should not use punctuation in front of/after quotes
+# Triggered by patterns like ``word'', which is correct LaTeX quoting.
+-n38
+
+# Warning 44: User Regex (matches are strung across a line)
+# Disabled: too noisy with generated documents.
+-n44
+
+# ---- Package-specific suppressions ----
+
+# Suppress warnings about unrecognized environments (common with tcolorbox,
+# exam class, custom environments in templates)
+-n32
+
+# ---- Recognized environments ----
+# Tell chktex about environments commonly used in our templates
+# so it doesn't flag them as unrecognized.
+VerbEnvir { lstlisting minted Verbatim }
+
+# ---- Recognized commands that take arguments ----
+# Prevents "wrong number of arguments" false positives for
+# custom commands defined in our templates.
+Silent
+{
+    \rowcolor \cellcolor \columncolor
+    \textcolor \colorbox \fcolorbox
+    \hyperref \hyperlink \hypertarget
+    \tikzset \pgfplotsset
+    \newacronym \gls \Gls \glspl
+    \sisetup \SI \si \num
+    \addbibresource \printbibliography
+    \tcbox \tcbset
+    \titleformat \titlespacing
+    \fancyhead \fancyfoot
+}

@@ -311,9 +311,25 @@ def merge_pdfs(pdf_paths, output_path):
     # Check for pdfunite
     if not shutil.which('pdfunite'):
         print("Installing poppler-utils for PDF merging...", file=sys.stderr)
-        subprocess.run(['sudo', 'apt-get', 'install', '-y', '-q', 'poppler-utils'],
-                       capture_output=True)
-        if not shutil.which('pdfunite'):
+        # Cross-platform package installation
+        install_cmds = [
+            (['apt-get', 'install', '-y', '-q', 'poppler-utils'], 'apt-get'),
+            (['dnf', 'install', '-y', '-q', 'poppler-utils'], 'dnf'),
+            (['brew', 'install', 'poppler'], 'brew'),
+            (['apk', 'add', '--no-cache', 'poppler-utils'], 'apk'),
+            (['pacman', '-S', '--noconfirm', 'poppler'], 'pacman'),
+        ]
+        installed = False
+        for cmd, mgr in install_cmds:
+            if shutil.which(mgr):
+                # Prepend sudo for non-brew package managers if available
+                if mgr != 'brew' and shutil.which('sudo'):
+                    cmd = ['sudo'] + cmd
+                result = subprocess.run(cmd, capture_output=True)
+                if result.returncode == 0:
+                    installed = True
+                break
+        if not installed and not shutil.which('pdfunite'):
             print("Error: pdfunite not available. Install poppler-utils.", file=sys.stderr)
             return False
 
