@@ -698,3 +698,12 @@ Tests found and fixed 2 real bugs in `compile_latex.sh`:
 ## License
 
 MIT
+
+---
+
+## Keywords
+
+> *For the search engines and the curious humans who find things by typing random words*
+
+LaTeX template, document generation AI, PDF creation tool, LaTeX automation, Claude Code LaTeX, academic document template, professional PDF generator, LaTeX skill, report generator, thesis template LaTeX, resume LaTeX template, invoice generator LaTeX, universal document creator, AI document maker
+
