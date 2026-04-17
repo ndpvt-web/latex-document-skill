@@ -711,6 +711,16 @@ latex-document/
 
 ---
 
+## Star History
+
+<p align="center">
+  <a href="https://star-history.com/#ndpvt-web/latex-document-skill&Date">
+    <img src="https://api.star-history.com/svg?repos=ndpvt-web/latex-document-skill&type=Date" alt="Star History Chart" width="600"/>
+  </a>
+</p>
+
+---
+
 ## Sponsor
 
 <p align="center">
