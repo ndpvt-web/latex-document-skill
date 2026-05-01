@@ -67,9 +67,10 @@ Create any LaTeX document, compile to PDF, and generate PNG previews. Convert PD
 ## Workflow: Create Documents
 
 1. Determine document type (resume, report, letter, invoice, article, thesis, academic CV, presentation, poster, exam, book, cheat sheet)
-2. **If poster:** Run the poster sub-workflow (see [Poster Sub-Workflow](#poster-sub-workflow) below), then skip to step 5.
-3. **If cheat sheet / reference card:** Run the cheat sheet sub-workflow (see [Cheat Sheet / Reference Card Sub-Workflow](#cheat-sheet--reference-card-sub-workflow) below), then skip to step 5.
-4. **Ask the user which enrichment elements they want** (use AskUserQuestion tool with multiSelect). Offer relevant options based on document type:
+2. **If the target is an IEEE journal / Transactions / IEEE two-column paper:** Read [references/ieee-journal-twocolumn-guide.md](references/ieee-journal-twocolumn-guide.md) before choosing a template. Start from `examples/ieee-twocolumn-sample.tex` for a working IEEEtran baseline and use `examples/ieee-twocolumn.png` / `examples/ieee-twocolumn-p1.png` / `examples/ieee-twocolumn-p2.png` as visual references.
+3. **If poster:** Run the poster sub-workflow (see [Poster Sub-Workflow](#poster-sub-workflow) below), then skip to step 5.
+4. **If cheat sheet / reference card:** Run the cheat sheet sub-workflow (see [Cheat Sheet / Reference Card Sub-Workflow](#cheat-sheet--reference-card-sub-workflow) below), then skip to step 5.
+5. **Ask the user which enrichment elements they want** (use AskUserQuestion tool with multiSelect). Offer relevant options based on document type:
    - **AI-generated images** -- custom illustrations, diagrams, photos (uses generate-image skill)
    - **Charts/graphs** -- bar, line, pie, scatter, heatmap (pgfplots or matplotlib)
    - **Flowcharts/diagrams** -- process flows, architecture, decision trees (TikZ or Mermaid)
@@ -77,15 +78,15 @@ Create any LaTeX document, compile to PDF, and generate PNG previews. Convert PD
    - **Tables with data** -- comparison matrices, financial data, statistics (booktabs)
    - **Watermarks** -- DRAFT, CONFIDENTIAL, or company logo background
    - Skip this step for simple documents (cover letters, invoices) or when the user has already specified exactly what they want.
-5. Copy the appropriate template from `assets/templates/` or write from scratch
-6. Customize content based on user requirements
-7. Generate external assets based on user's element choices:
+6. Copy the appropriate template from `assets/templates/` or write from scratch
+7. Customize content based on user requirements
+8. Generate external assets based on user's element choices:
    - AI images: `python3 <skill_path>/../generate-image/scripts/generate_image.py "prompt" --output ./outputs/figure.png`
    - matplotlib charts: `python3 <skill_path>/scripts/generate_chart.py <type> --data '<json>' --output chart.png`
    - Mermaid diagrams: `bash <skill_path>/scripts/mermaid_to_image.sh diagram.mmd output.png`
-8. **For documents 5+ pages:** Review the [Long-Form Document Anti-Patterns](#long-form-document-anti-patterns-must-read-for-reports-theses-books) section and run the Content Generation Checklist before compiling. Key rules: prefer prose over bullets, include global list compaction, escape `<`/`>` in text mode, vary section formats, limit `\newpage`, size images at 0.75-0.85 textwidth.
-9. Compile with `scripts/compile_latex.sh` (auto-detects XeLaTeX for CJK/RTL, glossaries, bibliography)
-10. Show PNG preview to user, deliver PDF
+9. **For documents 5+ pages:** Review the [Long-Form Document Anti-Patterns](#long-form-document-anti-patterns-must-read-for-reports-theses-books) section and run the Content Generation Checklist before compiling. Key rules: prefer prose over bullets, include global list compaction, escape `<`/`>` in text mode, vary section formats, limit `\newpage`, size images at 0.75-0.85 textwidth.
+10. Compile with `scripts/compile_latex.sh` (auto-detects XeLaTeX for CJK/RTL, glossaries, bibliography)
+11. Show PNG preview to user, deliver PDF
 
 ### Poster Sub-Workflow
 
@@ -257,6 +258,7 @@ All 5 templates follow ATS rules: single-column, no graphics/images, no tables f
 - **`cover-letter.tex`** -- Professional cover letter with sender/recipient blocks
 - **`invoice.tex`** -- Invoice with company header, line items table, subtotal/tax/total
 - **`academic-paper.tex`** -- Research paper with abstract, sections, bibliography, figures. Includes example `.bib` file (`references.bib`) for BibTeX citations.
+- **`examples/ieee-twocolumn-sample.tex`** -- IEEE Transactions / journal example using `\documentclass[journal,10pt]{IEEEtran}` with abstract, keywords, single-column figure, single-column table, full-width table, and numeric bibliography. Use with [references/ieee-journal-twocolumn-guide.md](references/ieee-journal-twocolumn-guide.md). Preview PNGs: `examples/ieee-twocolumn.png`, `examples/ieee-twocolumn-p1.png`, `examples/ieee-twocolumn-p2.png`.
 - **`presentation.tex`** -- Beamer presentation with title slide, content frames, columns
 - **`fillable-form.tex`** -- Fillable PDF form (`article` class) with hyperref form fields: text inputs, checkboxes, radio buttons, dropdowns, push buttons. Two-column layout with `tabularx`. Custom `\FormField`, `\FormCheck`, `\FormDropdown` helper commands. Requires Adobe Reader for full form support (browser PDF viewers have limited form capabilities).
 - **`conditional-document.tex`** -- Configurable document (`article` class) with etoolbox toggle system: show/hide TOC, appendix, watermark, draft mode, confidential marking, abstract. Template variables via `\providecommand` (title, author, org, version). Three visual profiles (corporate, academic, minimal). Supports command-line variable passing for CI/CD.
@@ -288,6 +290,7 @@ bash <skill_path>/scripts/compile_latex.sh ./outputs/my_resume.tex --preview --p
 | Cover letter | `cover-letter.tex` | `article` |
 | Invoice | `invoice.tex` | `article` |
 | Academic paper | `academic-paper.tex` + `references.bib` | `article` |
+| IEEE journal, IEEE Transactions, IEEE two-column paper | `examples/ieee-twocolumn-sample.tex` + [ieee-journal-twocolumn-guide.md](references/ieee-journal-twocolumn-guide.md) | `IEEEtran` |
 | Book | `book.tex` | `book` |
 | Scientific poster (portrait) | `poster.tex` | `tikzposter` |
 | Scientific poster (landscape) | `poster-landscape.tex` | `tikzposter` |
@@ -361,6 +364,7 @@ When uncertain about LaTeX patterns, compilation issues, or document quality, co
 | Format Conversion (Pandoc) | [format-conversion.md](references/format-conversion.md) | Markdown/DOCX/HTML to/from LaTeX |
 | Tables and Images | [tables-and-images.md](references/tables-and-images.md) | Colored rows, multi-row/column, booktabs, long tables, images, TikZ |
 | Charts and Graphs (pgfplots) | [charts-and-graphs.md](references/charts-and-graphs.md) | Line plots, bar charts, scatter plots, pie charts in pgfplots |
+| IEEE Journal Two-Column Typography | [ieee-journal-twocolumn-guide.md](references/ieee-journal-twocolumn-guide.md) | IEEEtran journal layout, float rules, XeLaTeX vs. pdfLaTeX, bibliography, Markdown-to-IEEE workflow, sample PNGs in `examples/ieee-twocolumn*.png` |
 | LaTeX Packages | [packages.md](references/packages.md) | Common packages reference |
 | Poster Design Guide | [poster-design-guide.md](references/poster-design-guide.md) | Conference size presets, typography, color schemes, layout archetypes, content guidelines |
 | Resume ATS Guide | [resume-ats-guide.md](references/resume-ats-guide.md) | ATS rules, LaTeX pitfalls, keywords |
