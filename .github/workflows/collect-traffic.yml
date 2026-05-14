@@ -1,0 +1,91 @@
+name: Collect Traffic Stats
+
+on:
+  schedule:
+    - cron: '0 2 * * *'   # 2am UTC daily
+  workflow_dispatch:        # allow manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fetch and merge traffic data
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+
+          REPO="${{ github.repository }}"
+
+          echo "=== Fetching clone data ==="
+          gh api repos/$REPO/traffic/clones > /tmp/clones.json
+          cat /tmp/clones.json
+
+          echo "=== Fetching views data ==="
+          gh api repos/$REPO/traffic/views > /tmp/views.json
+          cat /tmp/views.json
+
+          echo "=== Merging clone data ==="
+          python3 << 'PYEOF'
+          import json, csv, os
+
+          def merge_csv(filepath, new_rows, date_col, cols):
+              existing = {}
+              if os.path.exists(filepath):
+                  with open(filepath, newline='') as f:
+                      reader = csv.DictReader(f)
+                      for row in reader:
+                          existing[row[date_col]] = row
+
+              for row in new_rows:
+                  date = row[date_col]
+                  if date not in existing:
+                      existing[date] = row
+
+              sorted_rows = sorted(existing.values(), key=lambda r: r[date_col])
+              with open(filepath, 'w', newline='') as f:
+                  writer = csv.DictWriter(f, fieldnames=cols)
+                  writer.writeheader()
+                  writer.writerows(sorted_rows)
+              print(f"Written {len(sorted_rows)} rows to {filepath}")
+
+          # Clones
+          with open('/tmp/clones.json') as f:
+              data = json.load(f)
+
+          new_clones = [
+              {'date': e['timestamp'][:10], 'clones': str(e['count']), 'unique_cloners': str(e['uniques'])}
+              for e in data.get('clones', [])
+          ]
+          merge_csv('stats/clone-stats.csv', new_clones, 'date', ['date', 'clones', 'unique_cloners'])
+
+          # Views
+          with open('/tmp/views.json') as f:
+              data = json.load(f)
+
+          new_views = [
+              {'date': e['timestamp'][:10], 'views': str(e['count']), 'unique_visitors': str(e['uniques'])}
+              for e in data.get('views', [])
+          ]
+          merge_csv('stats/views.csv', new_views, 'date', ['date', 'views', 'unique_visitors'])
+          PYEOF
+
+      - name: Commit updated stats
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add stats/clone-stats.csv stats/views.csv
+          if git diff --cached --quiet; then
+            echo "No new data today."
+          else
+            DATE=$(date -u +%Y-%m-%d)
+            git commit -m "stats: daily traffic update $DATE"
+            git push
+            echo "Pushed updated stats."
+          fi
