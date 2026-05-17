@@ -5,7 +5,9 @@
 <h1 align="center">LaTeX Document Skill</h1>
 
 <p align="center">
-  <a href="https://happycapy.ai/?via=gh">Made by HappyCapy AI</a>
+  <img src="https://img.shields.io/badge/installs-10K%2B-brightgreen?style=for-the-badge&logo=github&logoColor=white" alt="10K+ Installs"/>
+  &nbsp;
+  <a href="https://happycapy.ai/?via=gh"><img src="https://img.shields.io/badge/Made%20by-HappyCapy%20AI-orange?style=for-the-badge" alt="Made by HappyCapy AI"/></a>
 </p>
 
 <p align="center">
