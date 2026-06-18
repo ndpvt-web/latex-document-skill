@@ -17,7 +17,9 @@ jobs:
 
       - name: Fetch and merge traffic data
         env:
-          GH_TOKEN: ${{ github.token }}
+          # Requires a classic PAT with 'repo' scope stored as TRAFFIC_TOKEN secret.
+          # github.token (built-in) cannot access the traffic API (HTTP 403).
+          GH_TOKEN: ${{ secrets.TRAFFIC_TOKEN }}
         run: |
           set -e
 
