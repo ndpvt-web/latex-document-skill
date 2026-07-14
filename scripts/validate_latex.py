@@ -354,6 +354,65 @@ def validate_file(filepath: str, preamble_commands: set) -> list:
     return errors
 
 
+def fix_file_content(content: str) -> str:
+    """Scan LaTeX content and escape stray ampersands outside alignment/tabular environments."""
+    lines = content.splitlines()
+    fixed_lines = []
+    ampersand_depth = 0
+
+    # Pattern to find begins, ends, and unescaped ampersands
+    pattern = re.compile(r"\\begin\{([^}]+)\}|\\end\{([^}]+)\}|(?<!\\)&")
+
+    for line in lines:
+        if is_comment_line(line):
+            fixed_lines.append(line)
+            continue
+
+        # Split comments and code
+        comment_match = re.search(r"(?<!\\)%", line)
+        if comment_match:
+            comment_idx = comment_match.start()
+            code_part = line[:comment_idx]
+            comment_part = line[comment_idx:]
+        else:
+            code_part = line
+            comment_part = ""
+
+        last_pos = 0
+        new_code_parts = []
+
+        for m in pattern.finditer(code_part):
+            new_code_parts.append(code_part[last_pos:m.start()])
+            match_str = m.group(0)
+
+            if match_str.startswith("\\begin"):
+                env_name = m.group(1)
+                if env_name in AMPERSAND_ENVS:
+                    ampersand_depth += 1
+                new_code_parts.append(match_str)
+            elif match_str.startswith("\\end"):
+                env_name = m.group(2)
+                if env_name in AMPERSAND_ENVS:
+                    ampersand_depth = max(0, ampersand_depth - 1)
+                new_code_parts.append(match_str)
+            else:
+                # Stray ampersand
+                if ampersand_depth == 0:
+                    new_code_parts.append("\\&")
+                else:
+                    new_code_parts.append("&")
+            last_pos = m.end()
+
+        new_code_parts.append(code_part[last_pos:])
+        fixed_line = "".join(new_code_parts) + comment_part
+        fixed_lines.append(fixed_line)
+
+    result = "\n".join(fixed_lines)
+    if content.endswith("\n") and not result.endswith("\n"):
+        result += "\n"
+    return result
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Validate LaTeX batch files before assembly.",
@@ -374,7 +433,31 @@ def main():
         action="store_true",
         help="Output errors as JSON instead of plain text",
     )
+    parser.add_argument(
+        "--fix",
+        action="store_true",
+        help="In-place fix stray ampersands in batch files",
+    )
     args = parser.parse_args()
+
+    # If --fix is specified, correct stray ampersands in-place
+    if args.fix:
+        for filepath in sorted(args.files):
+            try:
+                path = Path(filepath)
+                if not path.exists():
+                    print(f"File not found for fix: {filepath}", file=sys.stderr)
+                    continue
+                content = path.read_text(encoding="utf-8", errors="replace")
+                fixed = fix_file_content(content)
+                if fixed != content:
+                    path.write_text(fixed, encoding="utf-8")
+                    print(f"Fixed stray ampersands in {filepath}")
+                else:
+                    print(f"No stray ampersands found to fix in {filepath}")
+            except Exception as e:
+                print(f"Error fixing {filepath}: {e}", file=sys.stderr)
+        return 0
 
     # Load preamble info
     preamble_commands = extract_preamble_commands(args.preamble)

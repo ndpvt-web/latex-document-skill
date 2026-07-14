@@ -86,3 +86,4 @@ Use this profile when the PDF contains: contracts, agreements, regulations, stat
 4. **Long paragraphs**: Legal text can be very dense. Preserve paragraph breaks as they appear in the original.
 5. **Escaping special chars**: Legal text often has `§` (use `\S`), `¶` (use `\P`), and `©` (use `\copyright`).
 6. **Cross-references**: Don't try to create `\label`/`\ref` pairs -- just write "Section 3.2" as plain text.
+7. **Stray ampersands**: Partner names (e.g., "Smith & Partners") and text clauses (e.g., "Section 4(a) & (b)") must escape the ampersand as `\&` to avoid compilation errors. Raw `&` is only allowed inside tables.
