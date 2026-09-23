@@ -1131,6 +1131,62 @@ class TestValidateLatex:
         assert "files_checked" in output
         assert "errors" in output
 
+    def test_fix_file_content_basic(self):
+        """Test escaping of stray ampersands in plain text."""
+        content = "This & that are cool.\n"
+        fixed = validate_latex.fix_file_content(content)
+        assert fixed == r"This \& that are cool." + "\n"
+
+    def test_fix_file_content_in_tabular(self):
+        """Test that & inside tabular is preserved."""
+        content = (
+            r"\begin{tabular}{ll}" + "\n" +
+            r"a & b \\" + "\n" +
+            r"\end{tabular}" + "\n" +
+            r"Text & more text." + "\n"
+        )
+        expected = (
+            r"\begin{tabular}{ll}" + "\n" +
+            r"a & b \\" + "\n" +
+            r"\end{tabular}" + "\n" +
+            r"Text \& more text." + "\n"
+        )
+        fixed = validate_latex.fix_file_content(content)
+        assert fixed == expected
+
+    def test_fix_file_content_with_comment(self):
+        """Test that ampersands in comment lines are not touched."""
+        content = (
+            r"Text & more text. % inline & comment" + "\n" +
+            r"% full line & comment" + "\n"
+        )
+        expected = (
+            r"Text \& more text. % inline & comment" + "\n" +
+            r"% full line & comment" + "\n"
+        )
+        fixed = validate_latex.fix_file_content(content)
+        assert fixed == expected
+
+    def test_fix_cli_integration(self, temp_dir):
+        """Test in-place fixing via CLI."""
+        tex_file = temp_dir / "stray_amp.tex"
+        tex_file.write_text(r"M&T Bank" + "\n")
+
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(SCRIPTS_DIR / "validate_latex.py"),
+                "--fix",
+                str(tex_file)
+            ],
+            capture_output=True,
+            text=True
+        )
+
+        assert result.returncode == 0
+        assert "Fixed stray ampersands" in result.stdout
+        assert tex_file.read_text() == r"M\&T Bank" + "\n"
+
 
 # ============================================================================
 # EDGE CASE AND INTEGRATION TESTS
