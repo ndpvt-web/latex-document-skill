@@ -513,6 +513,16 @@ if [[ "$AUTO_FIX" == true || "$PDFA" == true ]]; then
     # Stage 1: Fix naked floats
     log_info "Stage 1: Checking for naked floats..."
     auto_fix_floats "$INPUT_TEX" "$TEMP_TEX"
+
+    # Stage 2: Fix stray ampersands
+    log_info "Stage 2: Checking for stray ampersands..."
+    if command -v python3 &>/dev/null; then
+      python3 "${SCRIPT_DIR}/validate_latex.py" --fix "$TEMP_TEX"
+    elif command -v python &>/dev/null; then
+      python "${SCRIPT_DIR}/validate_latex.py" --fix "$TEMP_TEX"
+    else
+      log_info "Python not found, skipping ampersand auto-fix"
+    fi
   else
     cp "$INPUT_TEX" "$TEMP_TEX"
   fi

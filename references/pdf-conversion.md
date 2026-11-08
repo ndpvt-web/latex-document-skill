@@ -140,6 +140,10 @@ CRITICAL LATEX CONSTRAINTS (violation = compilation failure):
    - Delimiters: \abs{}, \norm{}, \floor{}, \ceil{}
    - Circled numbers: \circled{1}, \circled{2}
    - Strikethrough: \sout{text} (ulem loaded), \cancel{expr} (in math)
+
+6. ESCAPING AMPERSANDS:
+   - You MUST escape raw `&` characters in text mode as `\&` (e.g., "R\&D", "P\&L", "Smith \& Partners").
+   - Raw `&` is only valid inside tabular and mathematical alignment environments (like `tabular`, `align`, `matrix`).
 ```
 
 ## Step 6: Validate Batch Outputs

@@ -64,6 +64,12 @@ description: >
 
 Create any LaTeX document, compile to PDF, and generate PNG previews. Convert PDFs of any type to LaTeX.
 
+> [!IMPORTANT]
+> **CRITICAL RULE: ESCAPING AMPERSANDS (`&`)**
+> LaTeX uses `&` as a column/alignment separator in math and tabular environments (like `tabular`, `align`, `matrix`).
+> In normal text (e.g., titles, headers, bullet points, names like "R&D" or "M&T"), you **MUST ALWAYS** escape `&` as `\&`.
+> Leaving `&` unescaped in text mode is the leading cause of LaTeX compilation failures. Always double-check and escape all raw `&` characters in your output.
+
 ## Workflow: Create Documents
 
 1. Determine document type (resume, report, letter, invoice, article, thesis, academic CV, presentation, poster, exam, book, cheat sheet)
@@ -312,7 +318,12 @@ bash <skill_path>/scripts/compile_latex.sh ./outputs/my_resume.tex --preview --p
 
 ### Escaping Special Characters
 
-Always escape: `%` → `\%`, `$` → `\$`, `&` → `\&`, `#` → `\#`, `_` → `\_`
+Always escape LaTeX special characters to avoid compilation errors:
+- **Ampersand:** `&` → `\&` (Crucial! Raw `&` outside `tabular`/`align` will crash the compiler)
+- **Percent:** `%` → `\%` (Raw `%` starts a comment, causing text after it to disappear)
+- **Dollar:** `$` → `\$` (Raw `$` starts math mode)
+- **Hash:** `#` → `\#` (Raw `#` is for macro parameters)
+- **Underscore:** `_` → `\_` (Raw `_` is for math subscripts)
 
 **Angle brackets in text mode:** `<` and `>` are NOT valid in LaTeX text mode with T1 encoding. They render as inverted question marks (¡ or ¿). Always use math mode or text commands:
 - `<5%` → `$<$5\%` or `\textless 5\%`
